@@ -1,0 +1,207 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "pdfs"
+public_folder: "/pdfs"
+
+collections:
+
+  # ── ANNOUNCEMENTS ──────────────────────────────────────────
+  - name: "announcements"
+    label: "Announcements"
+    label_singular: "Announcement"
+    folder: "_announcements"
+    create: false
+    identifier_field: league
+    fields:
+      - label: "League"
+        name: "league"
+        widget: "hidden"
+      - label: "Announcement Text"
+        name: "body"
+        widget: "text"
+        hint: "One or two sentences. Leave blank to hide."
+      - label: "Show Announcement"
+        name: "active"
+        widget: "boolean"
+        default: false
+      - label: "Date"
+        name: "date"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+
+  # ── BEST BALL ──────────────────────────────────────────────
+  - name: "bestball"
+    label: "Best Ball — Wednesday"
+    folder: "_leagues/bestball"
+    create: false
+    identifier_field: name
+    fields:
+      - { label: "Section", name: "name", widget: "hidden" }
+
+      - label: "League Rules"
+        name: "league_rules"
+        widget: "file"
+        media_folder: "/pdfs/bestball"
+        public_folder: "/pdfs/bestball"
+        allow_multiple: false
+        hint: "Upload the current season's league rules PDF."
+
+      - label: "Score Guide / Worksheet"
+        name: "score_guide"
+        widget: "file"
+        media_folder: "/pdfs/bestball"
+        public_folder: "/pdfs/bestball"
+        allow_multiple: false
+
+      - label: "Peer-to-Peer Handicap Guide"
+        name: "handicap_guide"
+        widget: "file"
+        media_folder: "/pdfs/bestball"
+        public_folder: "/pdfs/bestball"
+        allow_multiple: false
+
+      - label: "Division 1 Schedule"
+        name: "d1_schedule"
+        widget: "file"
+        media_folder: "/pdfs/bestball"
+        public_folder: "/pdfs/bestball"
+        allow_multiple: false
+
+      - label: "Division 2 Schedule"
+        name: "d2_schedule"
+        widget: "file"
+        media_folder: "/pdfs/bestball"
+        public_folder: "/pdfs/bestball"
+        allow_multiple: false
+
+      - label: "Team Contacts & Rosters"
+        name: "team_contacts"
+        widget: "file"
+        media_folder: "/pdfs/bestball"
+        public_folder: "/pdfs/bestball"
+        allow_multiple: false
+
+      - label: "Season Standings"
+        name: "standings"
+        widget: "file"
+        media_folder: "/pdfs/bestball"
+        public_folder: "/pdfs/bestball"
+        allow_multiple: false
+        hint: "Replace this each week with the latest standings."
+
+      - label: "Weekly Matchups & Results"
+        name: "weekly_matchups"
+        widget: "file"
+        media_folder: "/pdfs/bestball"
+        public_folder: "/pdfs/bestball"
+        allow_multiple: false
+        hint: "Replace this each week with the latest matchups."
+
+      - label: "Consolation Bracket"
+        name: "consolation_bracket"
+        widget: "file"
+        media_folder: "/pdfs/bestball"
+        public_folder: "/pdfs/bestball"
+        allow_multiple: false
+
+      - label: "Championship Bracket"
+        name: "championship_bracket"
+        widget: "file"
+        media_folder: "/pdfs/bestball"
+        public_folder: "/pdfs/bestball"
+        allow_multiple: false
+
+      - label: "Final Playoff Standings"
+        name: "playoff_standings"
+        widget: "file"
+        media_folder: "/pdfs/bestball"
+        public_folder: "/pdfs/bestball"
+        allow_multiple: false
+
+      - label: "Payouts"
+        name: "payouts"
+        widget: "file"
+        media_folder: "/pdfs/bestball"
+        public_folder: "/pdfs/bestball"
+        allow_multiple: false
+
+  # ── SCRATCH ────────────────────────────────────────────────
+  - name: "scratch"
+    label: "Scratch League — Tuesday"
+    folder: "_leagues/scratch"
+    create: false
+    identifier_field: name
+    fields:
+      - { label: "Section", name: "name", widget: "hidden" }
+      - { label: "League Rules", name: "league_rules", widget: "file", media_folder: "/pdfs/scratch", public_folder: "/pdfs/scratch", allow_multiple: false }
+      - { label: "Teams & Contacts", name: "team_contacts", widget: "file", media_folder: "/pdfs/scratch", public_folder: "/pdfs/scratch", allow_multiple: false }
+      - { label: "Season Schedule", name: "schedule", widget: "file", media_folder: "/pdfs/scratch", public_folder: "/pdfs/scratch", allow_multiple: false }
+      - { label: "Weekly Matchups", name: "weekly_matchups", widget: "file", media_folder: "/pdfs/scratch", public_folder: "/pdfs/scratch", allow_multiple: false, hint: "Replace each week." }
+      - { label: "Weekly Results", name: "weekly_results", widget: "file", media_folder: "/pdfs/scratch", public_folder: "/pdfs/scratch", allow_multiple: false, hint: "Replace each week." }
+      - { label: "Gold Division Standings", name: "standings_gold", widget: "file", media_folder: "/pdfs/scratch", public_folder: "/pdfs/scratch", allow_multiple: false }
+      - { label: "Green Division Standings", name: "standings_green", widget: "file", media_folder: "/pdfs/scratch", public_folder: "/pdfs/scratch", allow_multiple: false }
+      - { label: "Playoff Bracket", name: "playoff_bracket", widget: "file", media_folder: "/pdfs/scratch", public_folder: "/pdfs/scratch", allow_multiple: false }
+      - { label: "Playoff Bracket Round 2", name: "playoff_bracket_r2", widget: "file", media_folder: "/pdfs/scratch", public_folder: "/pdfs/scratch", allow_multiple: false }
+      - { label: "Payouts", name: "payouts", widget: "file", media_folder: "/pdfs/scratch", public_folder: "/pdfs/scratch", allow_multiple: false }
+
+  # ── BUSHWHACKERS ───────────────────────────────────────────
+  - name: "bushwhackers"
+    label: "Bushwhackers — Mon/Tue"
+    folder: "_leagues/bushwhackers"
+    create: false
+    identifier_field: name
+    fields:
+      - { label: "Section", name: "name", widget: "hidden" }
+      - { label: "League Rules", name: "league_rules", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false }
+      - { label: "Monday Captains List", name: "monday_captains", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false }
+      - { label: "Monday AFC Schedule", name: "monday_afc", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false }
+      - { label: "Monday NFC Schedule", name: "monday_nfc", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false }
+      - { label: "Monday Standings", name: "monday_standings", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false, hint: "Replace each week." }
+      - { label: "Monday Weekly Matchups & Results", name: "monday_weekly", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false, hint: "Replace each week." }
+      - { label: "Monday Consolation Bracket", name: "monday_consolation", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false }
+      - { label: "Monday Championship Bracket", name: "monday_championship", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false }
+      - { label: "Tuesday Captains List", name: "tuesday_captains", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false }
+      - { label: "Tuesday American Schedule", name: "tuesday_american", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false }
+      - { label: "Tuesday National Schedule", name: "tuesday_national", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false }
+      - { label: "Tuesday Standings", name: "tuesday_standings", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false, hint: "Replace each week." }
+      - { label: "Tuesday Weekly Matchups & Results", name: "tuesday_weekly", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false, hint: "Replace each week." }
+      - { label: "Tuesday Consolation Bracket", name: "tuesday_consolation", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false }
+      - { label: "Tuesday Championship Bracket", name: "tuesday_championship", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false }
+      - { label: "Budget", name: "budget", widget: "file", media_folder: "/pdfs/bushwhackers", public_folder: "/pdfs/bushwhackers", allow_multiple: false }
+
+  # ── 40 & OVER ──────────────────────────────────────────────
+  - name: "40over"
+    label: "40 & Over — Thursday"
+    folder: "_leagues/40over"
+    create: false
+    identifier_field: name
+    fields:
+      - { label: "Section", name: "name", widget: "hidden" }
+      - { label: "League Rules", name: "league_rules", widget: "file", media_folder: "/pdfs/40over", public_folder: "/pdfs/40over", allow_multiple: false }
+      - { label: "Team Contacts", name: "team_contacts", widget: "file", media_folder: "/pdfs/40over", public_folder: "/pdfs/40over", allow_multiple: false }
+      - { label: "Season Schedule", name: "schedule", widget: "file", media_folder: "/pdfs/40over", public_folder: "/pdfs/40over", allow_multiple: false }
+      - { label: "Season Standings", name: "standings", widget: "file", media_folder: "/pdfs/40over", public_folder: "/pdfs/40over", allow_multiple: false, hint: "Replace each week." }
+      - { label: "Weekly Matchups & Results", name: "weekly_matchups", widget: "file", media_folder: "/pdfs/40over", public_folder: "/pdfs/40over", allow_multiple: false, hint: "Replace each week." }
+      - { label: "Consolation Bracket", name: "consolation_bracket", widget: "file", media_folder: "/pdfs/40over", public_folder: "/pdfs/40over", allow_multiple: false }
+      - { label: "Championship Bracket", name: "championship_bracket", widget: "file", media_folder: "/pdfs/40over", public_folder: "/pdfs/40over", allow_multiple: false }
+      - { label: "Payouts", name: "payouts", widget: "file", media_folder: "/pdfs/40over", public_folder: "/pdfs/40over", allow_multiple: false }
+      - { label: "Peer-to-Peer Handicap Guide", name: "handicap_guide", widget: "file", media_folder: "/pdfs/40over", public_folder: "/pdfs/40over", allow_multiple: false }
+
+  # ── RESOURCES (Admin only) ─────────────────────────────────
+  - name: "resources"
+    label: "Resources (Admin)"
+    folder: "_resources"
+    create: false
+    identifier_field: name
+    fields:
+      - { label: "Section", name: "name", widget: "hidden" }
+      - { label: "Club Bylaws", name: "bylaws", widget: "file", media_folder: "/pdfs/club", public_folder: "/pdfs/club", allow_multiple: false }
+      - { label: "Annual Budget", name: "annual_budget", widget: "file", media_folder: "/pdfs/club", public_folder: "/pdfs/club", allow_multiple: false }
+      - { label: "Financial Report", name: "financial_report", widget: "file", media_folder: "/pdfs/club", public_folder: "/pdfs/club", allow_multiple: false }
+      - { label: "Meeting Minutes (current)", name: "meeting_minutes", widget: "file", media_folder: "/pdfs/club", public_folder: "/pdfs/club", allow_multiple: false }
+      - { label: "Local Rules", name: "local_rules", widget: "file", media_folder: "/pdfs/club", public_folder: "/pdfs/club", allow_multiple: false }
+      - { label: "Scorecard", name: "scorecard", widget: "file", media_folder: "/pdfs/club", public_folder: "/pdfs/club", allow_multiple: false }
+      - { label: "NMGC Handicap Guide", name: "handicap_guide", widget: "file", media_folder: "/pdfs/club", public_folder: "/pdfs/club", allow_multiple: false }
+      - { label: "USGA Rules Summary", name: "usga_rules", widget: "file", media_folder: "/pdfs/club", public_folder: "/pdfs/club", allow_multiple: false }

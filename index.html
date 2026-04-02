@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nemadji Men's Golf Club — Superior, WI</title>
+  <meta name="description" content="Nemadji Men's Golf Club — home of Bushwhackers, Scratch, Best Ball, and 40 & Over leagues in Superior, Wisconsin.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+
+<!-- ============ NAVIGATION ============ -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="images/nmgc-logo.png" alt="Nemadji Men's Golf Club" style="height:42px;width:auto;">
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li class="has-dropdown">
+        <a href="#">Leagues</a>
+        <div class="dropdown-menu">
+          <a href="leagues/bushwhackers.html">Bushwhackers (Mon/Tue)</a>
+          <a href="leagues/scratch.html">Scratch League (Tue)</a>
+          <a href="leagues/bestball.html">Best Ball (Wed)</a>
+          <a href="leagues/40over.html">40 &amp; Over (Thu)</a>
+        </div>
+      </li>
+      <li class="has-dropdown">
+        <a href="#">Tournaments</a>
+        <div class="dropdown-menu">
+          <a href="tournaments/spring-scramble.html">Spring Scramble</a>
+          <a href="tournaments/memorial-weekend.html">Memorial Weekend Tourney</a>
+          <a href="tournaments/titos-classic.html">Tito's Classic</a>
+          <a href="tournaments/red-white-blue.html">Red-White-Blue</a>
+          <a href="tournaments/championship.html">Men's Club Championship</a>
+          <a href="tournaments/miller-team.html">Miller Team Championship</a>
+          <a href="tournaments/fall-scramble.html">Fall Scramble</a>
+          <a href="tournaments/superintendents-revenge.html">Superintendent's Revenge</a>
+        </div>
+      </li>
+      <li><a href="resources.html">Resources</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+
+    <button class="nav-toggle" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Mobile nav drawer -->
+  <div class="mobile-nav">
+    <div class="mobile-nav-group">
+      <div class="mobile-nav-label">Leagues</div>
+      <a href="leagues/bushwhackers.html">Bushwhackers (Mon/Tue)</a>
+      <a href="leagues/scratch.html">Scratch League (Tue)</a>
+      <a href="leagues/bestball.html">Best Ball (Wed)</a>
+      <a href="leagues/40over.html">40 &amp; Over (Thu)</a>
+    </div>
+    <div class="mobile-nav-group">
+      <div class="mobile-nav-label">Tournaments</div>
+      <a href="tournaments/spring-scramble.html">Spring Scramble</a>
+      <a href="tournaments/memorial-weekend.html">Memorial Weekend Tourney</a>
+      <a href="tournaments/titos-classic.html">Tito's Classic</a>
+      <a href="tournaments/red-white-blue.html">Red-White-Blue</a>
+      <a href="tournaments/championship.html">Men's Club Championship</a>
+      <a href="tournaments/miller-team.html">Miller Team Championship</a>
+      <a href="tournaments/fall-scramble.html">Fall Scramble</a>
+      <a href="tournaments/superintendents-revenge.html">Superintendent's Revenge</a>
+    </div>
+    <a href="resources.html">Resources</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-overlay"></div>
+  <!-- Replace hero-bg with actual course photo later:
+       <div class="hero-bg" style="background-image:url('images/course.jpg');"></div> -->
+  <div class="hero-inner">
+    <div class="hero-label">Superior, Wisconsin · Est. 1952</div>
+    <h1>Nemadji Men's<br>Golf Club</h1>
+    <p class="hero-sub">A non-profit men's golf club serving Superior, Wisconsin since 1952. Four competitive leagues, club tournaments, and USGA-sanctioned handicaps — all at Nemadji Public Golf Course.</p>
+  </div>
+</section>
+
+<!-- ============ MAIN CONTENT ============ -->
+<main class="page-content">
+
+  <!-- Announcement -->
+  <div class="announcement" id="league-announcement" data-league="homepage" style="display:none;">
+    <div class="announcement-icon">📣</div>
+    <div>
+      <div class="announcement-label">Club Announcement</div>
+      <div class="announcement-text">Annual Meeting &amp; League Sign-Up is <strong>April 10th</strong>. Don't miss your chance to win a cart pass donated by <strong>Kemper Sports</strong>!</div>
+    </div>
+  </div>
+
+  <!-- League Tiles -->
+  <section id="leagues">
+    <div class="section-label">Men's Leagues</div>
+    <div class="grid-4">
+
+      <a href="leagues/bushwhackers.html" class="league-tile" style="background:linear-gradient(135deg,#eaf2f8 0%,#d0e6f0 100%);">
+        <div class="league-tile-bar" style="background:#3a6080;"></div>
+        <div class="league-tile-body" style="background:transparent;border-color:#b0cfe0;">
+          <div>
+            <div class="league-tile-day">Mon / Tue</div>
+            <div class="league-tile-name">Bushwhackers</div>
+          </div>
+          <div class="league-tile-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="leagues/scratch.html" class="league-tile" style="background:linear-gradient(135deg,#fdf8e8 0%,#f5e8b0 100%);">
+        <div class="league-tile-bar" style="background:#c8a830;"></div>
+        <div class="league-tile-body" style="background:transparent;border-color:#e0cc80;">
+          <div>
+            <div class="league-tile-day">Tuesday</div>
+            <div class="league-tile-name">Scratch League</div>
+          </div>
+          <div class="league-tile-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="leagues/bestball.html" class="league-tile" style="background:linear-gradient(135deg,#f2f7e8 0%,#dcedb0 100%);">
+        <div class="league-tile-bar" style="background:#7e9d10;"></div>
+        <div class="league-tile-body" style="background:transparent;border-color:#bcd878;">
+          <div>
+            <div class="league-tile-day">Wednesday</div>
+            <div class="league-tile-name">Best Ball</div>
+          </div>
+          <div class="league-tile-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="leagues/40over.html" class="league-tile" style="background:linear-gradient(135deg,#faf3ea 0%,#f0dcc0 100%);">
+        <div class="league-tile-bar" style="background:#8a5a20;"></div>
+        <div class="league-tile-body" style="background:transparent;border-color:#d4a870;">
+          <div>
+            <div class="league-tile-day">Thursday</div>
+            <div class="league-tile-name">40 &amp; Over</div>
+          </div>
+          <div class="league-tile-arrow">→</div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Events Calendar -->
+  <section>
+    <div class="section-label">2026 Men's Club Events</div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Upcoming Events</span>
+        <span style="font-size:0.7rem;color:#888;font-family:'Courier Prime',monospace;">Nemadji Golf Course · 2026</span>
+      </div>
+      <div class="card-body" style="padding:0;">
+
+        <!-- Always visible: April & May -->
+        <div class="events-month">
+          <div class="events-month-header">April 2026</div>
+          <div class="event-row">
+            <div class="event-date">Fri, Apr 10</div>
+            <div class="event-name">Men's Club Spring Banquet <span class="event-note">+ Annual Meeting &amp; Sign-Up · Cart Pass Giveaway by Kemper Sports</span></div>
+          </div>
+          <div class="event-row">
+            <div class="event-date">Mon, Apr 20</div>
+            <div class="event-name">Bushwhackers Captain's Meeting</div>
+          </div>
+          <div class="event-row">
+            <div class="event-date">Tue, Apr 21</div>
+            <div class="event-name">Scratch League Captain's Meeting</div>
+          </div>
+          <div class="event-row">
+            <div class="event-date">Wed, Apr 22</div>
+            <div class="event-name">Best Ball Captain's Meeting</div>
+          </div>
+          <div class="event-row">
+            <div class="event-date">Thu, Apr 23</div>
+            <div class="event-name">40 &amp; Over Captain's Meeting</div>
+          </div>
+        </div>
+
+        <div class="events-month">
+          <div class="events-month-header">May 2026</div>
+          <div class="event-row">
+            <div class="event-date">Mon, May 4</div>
+            <div class="event-name">Men's Club Spring Scramble</div>
+          </div>
+          <div class="event-row">
+            <div class="event-date">Week of May 11</div>
+            <div class="event-name event-highlight">🏌 Leagues Begin</div>
+          </div>
+          <div class="event-row">
+            <div class="event-date">Sat–Sun, May 23–24</div>
+            <div class="event-name">Men's Club Memorial Weekend Tourney</div>
+          </div>
+          <div class="event-row">
+            <div class="event-date">Sat, May 30</div>
+            <div class="event-name">Tito's Classic</div>
+          </div>
+        </div>
+
+        <!-- Expandable: June through October -->
+        <div id="events-more" style="display:none;">
+
+          <div class="events-month">
+            <div class="events-month-header">June 2026</div>
+            <div class="event-row">
+              <div class="event-date">Sat–Sun, Jun 20–21</div>
+              <div class="event-name">Nemadji Invitational</div>
+            </div>
+          </div>
+
+          <div class="events-month">
+            <div class="events-month-header">July 2026</div>
+            <div class="event-row">
+              <div class="event-date">Fri, Jul 4</div>
+              <div class="event-name">Men's Club Red-White-Blue</div>
+            </div>
+          </div>
+
+          <div class="events-month">
+            <div class="events-month-header">August 2026</div>
+            <div class="event-row">
+              <div class="event-date">Fri, Aug 28</div>
+              <div class="event-name">Men's Club Championship</div>
+            </div>
+            <div class="event-row">
+              <div class="event-date">Sat–Sun, Aug 29–30</div>
+              <div class="event-name">Miller Team Championship</div>
+            </div>
+          </div>
+
+          <div class="events-month">
+            <div class="events-month-header">September 2026</div>
+            <div class="event-row">
+              <div class="event-date">Wed, Sep 30</div>
+              <div class="event-name">Men's Club Fall Scramble</div>
+            </div>
+          </div>
+
+          <div class="events-month">
+            <div class="events-month-header">October 2026</div>
+            <div class="event-row">
+              <div class="event-date">Sat, Oct 10</div>
+              <div class="event-name">Superintendent's Revenge</div>
+            </div>
+          </div>
+
+        </div><!-- /events-more -->
+
+        <!-- Expand toggle -->
+        <div style="padding:0.75rem 1rem;border-top:1px solid #eee;text-align:center;">
+          <button onclick="toggleEvents(this)" style="background:none;border:none;color:#3a5fc8;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;">
+            Show full 2026 season ▾
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Nemadji Course Redirect -->
+  <div class="course-banner">
+    <div class="course-banner-icon">⛳</div>
+    <div class="course-banner-text">
+      <div class="course-banner-title">Looking for the Nemadji Course Website?</div>
+      <div class="course-banner-sub">Tee times, green fees, and course information</div>
+    </div>
+    <a href="https://www.nemadjigolf.com/" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Visit nemadjigolf.com</a>
+  </div>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-brand-logo">
+        <img src="images/nmgc-logo.png" alt="NMGC" style="height:36px;width:auto;">
+        <div class="footer-brand-name">NMGC</div>
+      </div>
+      <p class="footer-brand-desc">Nemadji Men's Golf Club<br>Superior, Wisconsin</p>
+    </div>
+    <div class="footer-col">
+      <h4>Leagues</h4>
+      <a href="leagues/bushwhackers.html">Bushwhackers</a>
+      <a href="leagues/scratch.html">Scratch</a>
+      <a href="leagues/bestball.html">Best Ball</a>
+      <a href="leagues/40over.html">40 &amp; Over</a>
+    </div>
+    <div class="footer-col">
+      <h4>Club</h4>
+      <a href="about.html">About</a>
+      <a href="resources.html">Resources</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Links</h4>
+      <a href="https://www.nemadjigolf.com/" target="_blank" rel="noopener">Nemadji Golf Course</a>
+      <a href="https://www.ghin.com/" target="_blank" rel="noopener">GHIN Handicap</a>
+      <a href="https://www.usga.org/" target="_blank" rel="noopener">USGA</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2026 Nemadji Men's Golf Club · Superior, WI · Est. 1952 · All rights reserved
+  </div>
+</footer>
+
+<script src="css/nav.js"></script>
+
+<style>
+.events-month { border-bottom: 1px solid #eee; }
+.events-month:last-child { border-bottom: none; }
+.events-month-header {
+  background: #f5f5f5;
+  padding: 0.4rem 1rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7e9d10;
+  border-bottom: 1px solid #eee;
+}
+.event-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.55rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+.event-row:last-child { border-bottom: none; }
+.event-date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
+  min-width: 130px;
+  flex-shrink: 0;
+  font-family: 'Courier Prime', monospace;
+}
+.event-name {
+  font-size: 0.875rem;
+  color: #222;
+}
+.event-note {
+  font-size: 0.72rem;
+  color: #7e9d10;
+  font-weight: 600;
+  display: block;
+}
+.event-highlight {
+  font-weight: 700;
+  color: #2a4a10;
+}
+@media (max-width: 480px) {
+  .event-row { flex-direction: column; gap: 0.15rem; }
+  .event-date { min-width: unset; }
+}
+</style>
+<script>
+function toggleEvents(btn) {
+  var more = document.getElementById('events-more');
+  if (more.style.display === 'none') {
+    more.style.display = 'block';
+    btn.innerHTML = 'Show less ▴';
+  } else {
+    more.style.display = 'none';
+    btn.innerHTML = 'Show full 2026 season ▾';
+  }
+}
+</script>
+<script src="js/announcements.js"></script>
+</body>
+</html>
