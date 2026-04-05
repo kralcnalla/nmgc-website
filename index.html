@@ -14,9 +14,7 @@
 <!-- ============ NAVIGATION ============ -->
 <nav class="site-nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <img src="images/nmgc-logo.png" alt="Nemadji Men's Golf Club" style="height:42px;width:auto;">
-    </a>
+    <a href="index.html" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a>
 
     <ul class="nav-links">
       <li><a href="index.html" class="active">Home</a></li>
@@ -33,13 +31,10 @@
         <a href="#">Tournaments</a>
         <div class="dropdown-menu">
           <a href="tournaments/spring-scramble.html">Spring Scramble</a>
-          <a href="tournaments/memorial-weekend.html">Memorial Weekend Tourney</a>
           <a href="tournaments/titos-classic.html">Tito's Classic</a>
           <a href="tournaments/red-white-blue.html">Red-White-Blue</a>
           <a href="tournaments/championship.html">Men's Club Championship</a>
-          <a href="tournaments/miller-team.html">Miller Team Championship</a>
-          <a href="tournaments/fall-scramble.html">Fall Scramble</a>
-          <a href="tournaments/superintendents-revenge.html">Superintendent's Revenge</a>
+      <a href="tournaments/fall-scramble.html">Fall Scramble</a>
         </div>
       </li>
       <li><a href="resources.html">Resources</a></li>
@@ -64,26 +59,23 @@
     <div class="mobile-nav-group">
       <div class="mobile-nav-label">Tournaments</div>
       <a href="tournaments/spring-scramble.html">Spring Scramble</a>
-      <a href="tournaments/memorial-weekend.html">Memorial Weekend Tourney</a>
       <a href="tournaments/titos-classic.html">Tito's Classic</a>
       <a href="tournaments/red-white-blue.html">Red-White-Blue</a>
       <a href="tournaments/championship.html">Men's Club Championship</a>
-      <a href="tournaments/miller-team.html">Miller Team Championship</a>
       <a href="tournaments/fall-scramble.html">Fall Scramble</a>
-      <a href="tournaments/superintendents-revenge.html">Superintendent's Revenge</a>
     </div>
-    <a href="resources.html">Resources</a>
+    <hr class="mobile-nav-divider">
+    <a href="../resources.html">Resources</a>
     <a href="about.html">About</a>
     <a href="contact.html">Contact</a>
   </div>
 </nav>
 
 <!-- ============ HERO ============ -->
-<section class="hero">
+<section class="hero" style="background-image:url('images/hero.jpg');background-size:cover;background-position:center;">
   <div class="hero-overlay"></div>
-  <!-- Replace hero-bg with actual course photo later:
-       <div class="hero-bg" style="background-image:url('images/course.jpg');"></div> -->
   <div class="hero-inner">
+    <img src="images/nmgc-logo.png" alt="Nemadji Men's Golf Club" class="hero-logo-mobile">
     <div class="hero-label">Superior, Wisconsin · Est. 1952</div>
     <h1>Nemadji Men's<br>Golf Club</h1>
     <p class="hero-sub">A non-profit men's golf club serving Superior, Wisconsin since 1952. Four competitive leagues, club tournaments, and USGA-sanctioned handicaps — all at Nemadji Public Golf Course.</p>
@@ -160,107 +152,88 @@
     <div class="card">
       <div class="card-header">
         <span class="card-title">Upcoming Events</span>
-        <span style="font-size:0.7rem;color:#888;font-family:'Courier Prime',monospace;">Nemadji Golf Course · 2026</span>
       </div>
       <div class="card-body" style="padding:0;">
 
-        <!-- Always visible: April & May -->
-        <div class="events-month">
+        <div class="events-month" data-month="2026-04">
           <div class="events-month-header">April 2026</div>
-          <div class="event-row">
+          <div class="event-row" data-date="2026-04-10">
             <div class="event-date">Fri, Apr 10</div>
             <div class="event-name">Men's Club Spring Banquet <span class="event-note">+ Annual Meeting &amp; Sign-Up · Cart Pass Giveaway by Kemper Sports</span></div>
           </div>
-          <div class="event-row">
+          <div class="event-row" data-date="2026-04-20">
             <div class="event-date">Mon, Apr 20</div>
             <div class="event-name">Bushwhackers Captain's Meeting</div>
           </div>
-          <div class="event-row">
+          <div class="event-row" data-date="2026-04-21">
             <div class="event-date">Tue, Apr 21</div>
             <div class="event-name">Scratch League Captain's Meeting</div>
           </div>
-          <div class="event-row">
+          <div class="event-row" data-date="2026-04-22">
             <div class="event-date">Wed, Apr 22</div>
             <div class="event-name">Best Ball Captain's Meeting</div>
           </div>
-          <div class="event-row">
+          <div class="event-row" data-date="2026-04-23">
             <div class="event-date">Thu, Apr 23</div>
             <div class="event-name">40 &amp; Over Captain's Meeting</div>
           </div>
         </div>
 
-        <div class="events-month">
+        <div class="events-month" data-month="2026-05">
           <div class="events-month-header">May 2026</div>
-          <div class="event-row">
+          <div class="event-row" data-date="2026-05-04">
             <div class="event-date">Mon, May 4</div>
             <div class="event-name">Men's Club Spring Scramble</div>
           </div>
-          <div class="event-row">
+          <div class="event-row" data-date="2026-05-11">
             <div class="event-date">Week of May 11</div>
             <div class="event-name event-highlight">🏌 Leagues Begin</div>
           </div>
-          <div class="event-row">
+          <div class="event-row" data-date="2026-05-23">
             <div class="event-date">Sat–Sun, May 23–24</div>
             <div class="event-name">Men's Club Memorial Weekend Tourney</div>
           </div>
-          <div class="event-row">
+          <div class="event-row" data-date="2026-05-30">
             <div class="event-date">Sat, May 30</div>
             <div class="event-name">Tito's Classic</div>
           </div>
         </div>
 
-        <!-- Expandable: June through October -->
-        <div id="events-more" style="display:none;">
-
-          <div class="events-month">
-            <div class="events-month-header">June 2026</div>
-            <div class="event-row">
-              <div class="event-date">Sat–Sun, Jun 20–21</div>
-              <div class="event-name">Nemadji Invitational</div>
-            </div>
+        <div class="events-month" data-month="2026-06">
+          <div class="events-month-header">June 2026</div>
+          <div class="event-row" data-date="2026-06-20">
+            <div class="event-date">Sat–Sun, Jun 20–21</div>
+            <div class="event-name">Nemadji Invitational</div>
           </div>
+        </div>
 
-          <div class="events-month">
-            <div class="events-month-header">July 2026</div>
-            <div class="event-row">
-              <div class="event-date">Fri, Jul 4</div>
-              <div class="event-name">Men's Club Red-White-Blue</div>
-            </div>
+        <div class="events-month" data-month="2026-07">
+          <div class="events-month-header">July 2026</div>
+          <div class="event-row" data-date="2026-07-04">
+            <div class="event-date">Fri, Jul 4</div>
+            <div class="event-name">Men's Club Red-White-Blue</div>
           </div>
+        </div>
 
-          <div class="events-month">
-            <div class="events-month-header">August 2026</div>
-            <div class="event-row">
-              <div class="event-date">Fri, Aug 28</div>
-              <div class="event-name">Men's Club Championship</div>
-            </div>
-            <div class="event-row">
-              <div class="event-date">Sat–Sun, Aug 29–30</div>
-              <div class="event-name">Miller Team Championship</div>
-            </div>
+        <div class="events-month" data-month="2026-08">
+          <div class="events-month-header">August 2026</div>
+          <div class="event-row" data-date="2026-08-28">
+            <div class="event-date">Fri, Aug 28</div>
+            <div class="event-name">Men's Club Championship</div>
           </div>
+        </div>
 
-          <div class="events-month">
-            <div class="events-month-header">September 2026</div>
-            <div class="event-row">
-              <div class="event-date">Wed, Sep 30</div>
-              <div class="event-name">Men's Club Fall Scramble</div>
-            </div>
+        <div class="events-month" data-month="2026-09">
+          <div class="events-month-header">September 2026</div>
+          <div class="event-row" data-date="2026-09-30">
+            <div class="event-date">Wed, Sep 30</div>
+            <div class="event-name">Men's Club Fall Scramble</div>
           </div>
-
-          <div class="events-month">
-            <div class="events-month-header">October 2026</div>
-            <div class="event-row">
-              <div class="event-date">Sat, Oct 10</div>
-              <div class="event-name">Superintendent's Revenge</div>
-            </div>
-          </div>
-
-        </div><!-- /events-more -->
+        </div>
 
         <!-- Expand toggle -->
-        <div style="padding:0.75rem 1rem;border-top:1px solid #eee;text-align:center;">
-          <button onclick="toggleEvents(this)" style="background:none;border:none;color:#3a5fc8;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;">
+        <div id="events-toggle-row" style="padding:0.75rem 1rem;border-top:1px solid #eee;text-align:center;">
+          <button onclick="showAllEvents(this)" style="background:none;border:none;color:#3a5fc8;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;">
             Show full 2026 season ▾
           </button>
         </div>
@@ -284,14 +257,7 @@
 <!-- ============ FOOTER ============ -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <div class="footer-brand">
-      <div class="footer-brand-logo">
-        <img src="images/nmgc-logo.png" alt="NMGC" style="height:36px;width:auto;">
-        <div class="footer-brand-name">NMGC</div>
-      </div>
-      <p class="footer-brand-desc">Nemadji Men's Golf Club<br>Superior, Wisconsin</p>
-    </div>
-    <div class="footer-col">
+    <div class="footer-col hide-mobile">
       <h4>Leagues</h4>
       <a href="leagues/bushwhackers.html">Bushwhackers</a>
       <a href="leagues/scratch.html">Scratch</a>
@@ -324,8 +290,8 @@
 .events-month-header {
   background: #f5f5f5;
   padding: 0.4rem 1rem;
-  font-size: 0.65rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #7e9d10;
@@ -367,17 +333,40 @@
 }
 </style>
 <script>
-function toggleEvents(btn) {
-  var more = document.getElementById('events-more');
-  if (more.style.display === 'none') {
-    more.style.display = 'block';
-    btn.innerHTML = 'Show less ▴';
-  } else {
-    more.style.display = 'none';
-    btn.innerHTML = 'Show full 2026 season ▾';
-  }
+(function() {
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  var cutoff = new Date(today);
+  cutoff.setDate(cutoff.getDate() + 30);
+
+  var rows = document.querySelectorAll('.event-row[data-date]');
+  rows.forEach(function(row) {
+    var d = new Date(row.getAttribute('data-date') + 'T00:00:00');
+    if (d < today || d > cutoff) {
+      row.style.display = 'none';
+    }
+  });
+
+  // Hide month sections with no visible rows
+  document.querySelectorAll('.events-month').forEach(function(month) {
+    var visible = month.querySelectorAll('.event-row:not([style*="display: none"]):not([style*="display:none"])');
+    if (visible.length === 0) month.style.display = 'none';
+  });
+})();
+
+function showAllEvents(btn) {
+  document.querySelectorAll('.event-row[data-date]').forEach(function(r) { r.style.display = ''; });
+  document.querySelectorAll('.events-month').forEach(function(m) { m.style.display = ''; });
+  document.getElementById('events-toggle-row').style.display = 'none';
 }
 </script>
 <script src="js/announcements.js"></script>
+<button class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+var btn = document.querySelector('.back-to-top');
+window.addEventListener('scroll', function() {
+  btn.classList.toggle('visible', window.scrollY > 300);
+});
+</script>
 </body>
 </html>

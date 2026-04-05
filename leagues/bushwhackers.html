@@ -27,9 +27,7 @@
 
 <nav class="site-nav">
   <div class="nav-inner">
-    <a href="../index.html" class="nav-logo">
-      <img src="../images/nmgc-logo.png" alt="Nemadji Men's Golf Club" style="height:42px;width:auto;background:white;border-radius:6px;padding:3px 8px;">
-    </a>
+    <a href="../index.html" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a>
     <ul class="nav-links">
       <li><a href="../index.html">Home</a></li>
       <li class="has-dropdown">
@@ -45,13 +43,10 @@
         <a href="#">Tournaments</a>
         <div class="dropdown-menu">
           <a href="../tournaments/spring-scramble.html">Spring Scramble</a>
-          <a href="../tournaments/memorial-weekend.html">Memorial Weekend Tourney</a>
           <a href="../tournaments/titos-classic.html">Tito's Classic</a>
           <a href="../tournaments/red-white-blue.html">Red-White-Blue</a>
           <a href="../tournaments/championship.html">Men's Club Championship</a>
-          <a href="../tournaments/miller-team.html">Miller Team Championship</a>
-          <a href="../tournaments/fall-scramble.html">Fall Scramble</a>
-          <a href="../tournaments/superintendents-revenge.html">Superintendent's Revenge</a>
+      <a href="../tournaments/fall-scramble.html">Fall Scramble</a>
         </div>
       </li>
       <li><a href="../resources.html">Resources</a></li>
@@ -70,6 +65,15 @@
       <a href="bestball.html">Best Ball (Wed)</a>
       <a href="40over.html">40 &amp; Over (Thu)</a>
     </div>
+    <div class="mobile-nav-group">
+      <div class="mobile-nav-label">Tournaments</div>
+      <a href="../tournaments/spring-scramble.html">Spring Scramble</a>
+      <a href="../tournaments/titos-classic.html">Tito's Classic</a>
+      <a href="../tournaments/red-white-blue.html">Red-White-Blue</a>
+      <a href="../tournaments/championship.html">Men's Club Championship</a>
+      <a href="../tournaments/fall-scramble.html">Fall Scramble</a>
+    </div>
+    <hr class="mobile-nav-divider">
     <a href="../resources.html">Resources</a>
     <a href="../about.html">About</a>
     <a href="../contact.html">Contact</a>
@@ -77,7 +81,7 @@
 </nav>
 
 <!-- Hero -->
-<section class="hero" style="background:linear-gradient(160deg,#101a2a 0%,#1a2a4a 60%,#101e3a 100%);">
+<section class="hero" style="background-image:url('../images/hero.jpg');background-size:cover;background-position:center;">
   <div class="hero-overlay"></div>
   <div class="hero-inner">
     <div class="hero-label">Monday / Tuesday League · Nemadji Men's Golf Club</div>
@@ -297,12 +301,6 @@
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <div class="footer-brand">
-      <div class="footer-brand-logo">
-        <img src="../images/nmgc-logo.png" alt="NMGC" style="height:36px;width:auto;">
-      </div>
-      <p class="footer-brand-desc">Nemadji Men's Golf Club<br>Superior, Wisconsin</p>
-    </div>
     <div class="footer-col">
       <h4>Leagues</h4>
       <a href="bushwhackers.html">Bushwhackers</a>
@@ -339,5 +337,12 @@ function showNight(night, btn) {
 </script>
 <script src="../js/announcements.js"></script>
 <script src="../js/pdfs.js"></script>
+<button class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+var btn = document.querySelector('.back-to-top');
+window.addEventListener('scroll', function() {
+  btn.classList.toggle('visible', window.scrollY > 300);
+});
+</script>
 </body>
 </html>

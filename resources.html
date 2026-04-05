@@ -13,9 +13,7 @@
 
 <nav class="site-nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <img src="images/nmgc-logo.png" alt="Nemadji Men's Golf Club" style="height:42px;width:auto;background:white;border-radius:6px;padding:3px 8px;">
-    </a>
+    <a href="index.html" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li class="has-dropdown">
@@ -31,13 +29,10 @@
         <a href="#">Tournaments</a>
         <div class="dropdown-menu">
           <a href="tournaments/spring-scramble.html">Spring Scramble</a>
-          <a href="tournaments/memorial-weekend.html">Memorial Weekend Tourney</a>
           <a href="tournaments/titos-classic.html">Tito's Classic</a>
           <a href="tournaments/red-white-blue.html">Red-White-Blue</a>
           <a href="tournaments/championship.html">Men's Club Championship</a>
-          <a href="tournaments/miller-team.html">Miller Team Championship</a>
-          <a href="tournaments/fall-scramble.html">Fall Scramble</a>
-          <a href="tournaments/superintendents-revenge.html">Superintendent's Revenge</a>
+      <a href="tournaments/fall-scramble.html">Fall Scramble</a>
         </div>
       </li>
       <li><a href="resources.html" class="active">Resources</a></li>
@@ -56,6 +51,15 @@
       <a href="leagues/bestball.html">Best Ball (Wed)</a>
       <a href="leagues/40over.html">40 &amp; Over (Thu)</a>
     </div>
+    <div class="mobile-nav-group">
+      <div class="mobile-nav-label">Tournaments</div>
+      <a href="tournaments/spring-scramble.html">Spring Scramble</a>
+      <a href="tournaments/titos-classic.html">Tito's Classic</a>
+      <a href="tournaments/red-white-blue.html">Red-White-Blue</a>
+      <a href="tournaments/championship.html">Men's Club Championship</a>
+      <a href="tournaments/fall-scramble.html">Fall Scramble</a>
+    </div>
+    <hr class="mobile-nav-divider">
     <a href="resources.html">Resources</a>
     <a href="about.html">About</a>
     <a href="contact.html">Contact</a>
@@ -63,19 +67,18 @@
 </nav>
 
 <!-- Hero -->
-<section class="hero" style="background:linear-gradient(160deg,#1a2010 0%,#2e3a1a 60%,#223018 100%);">
+<section class="hero" style="background-image:url('images/hero.jpg');background-size:cover;background-position:center;">
   <div class="hero-overlay"></div>
   <div class="hero-inner">
     <div class="hero-label">Nemadji Men's Golf Club</div>
     <h1>Resources</h1>
-    <p class="hero-sub">Club documents, course info, handicap resources, and useful links — all in one place.</p>
   </div>
 </section>
 
 <main class="page-content">
 
   <!-- Club Documents -->
-  <section>
+  <section class="section-club-docs">
     <div class="section-label">Club Documents</div>
     <div class="card">
       <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
@@ -104,7 +107,7 @@
   </section>
 
   <!-- Meeting Minutes archive -->
-  <section>
+  <section class="section-minutes">
     <div class="section-label">Meeting Minutes Archive</div>
     <div class="card">
       <div class="card-body">
@@ -147,7 +150,7 @@
 
     <section>
       <div class="section-label">Course Documents</div>
-      <div class="card">
+      <div class="card section-course-card" style="border-left:5px solid #c8a830;">
         <div class="card-body">
           <a href="#" data-pdf="local_rules" class="pdf-row">
             <div class="pdf-icon"></div>
@@ -165,7 +168,7 @@
 
     <section>
       <div class="section-label">Handicap &amp; Rules</div>
-      <div class="card">
+      <div class="card" style="border-left:5px solid #8a5a20;">
         <div class="card-body">
           <a href="https://secureservercdn.net/50.62.89.104/m2p.b4c.myftpupload.com/wp-content/uploads/2022/05/Nemadji-Handicap-Guide-2022-V2-05.16.2022.pdf" data-pdf="handicap_guide" target="_blank" rel="noopener" class="pdf-row">
             <div class="pdf-icon"></div>
@@ -189,12 +192,12 @@
   </div>
 
   <!-- Useful Links -->
-  <section>
+  <section class="section-links">
     <div class="section-label">Useful Links</div>
     <div class="card">
-      <div class="card-body" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;">
+      <div class="card-body" style="padding:0;">
 
-        <a href="https://www.ghin.com/" target="_blank" rel="noopener" class="ext-row" style="margin-bottom:0;">
+        <a href="https://www.ghin.com/" target="_blank" rel="noopener" class="ext-row">
           <div class="ext-icon">⛳</div>
           <div>
             <div class="ext-name">GHIN</div>
@@ -203,7 +206,7 @@
           <div class="ext-arrow">↗</div>
         </a>
 
-        <a href="https://www.usga.org/content/usga/home-page/rules/rules-2019/rules-of-golf/rules-and-interpretations.html" target="_blank" rel="noopener" class="ext-row" style="margin-bottom:0;">
+        <a href="https://www.usga.org/content/usga/home-page/rules/rules-2019/rules-of-golf/rules-and-interpretations.html" target="_blank" rel="noopener" class="ext-row">
           <div class="ext-icon" style="background:#1a5a30;">📖</div>
           <div>
             <div class="ext-name">USGA Rules of Golf</div>
@@ -212,7 +215,7 @@
           <div class="ext-arrow">↗</div>
         </a>
 
-        <a href="https://www.nemadjigolf.com/" target="_blank" rel="noopener" class="ext-row" style="margin-bottom:0;">
+        <a href="https://www.nemadjigolf.com/" target="_blank" rel="noopener" class="ext-row">
           <div class="ext-icon" style="background:#1a4a2a;">🌲</div>
           <div>
             <div class="ext-name">Nemadji Golf Course</div>
@@ -229,12 +232,6 @@
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <div class="footer-brand">
-      <div class="footer-brand-logo">
-        <img src="images/nmgc-logo.png" alt="NMGC" style="height:36px;width:auto;">
-      </div>
-      <p class="footer-brand-desc">Nemadji Men's Golf Club<br>Superior, Wisconsin</p>
-    </div>
     <div class="footer-col">
       <h4>Leagues</h4>
       <a href="leagues/bushwhackers.html">Bushwhackers</a>
@@ -262,5 +259,12 @@
 
 <script src="css/nav.js"></script>
 <script src="js/pdfs.js"></script>
+<button class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+var btn = document.querySelector('.back-to-top');
+window.addEventListener('scroll', function() {
+  btn.classList.toggle('visible', window.scrollY > 300);
+});
+</script>
 </body>
 </html>

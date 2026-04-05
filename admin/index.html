@@ -8,5 +8,12 @@
 </head>
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+<button class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+var btn = document.querySelector('.back-to-top');
+window.addEventListener('scroll', function() {
+  btn.classList.toggle('visible', window.scrollY > 300);
+});
+</script>
 </body>
 </html>
