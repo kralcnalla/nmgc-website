@@ -10,25 +10,31 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // PDF link checker — show toast if file not yet uploaded to Cloudinary
-  var toast = document.createElement('div');
-  toast.id = 'pdf-toast';
-  toast.style.cssText = [
-    'position:fixed', 'bottom:1.5rem', 'left:50%', 'transform:translateX(-50%)',
-    'background:#1a1a1a', 'color:white', 'padding:0.7rem 1.2rem',
-    'border-radius:8px', 'font-size:0.85rem', 'font-weight:600',
+  // PDF link checker — show inline tooltip if file not yet uploaded to Cloudinary
+  var tooltip = document.createElement('div');
+  tooltip.id = 'pdf-tooltip';
+  tooltip.style.cssText = [
+    'position:absolute',
+    'background:#1a1a1a', 'color:white', 'padding:0.45rem 0.85rem',
+    'border-radius:6px', 'font-size:0.8rem', 'font-weight:600',
     'box-shadow:0 4px 16px rgba(0,0,0,0.25)', 'z-index:9999',
-    'opacity:0', 'transition:opacity 0.2s', 'pointer-events:none',
+    'opacity:0', 'transition:opacity 0.15s', 'pointer-events:none',
     'white-space:nowrap'
   ].join(';');
-  document.body.appendChild(toast);
+  document.body.appendChild(tooltip);
 
-  var toastTimer;
-  function showToast(msg) {
-    clearTimeout(toastTimer);
-    toast.textContent = msg;
-    toast.style.opacity = '1';
-    toastTimer = setTimeout(function () { toast.style.opacity = '0'; }, 3000);
+  var tooltipTimer;
+  function showTooltip(anchor, msg) {
+    clearTimeout(tooltipTimer);
+    tooltip.textContent = msg;
+    tooltip.style.opacity = '0';
+
+    var rect = anchor.getBoundingClientRect();
+    tooltip.style.left = (rect.left + window.scrollX) + 'px';
+    tooltip.style.top  = (rect.top  + window.scrollY - 38) + 'px';
+
+    tooltip.style.opacity = '1';
+    tooltipTimer = setTimeout(function () { tooltip.style.opacity = '0'; }, 3000);
   }
 
   document.querySelectorAll('a.pdf-row[href*="res.cloudinary.com"]').forEach(function (link) {
@@ -40,11 +46,10 @@ document.addEventListener('DOMContentLoaded', function () {
           if (res.ok) {
             window.open(url, '_blank', 'noopener');
           } else {
-            showToast('No document uploaded yet.');
+            showTooltip(link, 'No document uploaded yet.');
           }
         })
         .catch(function () {
-          // Network error — just try opening it
           window.open(url, '_blank', 'noopener');
         });
     });
