@@ -402,13 +402,10 @@
             </div>
           </div>
 
-          <!-- ── STEP 2: Division (Bushwhackers only) ── -->
+          <!-- ── STEP 2: Division (Bushwhackers or Best Ball) ── -->
           <div class="step-panel" id="step-2">
-            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;">Which Bushwhackers division?</p>
-            <div class="option-grid">
-              <button class="option-btn" data-value="monday" data-label="Monday" onclick="selectDivision(this)">Monday</button>
-              <button class="option-btn" data-value="tuesday" data-label="Tuesday" onclick="selectDivision(this)">Tuesday</button>
-            </div>
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;" id="step-2-label">Which division?</p>
+            <div class="option-grid" id="division-options"></div>
           </div>
 
           <!-- ── STEP 3: Document type ── -->
@@ -526,24 +523,50 @@
   }
 
   // ── Step 1: League ──
+  var DIVISIONS = {
+    'bushwhackers': [
+      { value: 'monday',   label: 'Monday' },
+      { value: 'tuesday',  label: 'Tuesday' }
+    ],
+    'bestball': [
+      { value: 'division-one', label: 'Division One' },
+      { value: 'division-two', label: 'Division Two' }
+    ]
+  };
+
   function selectLeague(btn) {
-    sel.league      = btn.dataset.value;
-    sel.leagueLabel = btn.dataset.label;
-    sel.division    = null;
+    sel.league        = btn.dataset.value;
+    sel.leagueLabel   = btn.dataset.label;
+    sel.division      = null;
     sel.divisionLabel = null;
-    sel.doctype     = null;
-    sel.doctypeLabel = null;
+    sel.doctype       = null;
+    sel.doctypeLabel  = null;
 
     setNodeState(1, 'done');
 
-    if (sel.league === 'bushwhackers') {
+    var divisions = DIVISIONS[sel.league];
+    if (divisions) {
+      // Populate division options dynamically
+      var label = document.getElementById('step-2-label');
+      label.textContent = 'Which ' + sel.leagueLabel + ' division?';
+      var container = document.getElementById('division-options');
+      container.innerHTML = '';
+      divisions.forEach(function(d) {
+        var b = document.createElement('button');
+        b.className = 'option-btn';
+        b.dataset.value = d.value;
+        b.dataset.label = d.label;
+        b.textContent   = d.label;
+        b.onclick = function() { selectDivision(b); };
+        container.appendChild(b);
+      });
+
       setNodeState(2, 'active');
       setNodeState(3, 'idle');
-      // Reset node 3 circle text in case it was changed
       document.getElementById('circle-3').textContent = '3';
       showStep('step-2');
     } else {
-      // Skip division step — mark node 2 as done automatically
+      // No divisions — skip step 2
       setNodeState(2, 'done');
       document.getElementById('circle-2').textContent = '–';
       setNodeState(3, 'active');
