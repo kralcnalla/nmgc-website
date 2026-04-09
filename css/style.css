@@ -675,40 +675,10 @@ img { max-width: 100%; display: block; }
   margin: 0 auto;
   padding: 2.5rem 1.5rem;
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
 
-.footer-brand { }
-.footer-brand-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.footer-logo-mark {
-  width: 28px;
-  height: 28px;
-  background: var(--green);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-}
-
-.footer-brand-name {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: white;
-}
-
-.footer-brand-desc {
-  font-size: 0.8rem;
-  color: #666;
-  line-height: 1.5;
-}
 
 .footer-col h4 {
   font-size: 0.65rem;
@@ -873,4 +843,60 @@ img { max-width: 100%; display: block; }
   background: white;
   border-radius: 6px;
   padding: 3px 8px;
+}
+
+/* ============================================
+   EVENTS CALENDAR
+   ============================================ */
+.events-month { border-bottom: 1px solid #eee; }
+.events-month:last-child { border-bottom: none; }
+.events-month-header {
+  background: #f5f5f5;
+  padding: 0.4rem 1rem;
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7e9d10;
+  border-bottom: 1px solid #eee;
+}
+
+.event-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.55rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+.event-row:last-child { border-bottom: none; }
+
+.event-date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
+  min-width: 130px;
+  flex-shrink: 0;
+  font-family: 'Courier Prime', monospace;
+}
+
+.event-name {
+  font-size: 0.875rem;
+  color: #222;
+}
+
+.event-note {
+  font-size: 0.72rem;
+  color: #7e9d10;
+  font-weight: 600;
+  display: block;
+}
+
+.event-highlight {
+  font-weight: 700;
+  color: #2a4a10;
+}
+
+@media (max-width: 480px) {
+  .event-row { flex-direction: column; gap: 0.15rem; }
+  .event-date { min-width: unset; }
 }
