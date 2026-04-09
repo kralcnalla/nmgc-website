@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
   if (toggle && mobileNav) {
     toggle.addEventListener('click', function () {
       mobileNav.classList.toggle('open');
+      toggle.classList.toggle('active');
+      toggle.setAttribute('aria-label', toggle.classList.contains('active') ? 'Close menu' : 'Open menu');
     });
   }
 });
