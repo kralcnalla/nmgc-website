@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commissioner Upload — NMGC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Password gate */
+    #password-gate {
+      min-height: calc(100vh - 60px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      background: var(--gray);
+    }
+
+    #password-gate .gate-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    #password-gate h2 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 0.25rem;
+    }
+
+    #password-gate p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    #password-error {
+      display: none;
+      font-size: 0.78rem;
+      color: #c0392b;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    /* Upload section */
+    #upload-section { display: none; }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 2rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      background: #fafafa;
+      position: relative;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-zone-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .upload-zone-label { font-size: 0.875rem; font-weight: 600; color: #444; }
+    .upload-zone-sub { font-size: 0.75rem; color: #999; margin-top: 0.25rem; }
+    .upload-zone-filename { font-size: 0.82rem; color: var(--green); font-weight: 700; margin-top: 0.5rem; }
+
+    /* Progress bar */
+    .progress-wrap {
+      display: none;
+      margin-top: 1rem;
+      background: #eee;
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--green);
+      border-radius: 99px;
+      width: 0%;
+      transition: width 0.2s;
+    }
+
+    /* Status message */
+    .upload-status {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .upload-status.success {
+      background: var(--green-light);
+      color: #2a4a10;
+      border: 1.5px solid #b8cf6e;
+    }
+
+    .upload-status.error {
+      background: #fde8e8;
+      color: #8b0000;
+      border: 1.5px solid #f0a0a0;
+    }
+
+    /* Config warning */
+    .config-warning {
+      background: #fff8e0;
+      border: 1.5px solid #e8cc60;
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      font-size: 0.82rem;
+      color: #7a5800;
+      margin-bottom: 1.5rem;
+    }
+
+    .config-warning strong { display: block; margin-bottom: 0.25rem; }
+    .config-warning code {
+      background: rgba(0,0,0,0.06);
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li class="has-dropdown">
+        <a href="#">Leagues</a>
+        <div class="dropdown-menu">
+          <a href="leagues/bushwhackers.html">Bushwhackers (Mon/Tue)</a>
+          <a href="leagues/scratch.html">Scratch League (Tue)</a>
+          <a href="leagues/bestball.html">Best Ball (Wed)</a>
+          <a href="leagues/40over.html">40 &amp; Over (Thu)</a>
+        </div>
+      </li>
+      <li class="has-dropdown">
+        <a href="#">Tournaments</a>
+        <div class="dropdown-menu">
+          <a href="tournaments/spring-scramble.html">Spring Scramble</a>
+          <a href="tournaments/titos-classic.html">Tito's Classic</a>
+          <a href="tournaments/red-white-blue.html">Red-White-Blue</a>
+          <a href="tournaments/championship.html">Men's Club Championship</a>
+          <a href="tournaments/fall-scramble.html">Fall Scramble</a>
+        </div>
+      </li>
+      <li><a href="resources.html">Resources</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-nav">
+    <div class="mobile-nav-group">
+      <div class="mobile-nav-label">Leagues</div>
+      <a href="leagues/bushwhackers.html">Bushwhackers (Mon/Tue)</a>
+      <a href="leagues/scratch.html">Scratch League (Tue)</a>
+      <a href="leagues/bestball.html">Best Ball (Wed)</a>
+      <a href="leagues/40over.html">40 &amp; Over (Thu)</a>
+    </div>
+    <div class="mobile-nav-group">
+      <div class="mobile-nav-label">Tournaments</div>
+      <a href="tournaments/spring-scramble.html">Spring Scramble</a>
+      <a href="tournaments/titos-classic.html">Tito's Classic</a>
+      <a href="tournaments/red-white-blue.html">Red-White-Blue</a>
+      <a href="tournaments/championship.html">Men's Club Championship</a>
+      <a href="tournaments/fall-scramble.html">Fall Scramble</a>
+    </div>
+    <hr class="mobile-nav-divider">
+    <a href="resources.html">Resources</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+
+<!-- ============ PASSWORD GATE ============ -->
+<div id="password-gate">
+  <div class="gate-card">
+    <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">
+      <div style="width:36px;height:36px;background:var(--green);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🔒</div>
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:#aaa;font-weight:700;">Nemadji Men's Golf Club</div>
+        <div style="font-size:1rem;font-weight:800;color:#1a1a1a;">Commissioner Upload</div>
+      </div>
+    </div>
+    <p>Enter the commissioner password to upload standings.</p>
+    <div class="form-group" style="margin-bottom:0.75rem;">
+      <label class="form-label" for="gate-password">Password</label>
+      <input class="form-input" type="password" id="gate-password" placeholder="Enter password" autocomplete="current-password">
+    </div>
+    <div id="password-error">Incorrect password. Please try again.</div>
+    <button class="btn btn-primary" id="gate-submit" style="width:100%;justify-content:center;margin-top:0.75rem;">Unlock</button>
+  </div>
+</div>
+
+<!-- ============ UPLOAD SECTION ============ -->
+<div id="upload-section">
+
+  <section class="hero" style="background-image:url('images/hero.jpg');background-size:cover;background-position:center;">
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      <div class="hero-label">Nemadji Men's Golf Club · Commissioners</div>
+      <h1>Upload Documents</h1>
+    </div>
+  </section>
+
+  <main class="page-content" style="max-width:600px;">
+
+    <!-- Config warning — remove once Cloudinary is set up -->
+    <div class="config-warning" id="config-warning">
+      <strong>Setup required before this will work:</strong>
+      Open <code>upload.html</code> and replace <code>YOUR_CLOUD_NAME</code> and <code>YOUR_UPLOAD_PRESET</code> at the top of the script with your Cloudinary credentials.
+    </div>
+
+    <section>
+      <div class="section-label">Upload League Document</div>
+      <div class="card">
+        <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="league-select">League</label>
+            <select class="form-select" id="league-select">
+              <option value="">Select a league...</option>
+              <option value="bushwhackers">Bushwhackers (Mon/Tue)</option>
+              <option value="scratch">Scratch League (Tue)</option>
+              <option value="bestball">Best Ball (Wed)</option>
+              <option value="40over">40 &amp; Over (Thu)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="doctype-select">Document Type</label>
+            <select class="form-select" id="doctype-select">
+              <option value="">Select a document type...</option>
+              <option value="standings">Standings</option>
+              <option value="schedule">Schedule</option>
+              <option value="recap">Recap</option>
+              <option value="results">Results</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <!-- Computed filename preview -->
+          <div id="filename-preview" style="display:none;background:var(--gray);border:1.5px solid var(--border);border-radius:6px;padding:0.6rem 0.85rem;">
+            <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);font-weight:700;margin-bottom:0.2rem;">File will be saved as</div>
+            <div id="filename-preview-text" style="font-family:'Courier Prime',monospace;font-size:0.9rem;font-weight:700;color:var(--green);"></div>
+          </div>
+
+          <div>
+            <div class="form-label" style="display:block;margin-bottom:0.35rem;">PDF File</div>
+            <div class="upload-zone" id="upload-zone">
+              <input type="file" id="file-input" accept=".pdf,application/pdf">
+              <div class="upload-zone-icon">📄</div>
+              <div class="upload-zone-label">Click to choose a PDF, or drag and drop</div>
+              <div class="upload-zone-sub">Any filename — it will be renamed automatically</div>
+              <div class="upload-zone-filename" id="filename-display"></div>
+            </div>
+          </div>
+
+          <div class="progress-wrap" id="progress-wrap">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+
+          <div class="upload-status" id="upload-status"></div>
+
+          <button class="btn btn-primary" id="upload-btn" style="width:100%;justify-content:center;" disabled>
+            Upload Document
+          </button>
+
+          <p style="font-size:0.72rem;color:#aaa;text-align:center;margin:0;">
+            Uploading will overwrite the previous file of the same type for the selected league.
+          </p>
+
+        </div>
+      </div>
+    </section>
+
+    <div style="text-align:center;">
+      <a href="resources.html" style="font-size:0.82rem;color:var(--text-muted);">← Back to Resources</a>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="js/nav.js"></script>
+<script>
+  var CLOUDINARY_CLOUD_NAME    = 'dy0kdvq96';
+  var CLOUDINARY_UPLOAD_PRESET = 'ufee4v7p';
+
+  // Hide config warning — credentials are set
+  document.getElementById('config-warning').style.display = 'none';
+
+  // --- Password gate ---
+  var CORRECT_PASSWORD = 'nmgc2026';
+
+  function unlock() {
+    var val = document.getElementById('gate-password').value;
+    if (val === CORRECT_PASSWORD) {
+      document.getElementById('password-gate').style.display = 'none';
+      document.getElementById('upload-section').style.display = 'block';
+    } else {
+      document.getElementById('password-error').style.display = 'block';
+      document.getElementById('gate-password').focus();
+    }
+  }
+
+  document.getElementById('gate-submit').addEventListener('click', unlock);
+  document.getElementById('gate-password').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') unlock();
+  });
+
+  // --- Computed public ID from league + doctype ---
+  function getPublicId() {
+    var league  = document.getElementById('league-select').value;
+    var doctype = document.getElementById('doctype-select').value;
+    if (!league || !doctype) return null;
+    return 'nmgc-docs/' + league + '-' + doctype;
+  }
+
+  function getFilename() {
+    var league  = document.getElementById('league-select').value;
+    var doctype = document.getElementById('doctype-select').value;
+    if (!league || !doctype) return null;
+    return league + '-' + doctype + '.pdf';
+  }
+
+  function updatePreview() {
+    var name = getFilename();
+    var preview = document.getElementById('filename-preview');
+    var previewText = document.getElementById('filename-preview-text');
+    if (name) {
+      previewText.textContent = name;
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+    }
+    updateButton();
+  }
+
+  // --- File input ---
+  var selectedFile = null;
+
+  document.getElementById('file-input').addEventListener('change', function() {
+    selectedFile = this.files[0] || null;
+    document.getElementById('filename-display').textContent = selectedFile ? selectedFile.name : '';
+    updateButton();
+  });
+
+  var zone = document.getElementById('upload-zone');
+  zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', function() { zone.classList.remove('dragover'); });
+  zone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    var file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') {
+      selectedFile = file;
+      document.getElementById('filename-display').textContent = file.name;
+      updateButton();
+    }
+  });
+
+  document.getElementById('league-select').addEventListener('change', updatePreview);
+  document.getElementById('doctype-select').addEventListener('change', updatePreview);
+
+  function updateButton() {
+    var ready = getPublicId() && selectedFile;
+    document.getElementById('upload-btn').disabled = !ready;
+  }
+
+  // --- Upload ---
+  document.getElementById('upload-btn').addEventListener('click', function() {
+    var publicId = getPublicId();
+    var filename = getFilename();
+    if (!publicId || !selectedFile) return;
+
+    // Rename the file by creating a new File object with the computed name
+    var renamedFile = new File([selectedFile], filename, { type: 'application/pdf' });
+
+    var formData = new FormData();
+    formData.append('file', renamedFile);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    formData.append('public_id', publicId);
+    formData.append('resource_type', 'raw');
+
+    var progressWrap = document.getElementById('progress-wrap');
+    var progressBar  = document.getElementById('progress-bar');
+    var statusEl     = document.getElementById('upload-status');
+    var btn          = document.getElementById('upload-btn');
+
+    progressWrap.style.display = 'block';
+    progressBar.style.width = '0%';
+    statusEl.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Uploading…';
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
+
+    xhr.upload.addEventListener('progress', function(e) {
+      if (e.lengthComputable) {
+        progressBar.style.width = Math.round((e.loaded / e.total) * 100) + '%';
+      }
+    });
+
+    xhr.addEventListener('load', function() {
+      progressBar.style.width = '100%';
+      btn.textContent = 'Upload Document';
+      updateButton();
+
+      if (xhr.status === 200) {
+        statusEl.className = 'upload-status success';
+        statusEl.textContent = '✓ Uploaded as ' + filename + '. The Resources page will now serve the updated file.';
+        statusEl.style.display = 'block';
+        selectedFile = null;
+        document.getElementById('file-input').value = '';
+        document.getElementById('filename-display').textContent = '';
+        document.getElementById('league-select').value = '';
+        document.getElementById('doctype-select').value = '';
+        document.getElementById('filename-preview').style.display = 'none';
+        btn.disabled = true;
+      } else {
+        statusEl.className = 'upload-status error';
+        statusEl.textContent = 'Upload failed (' + xhr.status + '). Check your Cloudinary credentials and try again.';
+        statusEl.style.display = 'block';
+      }
+    });
+
+    xhr.addEventListener('error', function() {
+      btn.textContent = 'Upload Document';
+      updateButton();
+      statusEl.className = 'upload-status error';
+      statusEl.textContent = 'Network error. Check your connection and try again.';
+      statusEl.style.display = 'block';
+    });
+
+    xhr.send(formData);
+  });
+</script>
+</body>
+</html>
