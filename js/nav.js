@@ -4,9 +4,23 @@ document.addEventListener('DOMContentLoaded', function () {
   var mobileNav = document.querySelector('.mobile-nav');
   if (toggle && mobileNav) {
     toggle.addEventListener('click', function () {
-      mobileNav.classList.toggle('open');
+      var isOpen = mobileNav.classList.toggle('open');
       toggle.classList.toggle('active');
-      toggle.setAttribute('aria-label', toggle.classList.contains('active') ? 'Close menu' : 'Open menu');
+      toggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+      // Lock body scroll while nav is open — prevents iOS Safari from eating
+      // touches after the sticky nav changes height
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+  }
+
+  // Close mobile nav when a link is tapped
+  if (mobileNav) {
+    mobileNav.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        mobileNav.classList.remove('open');
+        if (toggle) toggle.classList.remove('active');
+        document.body.style.overflow = '';
+      });
     });
   }
 
