@@ -141,7 +141,8 @@ img { max-width: 100%; display: block; }
 }
 
 .has-dropdown:hover .dropdown-menu,
-.has-dropdown:focus-within .dropdown-menu {
+.has-dropdown:focus-within .dropdown-menu,
+.dropdown-menu.touch-open {
   display: block;
 }
 
@@ -865,7 +866,7 @@ img { max-width: 100%; display: block; }
 
 .event-row {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   gap: 1rem;
   padding: 0.55rem 1rem;
   border-bottom: 1px solid #f0f0f0;
@@ -873,7 +874,7 @@ img { max-width: 100%; display: block; }
 .event-row:last-child { border-bottom: none; }
 
 .event-date {
-  font-size: 0.75rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #555;
   min-width: 130px;
@@ -882,7 +883,7 @@ img { max-width: 100%; display: block; }
 }
 
 .event-name {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: #222;
 }
 

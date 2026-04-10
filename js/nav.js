@@ -10,6 +10,34 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // Touch-friendly dropdowns — tap to open, tap again to follow link
+  document.querySelectorAll('.has-dropdown > a').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      var isTouchDevice = window.matchMedia('(hover: none)').matches;
+      if (!isTouchDevice) return; // desktop hover handles it
+      var dropdown = link.parentNode.querySelector('.dropdown-menu');
+      if (!dropdown) return;
+      var isOpen = dropdown.classList.contains('touch-open');
+      // Close all other open dropdowns
+      document.querySelectorAll('.dropdown-menu.touch-open').forEach(function (d) {
+        d.classList.remove('touch-open');
+      });
+      if (!isOpen) {
+        e.preventDefault();
+        dropdown.classList.add('touch-open');
+      }
+    });
+  });
+
+  // Close touch dropdowns when tapping outside
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.has-dropdown')) {
+      document.querySelectorAll('.dropdown-menu.touch-open').forEach(function (d) {
+        d.classList.remove('touch-open');
+      });
+    }
+  });
+
   // PDF link checker — pre-check Cloudinary links on load, mark unavailable ones
   document.querySelectorAll('a.pdf-row[href*="res.cloudinary.com"]').forEach(function (link) {
     var url = link.getAttribute('href');
