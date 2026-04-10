@@ -899,7 +899,6 @@
     fd.append('file', file);
     fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
     fd.append('public_id', BANNERS_PUBLIC_ID);
-    fd.append('invalidate', 'true');
     var xhr = new XMLHttpRequest();
     xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
     xhr.onload = function() { xhr.status === 200 ? onSuccess() : onError(xhr.responseText); };
