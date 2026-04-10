@@ -168,6 +168,7 @@ img { max-width: 100%; display: block; }
   border: none;
   cursor: pointer;
   padding: 4px;
+  touch-action: manipulation; /* eliminates 300ms tap delay on mobile */
 }
 
 .nav-toggle span {
