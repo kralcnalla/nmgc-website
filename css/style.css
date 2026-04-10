@@ -893,6 +893,31 @@ img { max-width: 100%; display: block; }
   display: block;
 }
 
+.event-schedule {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.event-schedule-item {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.event-schedule-time {
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-right: 0.2rem;
+}
+
+.event-schedule-sep {
+  font-size: 0.72rem;
+  color: #ccc;
+}
+
 .event-highlight {
   font-weight: 700;
   color: #2a4a10;
