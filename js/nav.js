@@ -15,13 +15,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
-    mobileNav.querySelectorAll('a').forEach(function (link) {
-      link.addEventListener('click', function () {
-        mobileNav.classList.remove('open');
-        toggle.classList.remove('active');
-        toggle.setAttribute('aria-label', 'Open menu');
-      });
-    });
+    // Don't close the nav on link tap — let navigation happen naturally.
+    // Closing first causes a flash of the page behind the overlay.
   }
 
   // Touch-friendly dropdowns — tap to open, tap again to follow link
