@@ -559,6 +559,22 @@
               <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Committee policies</div>
               <button id="club-btn-handicap-peer-to-peer" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('handicap-peer-to-peer','Peer-to-Peer Handicap Guide','nmgc-docs/handicap-peer-to-peer')">Upload PDF</button>
             </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Local Rules</div>
+                <span id="club-file-status-course-local-rules" class="club-file-badge">…</span>
+              </div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Course-specific rules at Nemadji</div>
+              <button id="club-btn-course-local-rules" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('course-local-rules','Local Rules','nmgc-docs/course-local-rules')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Scorecard</div>
+                <span id="club-file-status-course-scorecard" class="club-file-badge">…</span>
+              </div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Nemadji Golf Course</div>
+              <button id="club-btn-course-scorecard" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('course-scorecard','Scorecard','nmgc-docs/course-scorecard')">Upload PDF</button>
+            </div>
           </div>
 
           <div class="upload-status" id="club-doc-status"></div>
@@ -928,7 +944,9 @@
     { id: 'financial-report',     url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-financial-report.pdf' },
     { id: 'meeting-minutes',      url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-meeting-minutes.pdf' },
     { id: 'handicap-guide',       url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/handicap-guide.pdf' },
-    { id: 'handicap-peer-to-peer',url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/handicap-peer-to-peer.pdf' }
+    { id: 'handicap-peer-to-peer',url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/handicap-peer-to-peer.pdf' },
+    { id: 'course-local-rules',   url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/course-local-rules.pdf' },
+    { id: 'course-scorecard',     url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/course-scorecard.pdf' }
   ];
 
   function setClubFileBadge(id, uploaded) {
