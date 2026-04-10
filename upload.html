@@ -257,6 +257,27 @@
       border: 1.5px solid #f0a0a0;
     }
 
+    /* ── Club file status badges ── */
+    .club-file-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.15rem 0.45rem;
+      border-radius: 99px;
+      background: #eee;
+      color: #aaa;
+      white-space: nowrap;
+    }
+    .club-file-badge.uploaded {
+      background: #e6f4d0;
+      color: #3a6a10;
+    }
+    .club-file-badge.not-uploaded {
+      background: #f5f5f5;
+      color: #bbb;
+    }
+
     /* ── Start over ── */
     .start-over-btn {
       background: none;
@@ -491,32 +512,50 @@
 
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
             <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
-              <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.25rem;">Club Bylaws / Constitution</div>
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Club Bylaws / Constitution</div>
+                <span id="club-file-status-bylaws" class="club-file-badge">…</span>
+              </div>
               <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Governing rules of the NMGC</div>
               <button id="club-btn-bylaws" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('bylaws','Club Bylaws / Constitution','nmgc-docs/club-bylaws')">Upload PDF</button>
             </div>
             <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
-              <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.25rem;">Annual Budget</div>
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Annual Budget</div>
+                <span id="club-file-status-budget" class="club-file-badge">…</span>
+              </div>
               <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Current season</div>
               <button id="club-btn-budget" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('budget','Annual Budget','nmgc-docs/club-budget')">Upload PDF</button>
             </div>
             <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
-              <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.25rem;">Financial Report</div>
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Financial Report</div>
+                <span id="club-file-status-financial-report" class="club-file-badge">…</span>
+              </div>
               <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Most recent year-end summary</div>
               <button id="club-btn-financial-report" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('financial-report','Financial Report','nmgc-docs/club-financial-report')">Upload PDF</button>
             </div>
             <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
-              <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.25rem;">Meeting Minutes</div>
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Meeting Minutes</div>
+                <span id="club-file-status-meeting-minutes" class="club-file-badge">…</span>
+              </div>
               <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Most recent board meeting</div>
               <button id="club-btn-meeting-minutes" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('meeting-minutes','Meeting Minutes','nmgc-docs/club-meeting-minutes')">Upload PDF</button>
             </div>
             <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
-              <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.25rem;">NMGC Handicap Guide</div>
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">NMGC Handicap Guide</div>
+                <span id="club-file-status-handicap-guide" class="club-file-badge">…</span>
+              </div>
               <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">How the handicap system works</div>
               <button id="club-btn-handicap-guide" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('handicap-guide','NMGC Handicap Guide','nmgc-docs/handicap-guide')">Upload PDF</button>
             </div>
             <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
-              <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.25rem;">Peer-to-Peer Handicap Guide</div>
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Peer-to-Peer Handicap Guide</div>
+                <span id="club-file-status-handicap-peer-to-peer" class="club-file-badge">…</span>
+              </div>
               <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Committee policies</div>
               <button id="club-btn-handicap-peer-to-peer" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('handicap-peer-to-peer','Peer-to-Peer Handicap Guide','nmgc-docs/handicap-peer-to-peer')">Upload PDF</button>
             </div>
@@ -883,6 +922,35 @@
   // CLUB RESOURCES — fixed-slot uploads
   // ══════════════════════════════════════
 
+  var CLUB_DOCS = [
+    { id: 'bylaws',               url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-bylaws.pdf' },
+    { id: 'budget',               url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-budget.pdf' },
+    { id: 'financial-report',     url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-financial-report.pdf' },
+    { id: 'meeting-minutes',      url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-meeting-minutes.pdf' },
+    { id: 'handicap-guide',       url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/handicap-guide.pdf' },
+    { id: 'handicap-peer-to-peer',url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/handicap-peer-to-peer.pdf' }
+  ];
+
+  function setClubFileBadge(id, uploaded) {
+    var el = document.getElementById('club-file-status-' + id);
+    if (!el) return;
+    if (uploaded) {
+      el.textContent = '\u2713 Uploaded';
+      el.className = 'club-file-badge uploaded';
+    } else {
+      el.textContent = 'Not uploaded';
+      el.className = 'club-file-badge not-uploaded';
+    }
+  }
+
+  function checkClubDocStatuses() {
+    CLUB_DOCS.forEach(function (doc) {
+      fetch(doc.url + '?v=' + Date.now(), { method: 'HEAD' })
+        .then(function (r) { setClubFileBadge(doc.id, r.ok); })
+        .catch(function ()  { setClubFileBadge(doc.id, false); });
+    });
+  }
+
   function uploadClubDoc(id, label, publicId) {
     var input = document.createElement('input');
     input.type = 'file';
@@ -903,6 +971,7 @@
       xhr.onload = function () {
         if (xhr.status === 200) {
           showClubStatus('success', '\u2713 ' + label + ' uploaded.');
+          setClubFileBadge(id, true);
         } else {
           showClubStatus('error', 'Upload failed — try again.');
         }
@@ -1076,9 +1145,12 @@
     input.click();
   });
 
-  // Load minutes list when commissioner logs in
+  // Load minutes list and check club doc statuses when commissioner logs in
   document.getElementById('gate-submit').addEventListener('click', function () {
-    setTimeout(function () { loadMinutesList(); }, 300);
+    setTimeout(function () {
+      loadMinutesList();
+      checkClubDocStatuses();
+    }, 300);
   });
 
 </script>
