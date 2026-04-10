@@ -3,11 +3,20 @@ document.addEventListener('DOMContentLoaded', function () {
   var toggle = document.querySelector('.nav-toggle');
   var mobileNav = document.querySelector('.mobile-nav');
   if (toggle && mobileNav) {
-    toggle.addEventListener('click', function () {
+    function toggleMenu() {
       mobileNav.classList.toggle('open');
       toggle.classList.toggle('active');
       toggle.setAttribute('aria-label', toggle.classList.contains('active') ? 'Close menu' : 'Open menu');
-    });
+    }
+
+    // touchstart fires instantly — no 300ms delay
+    toggle.addEventListener('touchstart', function (e) {
+      e.preventDefault(); // prevent the delayed click from also firing
+      toggleMenu();
+    }, { passive: false });
+
+    // fallback for non-touch (mouse click on desktop)
+    toggle.addEventListener('click', toggleMenu);
   }
 
   // Touch-friendly dropdowns — tap to open, tap again to follow link
