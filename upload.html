@@ -852,47 +852,43 @@
   var BANNERS_PUBLIC_ID = 'nmgc-docs/banners';
   var BANNERS_URL = 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/' + BANNERS_PUBLIC_ID + '.json';
 
+  // In-memory store — loaded once, all edits go through this
+  // Avoids CDN cache issues with read-modify-write
+  var _banners = null;
+
   // Set default expiry to 7 days from now
   (function() {
     var d = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     d.setMinutes(0, 0, 0);
-    var iso = d.toISOString().slice(0, 16);
-    document.getElementById('banner-expires').value = iso;
+    document.getElementById('banner-expires').value = d.toISOString().slice(0, 16);
   })();
 
-  // Load and display active banners on the commissioner page
-  function loadActiveBanners() {
-    var list = document.getElementById('active-banners-list');
-    fetch(BANNERS_URL + '?v=' + Date.now())
-      .then(function(r) { return r.ok ? r.json() : { banners: [] }; })
-      .then(function(data) {
-        var banners = (data.banners || []).filter(function(b) { return Date.now() < b.expires; });
-        if (!banners.length) {
-          list.innerHTML = '<span style="color:#bbb;">No active banners.</span>';
-          return;
-        }
-        list.innerHTML = banners.map(function(b, i) {
-          var scopeLabel = b.scope === 'all' ? 'All pages' : b.scope;
-          var exp = new Date(b.expires).toLocaleString();
-          return '<div style="background:#f8f8f8;border:1.5px solid var(--border);border-radius:6px;padding:0.6rem 0.8rem;margin-bottom:0.5rem;">' +
-            '<div style="font-weight:700;font-size:0.85rem;margin-bottom:0.2rem;">' + escHtml(b.message) + '</div>' +
-            '<div style="font-size:0.72rem;color:#999;">Scope: <strong>' + scopeLabel + '</strong> &nbsp;·&nbsp; Expires: <strong>' + exp + '</strong></div>' +
-            '<button onclick="deleteBanner(' + i + ')" style="margin-top:0.4rem;background:none;border:none;font-size:0.72rem;color:#c0392b;font-weight:600;cursor:pointer;padding:0;">Remove</button>' +
-          '</div>';
-        }).join('');
-      })
-      .catch(function() {
-        list.innerHTML = '<span style="color:#bbb;">No active banners.</span>';
-      });
-  }
-
   function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // Upload banners JSON to Cloudinary
-  function saveBannersJson(banners, onSuccess, onError) {
-    var json = JSON.stringify({ banners: banners });
+  function renderBannerList() {
+    var list = document.getElementById('active-banners-list');
+    var active = (_banners || []).filter(function(b) { return Date.now() < b.expires; });
+    if (!active.length) {
+      list.innerHTML = '<span style="color:#bbb;">No active banners.</span>';
+      return;
+    }
+    var SCOPE_LABELS = { bushwhackers: 'Bushwhackers', scratch: 'Scratch League', bestball: 'Best Ball', '40over': '40 & Over', all: 'All pages' };
+    list.innerHTML = active.map(function(b) {
+      var scopeLabel = SCOPE_LABELS[b.scope] || b.scope;
+      var exp = new Date(b.expires).toLocaleString();
+      return '<div style="background:#f8f8f8;border:1.5px solid var(--border);border-radius:6px;padding:0.6rem 0.8rem;margin-bottom:0.5rem;">' +
+        '<div style="font-weight:700;font-size:0.85rem;margin-bottom:0.2rem;">' + escHtml(b.message) + '</div>' +
+        '<div style="font-size:0.72rem;color:#999;">Scope: <strong>' + scopeLabel + '</strong> &nbsp;·&nbsp; Type: <strong>' + b.type + '</strong> &nbsp;·&nbsp; Expires: <strong>' + exp + '</strong></div>' +
+        '<button onclick="deleteBanner(' + b.id + ')" style="margin-top:0.4rem;background:none;border:none;font-size:0.72rem;color:#c0392b;font-weight:600;cursor:pointer;padding:0;">Remove</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  function saveBannersJson(onSuccess, onError) {
+    var active = (_banners || []).filter(function(b) { return Date.now() < b.expires; });
+    var json = JSON.stringify({ banners: active });
     var blob = new Blob([json], { type: 'application/json' });
     var file = new File([blob], 'banners.json', { type: 'application/json' });
     var fd = new FormData();
@@ -907,31 +903,26 @@
     xhr.send(fd);
   }
 
-  // Fetch current banners, run transform fn, save back
-  function modifyBanners(transformFn) {
-    fetch(BANNERS_URL + '?v=' + Date.now())
-      .then(function(r) { return r.ok ? r.json() : { banners: [] }; })
-      .catch(function() { return { banners: [] }; })
-      .then(function(data) {
-        var banners = data.banners || [];
-        // Remove expired ones while we're here
-        banners = banners.filter(function(b) { return Date.now() < b.expires; });
-        banners = transformFn(banners);
-        saveBannersJson(banners, function() {
-          showBannerStatus('success', '✓ Saved.');
-          loadActiveBanners();
-        }, function(err) {
-          showBannerStatus('error', 'Error: ' + err);
-        });
-      });
-  }
-
   function showBannerStatus(type, msg) {
     var el = document.getElementById('banner-status');
     el.className = 'upload-status ' + type;
     el.textContent = msg;
     el.style.display = 'block';
     setTimeout(function() { el.style.display = 'none'; }, 4000);
+  }
+
+  function loadActiveBanners() {
+    var list = document.getElementById('active-banners-list');
+    list.innerHTML = '<span style="color:#bbb;">Loading…</span>';
+    fetch(BANNERS_URL + '?v=' + Date.now())
+      .then(function(r) { return r.ok ? r.json() : { banners: [] }; })
+      .catch(function() { return { banners: [] }; })
+      .then(function(data) {
+        // Ensure every banner has a unique id (backfill for ones saved before this version)
+        _banners = (data.banners || []).filter(function(b) { return Date.now() < b.expires; })
+          .map(function(b, i) { return b.id ? b : Object.assign({}, b, { id: Date.now() + i }); });
+        renderBannerList();
+      });
   }
 
   // Post new banner
@@ -949,21 +940,31 @@
     btn.disabled = true;
     btn.textContent = 'Saving…';
 
-    modifyBanners(function(banners) {
-      banners.push({ message: msg, scope: scope, type: type, expires: expires });
-      return banners;
-    });
+    if (!_banners) _banners = [];
+    _banners.push({ id: Date.now(), message: msg, scope: scope, type: type, expires: expires });
+    renderBannerList();
 
-    btn.disabled = false;
-    btn.textContent = 'Post Banner';
-    document.getElementById('banner-message').value = '';
+    saveBannersJson(function() {
+      showBannerStatus('success', '✓ Banner posted.');
+      btn.disabled = false;
+      btn.textContent = 'Post Banner';
+      document.getElementById('banner-message').value = '';
+    }, function(err) {
+      showBannerStatus('error', 'Error: ' + err);
+      btn.disabled = false;
+      btn.textContent = 'Post Banner';
+    });
   });
 
-  // Delete a banner by index
-  function deleteBanner(index) {
-    modifyBanners(function(banners) {
-      banners.splice(index, 1);
-      return banners;
+  // Delete a banner by its unique id
+  function deleteBanner(id) {
+    if (!_banners) return;
+    _banners = _banners.filter(function(b) { return b.id !== id; });
+    renderBannerList();
+    saveBannersJson(function() {
+      showBannerStatus('success', '✓ Banner removed.');
+    }, function(err) {
+      showBannerStatus('error', 'Error saving: ' + err);
     });
   }
 
