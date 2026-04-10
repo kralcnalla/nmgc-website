@@ -482,6 +482,93 @@
 
 
 
+    <!-- ── Club Resources ── -->
+    <section style="margin-top:2rem;">
+      <div class="section-label">Club Resources</div>
+      <div class="card">
+        <div class="card-body" style="display:flex;flex-direction:column;gap:0.75rem;">
+          <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Upload PDFs for the Resources page. Each button replaces the existing file for that slot.</p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.25rem;">Club Bylaws / Constitution</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Governing rules of the NMGC</div>
+              <button id="club-btn-bylaws" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('bylaws','Club Bylaws / Constitution','nmgc-docs/club-bylaws')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.25rem;">Annual Budget</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Current season</div>
+              <button id="club-btn-budget" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('budget','Annual Budget','nmgc-docs/club-budget')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.25rem;">Financial Report</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Most recent year-end summary</div>
+              <button id="club-btn-financial-report" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('financial-report','Financial Report','nmgc-docs/club-financial-report')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.25rem;">Meeting Minutes</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Most recent board meeting</div>
+              <button id="club-btn-meeting-minutes" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('meeting-minutes','Meeting Minutes','nmgc-docs/club-meeting-minutes')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.25rem;">NMGC Handicap Guide</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">How the handicap system works</div>
+              <button id="club-btn-handicap-guide" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('handicap-guide','NMGC Handicap Guide','nmgc-docs/handicap-guide')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.25rem;">Peer-to-Peer Handicap Guide</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Committee policies</div>
+              <button id="club-btn-handicap-peer-to-peer" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('handicap-peer-to-peer','Peer-to-Peer Handicap Guide','nmgc-docs/handicap-peer-to-peer')">Upload PDF</button>
+            </div>
+          </div>
+
+          <div class="upload-status" id="club-doc-status"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Meeting Minutes Archive ── -->
+    <section style="margin-top:2rem;">
+      <div class="section-label">Meeting Minutes Archive</div>
+      <div class="card">
+        <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+          <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Add or remove entries in the Meeting Minutes Archive on the Resources page.</p>
+
+          <div>
+            <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;color:var(--text-muted);margin-bottom:0.5rem;">Archive Entries</div>
+            <div id="minutes-list" style="font-size:0.82rem;color:#888;">Loading…</div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--border);margin:0;">
+
+          <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;color:var(--text-muted);">Add Entry</div>
+
+          <div style="display:grid;grid-template-columns:1fr 80px;gap:0.6rem;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Title</label>
+              <input class="form-input" type="text" id="minutes-title" placeholder="e.g. Meeting Minutes — April 10, 2026">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Year</label>
+              <input class="form-input" type="text" id="minutes-year" placeholder="2026" maxlength="4">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Date <span style="font-size:0.72rem;font-weight:400;color:var(--text-muted)">(used for sorting)</span></label>
+            <input class="form-input" type="date" id="minutes-date">
+          </div>
+
+          <div class="upload-status" id="minutes-status"></div>
+
+          <button class="btn btn-primary" id="minutes-upload-btn" style="width:100%;justify-content:center;">
+            Choose PDF &amp; Add to Archive
+          </button>
+
+        </div>
+      </div>
+    </section>
+
     <div style="text-align:center;margin-top:1.5rem;">
       <a href="resources.html" style="font-size:0.82rem;color:var(--text-muted);">← Back to Resources</a>
     </div>
@@ -782,6 +869,216 @@
     });
 
     xhr.send(formData);
+  });
+
+  // ══════════════════════════════════════
+  // SHARED HELPERS
+  // ══════════════════════════════════════
+
+  function escHtml(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ══════════════════════════════════════
+  // CLUB RESOURCES — fixed-slot uploads
+  // ══════════════════════════════════════
+
+  function uploadClubDoc(id, label, publicId) {
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,application/pdf';
+    input.onchange = function () {
+      var file = input.files[0];
+      if (!file) return;
+      var btn = document.getElementById('club-btn-' + id);
+      btn.disabled = true;
+      btn.textContent = 'Uploading…';
+      var renamed = new File([file], id + '.pdf', { type: 'application/pdf' });
+      var fd = new FormData();
+      fd.append('file', renamed);
+      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      fd.append('public_id', publicId);
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          showClubStatus('success', '\u2713 ' + label + ' uploaded.');
+        } else {
+          showClubStatus('error', 'Upload failed — try again.');
+        }
+        btn.disabled = false;
+        btn.textContent = 'Upload PDF';
+      };
+      xhr.onerror = function () {
+        showClubStatus('error', 'Network error.');
+        btn.disabled = false;
+        btn.textContent = 'Upload PDF';
+      };
+      xhr.send(fd);
+    };
+    input.click();
+  }
+
+  function showClubStatus(type, msg) {
+    var el = document.getElementById('club-doc-status');
+    el.className = 'upload-status ' + type;
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(function () { el.style.display = 'none'; }, 4000);
+  }
+
+  // ══════════════════════════════════════
+  // MEETING MINUTES ARCHIVE
+  // ══════════════════════════════════════
+
+  var MINUTES_PUBLIC_ID = 'nmgc-docs/minutes';
+  var MINUTES_URL = 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/' + MINUTES_PUBLIC_ID + '.json';
+
+  // Default entries seeded from old WordPress links
+  var MINUTES_DEFAULTS = [
+    { id:'min-1', date:'2025-03-19', title:'Meeting Minutes \u2014 March 19, 2025',     year:'2025', url:'https://nemadjimensclub.com/wp-content/uploads/2025/04/Nemadji-Mens-Club-meeting-minutes-3-19-2025.pdf' },
+    { id:'min-2', date:'2025-02-25', title:'Meeting Agenda \u2014 February 25, 2025',    year:'2025', url:'https://nemadjimensclub.com/wp-content/uploads/2025/04/Nemadji-Mens-Club-Agenda-2.25.2025-Revised-.pdf' },
+    { id:'min-3', date:'2024-03-20', title:'Annual Spring Meeting \u2014 March 20, 2024',year:'2024', url:'https://nemadjimensclub.com/wp-content/uploads/2025/03/Nemadji-Mens-Club-meeting-minutes-3-20-2024.pdf' },
+    { id:'min-4', date:'2024-02-21', title:'Meeting Minutes \u2014 February 21, 2024',   year:'2024', url:'https://nemadjimensclub.com/wp-content/uploads/2025/03/Nemadji-Mens-Club-meeting-minutes-2.21.2024.pdf' },
+    { id:'min-5', date:'2023-04-07', title:'Annual Spring Meeting \u2014 April 7, 2023', year:'2023', url:'https://nemadjimensclub.com/wp-content/uploads/2024/02/Agenda-Annual-Spring-Meeting-2023-Minutes.pdf' },
+    { id:'min-6', date:'2023-11-01', title:'Meeting Minutes \u2014 November 1, 2023',    year:'2023', url:'https://nemadjimensclub.com/wp-content/uploads/2024/02/Nemadji-Mens-Club-Meeting-11-1-23-meeting-minutes.pdf' }
+  ];
+
+  var _minutes = null;
+
+  function loadMinutesList() {
+    var list = document.getElementById('minutes-list');
+    if (!list) return;
+    fetch(MINUTES_URL + '?v=' + Date.now())
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
+      .then(function (data) {
+        _minutes = (data && data.minutes && data.minutes.length) ? data.minutes : JSON.parse(JSON.stringify(MINUTES_DEFAULTS));
+        renderMinutesList();
+      });
+  }
+
+  function renderMinutesList() {
+    var list = document.getElementById('minutes-list');
+    if (!_minutes || !_minutes.length) {
+      list.innerHTML = '<span style="color:#bbb;">No entries yet.</span>';
+      return;
+    }
+    var sorted = _minutes.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+    list.innerHTML = sorted.map(function (m) {
+      return '<div style="background:#f8f8f8;border:1.5px solid var(--border);border-radius:6px;padding:0.5rem 0.75rem;margin-bottom:0.4rem;display:flex;align-items:center;gap:0.5rem;">' +
+        '<div style="flex:1;">' +
+          '<div style="font-weight:700;font-size:0.85rem;">' + escHtml(m.title) + '</div>' +
+          '<div style="font-size:0.72rem;color:#999;">' + escHtml(m.year) + ' &nbsp;·&nbsp; ' + escHtml(m.date) + '</div>' +
+        '</div>' +
+        '<button onclick="deleteMinutesEntry(\'' + m.id + '\')" style="background:none;border:none;font-size:0.72rem;color:#c0392b;font-weight:600;cursor:pointer;padding:0 0.4rem;">Delete</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  function saveMinutesJson(onSuccess, onError) {
+    var json = JSON.stringify({ minutes: _minutes });
+    var blob = new Blob([json], { type: 'application/json' });
+    var file = new File([blob], 'minutes.json', { type: 'application/json' });
+    var fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    fd.append('public_id', MINUTES_PUBLIC_ID);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        try { var res = JSON.parse(xhr.responseText); if (res.version) localStorage.setItem('nmgc_minutes_ver', res.version); } catch(e) {}
+        onSuccess && onSuccess();
+      } else { onError && onError(xhr.responseText); }
+    };
+    xhr.onerror = function () { onError && onError('Network error'); };
+    xhr.send(fd);
+  }
+
+  function showMinutesStatus(type, msg) {
+    var el = document.getElementById('minutes-status');
+    el.className = 'upload-status ' + type;
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(function () { el.style.display = 'none'; }, 4000);
+  }
+
+  function deleteMinutesEntry(id) {
+    if (!confirm('Delete this entry from the archive?')) return;
+    _minutes = _minutes.filter(function (m) { return m.id !== id; });
+    renderMinutesList();
+    saveMinutesJson(function () { showMinutesStatus('success', '\u2713 Entry deleted.'); },
+                    function (e) { showMinutesStatus('error', 'Error: ' + e); });
+  }
+
+  document.getElementById('minutes-upload-btn').addEventListener('click', function () {
+    var title = document.getElementById('minutes-title').value.trim();
+    var year  = document.getElementById('minutes-year').value.trim();
+    var date  = document.getElementById('minutes-date').value;
+    if (!title) { showMinutesStatus('error', 'Please enter a title.'); return; }
+    if (!date)  { showMinutesStatus('error', 'Please select a date.'); return; }
+    if (!year)  year = date.slice(0, 4);
+
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,application/pdf';
+    input.onchange = function () {
+      var file = input.files[0];
+      if (!file) return;
+      var btn = document.getElementById('minutes-upload-btn');
+      btn.disabled = true;
+      btn.textContent = 'Uploading…';
+
+      var pdfPublicId = 'nmgc-docs/club-minutes-' + date;
+      var renamed = new File([file], 'club-minutes-' + date + '.pdf', { type: 'application/pdf' });
+      var fd = new FormData();
+      fd.append('file', renamed);
+      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      fd.append('public_id', pdfPublicId);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          var res = JSON.parse(xhr.responseText);
+          var ver = res.version ? '/v' + res.version + '/' : '/';
+          var url = 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload' + ver + pdfPublicId + '.pdf';
+          var entry = { id: 'min-' + Date.now(), date: date, title: title, year: year, url: url };
+          if (!_minutes) _minutes = [];
+          _minutes.push(entry);
+          renderMinutesList();
+          saveMinutesJson(function () {
+            showMinutesStatus('success', '\u2713 Entry added to archive.');
+            document.getElementById('minutes-title').value = '';
+            document.getElementById('minutes-year').value  = '';
+            document.getElementById('minutes-date').value  = '';
+            btn.disabled = false;
+            btn.textContent = 'Choose PDF & Add to Archive';
+          }, function (e) {
+            showMinutesStatus('error', 'PDF uploaded but could not save archive: ' + e);
+            btn.disabled = false;
+            btn.textContent = 'Choose PDF & Add to Archive';
+          });
+        } else {
+          showMinutesStatus('error', 'PDF upload failed.');
+          btn.disabled = false;
+          btn.textContent = 'Choose PDF & Add to Archive';
+        }
+      };
+      xhr.onerror = function () {
+        showMinutesStatus('error', 'Network error.');
+        btn.disabled = false;
+        btn.textContent = 'Choose PDF & Add to Archive';
+      };
+      xhr.send(fd);
+    };
+    input.click();
+  });
+
+  // Load minutes list when commissioner logs in
+  document.getElementById('gate-submit').addEventListener('click', function () {
+    setTimeout(function () { loadMinutesList(); }, 300);
   });
 
 </script>
