@@ -10,48 +10,32 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // PDF link checker — show inline tooltip if file not yet uploaded to Cloudinary
-  var tooltip = document.createElement('div');
-  tooltip.id = 'pdf-tooltip';
-  tooltip.style.cssText = [
-    'position:absolute',
-    'background:#1a1a1a', 'color:white', 'padding:0.45rem 0.85rem',
-    'border-radius:6px', 'font-size:0.8rem', 'font-weight:600',
-    'box-shadow:0 4px 16px rgba(0,0,0,0.25)', 'z-index:9999',
-    'opacity:0', 'transition:opacity 0.15s', 'pointer-events:none',
-    'white-space:nowrap'
-  ].join(';');
-  document.body.appendChild(tooltip);
-
-  var tooltipTimer;
-  function showTooltip(anchor, msg) {
-    clearTimeout(tooltipTimer);
-    tooltip.textContent = msg;
-    tooltip.style.opacity = '0';
-
-    var rect = anchor.getBoundingClientRect();
-    tooltip.style.left = (rect.left + window.scrollX) + 'px';
-    tooltip.style.top  = (rect.top  + window.scrollY - 38) + 'px';
-
-    tooltip.style.opacity = '1';
-    tooltipTimer = setTimeout(function () { tooltip.style.opacity = '0'; }, 3000);
-  }
-
+  // PDF link checker — pre-check Cloudinary links on load, mark unavailable ones
   document.querySelectorAll('a.pdf-row[href*="res.cloudinary.com"]').forEach(function (link) {
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-      var url = link.getAttribute('href');
-      fetch(url, { method: 'HEAD' })
-        .then(function (res) {
-          if (res.ok) {
-            window.open(url, '_blank', 'noopener');
-          } else {
-            showTooltip(link, 'No document uploaded yet.');
-          }
-        })
-        .catch(function () {
-          window.open(url, '_blank', 'noopener');
-        });
-    });
+    var url = link.getAttribute('href');
+    fetch(url, { method: 'HEAD' })
+      .then(function (res) {
+        if (!res.ok) markUnavailable(link);
+      })
+      .catch(function () { /* network error — leave link alone */ });
   });
+
+  function markUnavailable(link) {
+    link.removeAttribute('target');
+    link.removeAttribute('rel');
+    link.style.opacity = '0.45';
+    link.style.cursor  = 'default';
+
+    var badge = document.createElement('div');
+    badge.textContent = 'Not yet uploaded';
+    badge.style.cssText = [
+      'font-size:0.68rem', 'font-weight:600', 'color:#999',
+      'margin-top:0.15rem'
+    ].join(';');
+
+    var info = link.querySelector('.pdf-info');
+    if (info) info.appendChild(badge);
+
+    link.addEventListener('click', function (e) { e.preventDefault(); });
+  }
 });
