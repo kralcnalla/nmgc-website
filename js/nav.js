@@ -3,37 +3,24 @@ document.addEventListener('DOMContentLoaded', function () {
   var toggle = document.querySelector('.nav-toggle');
   var mobileNav = document.querySelector('.mobile-nav');
   if (toggle && mobileNav) {
-    var savedScroll = 0;
-
-    function openNav() {
-      savedScroll = window.scrollY;
-      mobileNav.classList.add('open');
-      toggle.classList.add('active');
-      toggle.setAttribute('aria-label', 'Close menu');
-      // iOS-safe scroll lock: fix body in place instead of overflow:hidden
-      document.body.style.position = 'fixed';
-      document.body.style.top      = '-' + savedScroll + 'px';
-      document.body.style.width    = '100%';
-    }
-
-    function closeNav() {
-      mobileNav.classList.remove('open');
-      toggle.classList.remove('active');
-      toggle.setAttribute('aria-label', 'Open menu');
-      // Restore body and scroll position precisely
-      document.body.style.position = '';
-      document.body.style.top      = '';
-      document.body.style.width    = '';
-      window.scrollTo(0, savedScroll);
-    }
+    var siteNav = document.querySelector('.site-nav');
 
     toggle.addEventListener('click', function () {
-      mobileNav.classList.contains('open') ? closeNav() : openNav();
+      var isOpen = mobileNav.classList.toggle('open');
+      toggle.classList.toggle('active');
+      toggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+      // Position the fixed overlay flush below the nav bar
+      if (isOpen && siteNav) {
+        mobileNav.style.top = siteNav.offsetHeight + 'px';
+      }
     });
 
-    // Close and restore scroll when a nav link is tapped
     mobileNav.querySelectorAll('a').forEach(function (link) {
-      link.addEventListener('click', closeNav);
+      link.addEventListener('click', function () {
+        mobileNav.classList.remove('open');
+        toggle.classList.remove('active');
+        toggle.setAttribute('aria-label', 'Open menu');
+      });
     });
   }
 

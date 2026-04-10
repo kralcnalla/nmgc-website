@@ -184,15 +184,30 @@ img { max-width: 100%; display: block; }
 .nav-toggle.active span:nth-child(2) { opacity: 0; }
 .nav-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* Mobile nav drawer */
+/* Mobile nav drawer — fixed overlay so sticky nav never changes height */
 .mobile-nav {
   display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 999;
   background: var(--darker);
   border-top: 1px solid #333;
   padding: 1rem 1.5rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: 80vh;
 }
 
 .mobile-nav.open { display: block; }
+
+/* Backdrop — blocks page scroll-through when nav is open */
+#nav-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+}
 
 .mobile-nav a {
   display: block;
