@@ -539,6 +539,10 @@
             Post Banner
           </button>
 
+          <button id="banner-clear-btn" style="background:none;border:none;font-size:0.75rem;color:#c0392b;font-weight:600;cursor:pointer;text-align:center;padding:0.25rem 0;">
+            Clear all banners
+          </button>
+
         </div>
       </div>
     </section>
@@ -967,6 +971,18 @@
       showBannerStatus('error', 'Error saving: ' + err);
     });
   }
+
+  // Clear all banners (force-saves empty array to invalidate CDN cache)
+  document.getElementById('banner-clear-btn').addEventListener('click', function() {
+    if (!confirm('Remove all active banners from the site?')) return;
+    _banners = [];
+    renderBannerList();
+    saveBannersJson(function() {
+      showBannerStatus('success', '✓ All banners cleared.');
+    }, function(err) {
+      showBannerStatus('error', 'Error: ' + err);
+    });
+  });
 
   // Warn when "All pages" is selected
   document.getElementById('banner-scope').addEventListener('change', function() {
