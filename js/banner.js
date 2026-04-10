@@ -4,7 +4,10 @@
 
 (function () {
   var CLOUD = 'dy0kdvq96';
-  var URL   = 'https://res.cloudinary.com/' + CLOUD + '/raw/upload/nmgc-docs/banners.json?v=' + Date.now();
+  var _ver  = (function() { try { return localStorage.getItem('nmgc_banners_ver'); } catch(e) { return null; } })();
+  var URL   = _ver
+    ? 'https://res.cloudinary.com/' + CLOUD + '/raw/upload/v' + _ver + '/nmgc-docs/banners.json'
+    : 'https://res.cloudinary.com/' + CLOUD + '/raw/upload/nmgc-docs/banners.json?v=' + Date.now();
   var scope = window.NMGC_SCOPE || 'all';
 
   var TYPE_STYLES = {

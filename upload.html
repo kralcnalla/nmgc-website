@@ -901,7 +901,17 @@
     fd.append('public_id', BANNERS_PUBLIC_ID);
     var xhr = new XMLHttpRequest();
     xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
-    xhr.onload = function() { xhr.status === 200 ? onSuccess() : onError(xhr.responseText); };
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        try {
+          var res = JSON.parse(xhr.responseText);
+          if (res.version) localStorage.setItem('nmgc_banners_ver', res.version);
+        } catch(e) {}
+        onSuccess();
+      } else {
+        onError(xhr.responseText);
+      }
+    };
     xhr.onerror = function() { onError('Network error'); };
     xhr.send(fd);
   }
