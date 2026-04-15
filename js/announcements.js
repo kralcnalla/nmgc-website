@@ -1,29 +1,24 @@
-// NMGC Announcement Loader
-(function() {
+// NMGC Announcement Loader — checks page-specific banner only
+(async function() {
   var el = document.getElementById('league-announcement');
   if (!el) return;
 
-  var league = el.getAttribute('data-league');
-  if (!league) return;
+  var league = el.getAttribute('data-league') || 'homepage';
+  var BASE = 'https://res.cloudinary.com/dy0kdvq96/raw/upload/nmgc-docs/';
 
-  fetch('/_announcements/' + league + '.md')
-    .then(function(r) { return r.text(); })
-    .then(function(text) {
-      var match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-      if (!match) return;
+  async function fetchJson(url) {
+    try {
+      var r = await fetch(url + '?v=' + Date.now());
+      return r.ok ? await r.json() : null;
+    } catch { return null; }
+  }
 
-      var frontmatter = match[1];
-      var body = match[2].trim();
+  function show(data) {
+    var textEl = el.querySelector('.announcement-text');
+    if (textEl) textEl.innerHTML = data.text;
+    el.style.display = 'flex';
+  }
 
-      var activeMatch = frontmatter.match(/active:\s*(true|false)/);
-      var active = activeMatch ? activeMatch[1] === 'true' : false;
-      if (!active) return;
-
-      if (!body || body.indexOf('No announcement') !== -1) return;
-
-      var textEl = el.querySelector('.announcement-text');
-      if (textEl) textEl.innerHTML = body;
-      el.style.display = 'flex';
-    })
-    .catch(function() {});
+  var data = await fetchJson(BASE + 'announcement-' + league + '.json');
+  if (data && data.active && data.text) show(data);
 })();

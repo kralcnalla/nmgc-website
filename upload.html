@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Commissioner Login — NMGC</title>
+  <title>Admin Login — NMGC</title>
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="images/N_logo.png">
   <link rel="stylesheet" href="css/style.css">
@@ -279,6 +279,26 @@
       color: #bbb;
     }
 
+    /* ── Banner page toggle buttons ── */
+    .banner-page-btn {
+      padding: 0.35rem 0.75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 99px;
+      background: white;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #444;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .banner-page-btn:hover { border-color: var(--green); color: var(--green); }
+    .banner-page-btn.selected {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+
     /* ── Start over ── */
     .start-over-btn {
       background: none;
@@ -334,7 +354,7 @@
       <a href="leagues/scratch.html">Scratch League (Tue)</a>
       <a href="leagues/bestball.html">Best Ball (Wed)</a>
       <a href="leagues/40over.html">40 &amp; Over (Thu)</a>
-      <a href="upload.html">Commissioner Login</a>
+      <a href="upload.html">Admin Login</a>
     </div>
     <div class="mobile-nav-group">
       <div class="mobile-nav-label">Tournaments</div>
@@ -360,7 +380,7 @@
       <div style="width:36px;height:36px;background:var(--green);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🔒</div>
       <div>
         <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:#aaa;font-weight:700;">Nemadji Men's Golf Club</div>
-        <div style="font-size:1rem;font-weight:800;color:#1a1a1a;">Commissioner Login</div>
+        <div style="font-size:1rem;font-weight:800;color:#1a1a1a;">Admin Login</div>
       </div>
     </div>
     <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter the commissioner password to upload documents.</p>
@@ -621,6 +641,43 @@
             Choose PDF &amp; Add to Archive
           </button>
 
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Announcement Banner ── -->
+    <section style="margin-top:2rem;">
+      <div class="section-label">Announcement Banner</div>
+      <div class="card">
+        <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+          <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Show or hide an announcement banner on any page.</p>
+
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Select Pages</label>
+            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.35rem;">
+              <button type="button" class="banner-page-btn" data-value="homepage" onclick="toggleBannerPage(this)">Homepage</button>
+              <button type="button" class="banner-page-btn" data-value="bushwhackers" onclick="toggleBannerPage(this)">Bushwhackers</button>
+              <button type="button" class="banner-page-btn" data-value="scratch" onclick="toggleBannerPage(this)">Scratch</button>
+              <button type="button" class="banner-page-btn" data-value="bestball" onclick="toggleBannerPage(this)">Best Ball</button>
+              <button type="button" class="banner-page-btn" data-value="40over" onclick="toggleBannerPage(this)">40 &amp; Over</button>
+              <button type="button" class="banner-page-btn" data-value="spring-scramble" onclick="toggleBannerPage(this)">Spring Scramble</button>
+              <button type="button" class="banner-page-btn" data-value="titos-classic" onclick="toggleBannerPage(this)">Tito's Classic</button>
+              <button type="button" class="banner-page-btn" data-value="red-white-blue" onclick="toggleBannerPage(this)">Red-White-Blue</button>
+              <button type="button" class="banner-page-btn" data-value="championship" onclick="toggleBannerPage(this)">Championship</button>
+              <button type="button" class="banner-page-btn" data-value="fall-scramble" onclick="toggleBannerPage(this)">Fall Scramble</button>
+              <button type="button" class="banner-page-btn" data-value="memorial-weekend" onclick="toggleBannerPage(this)">Memorial Weekend</button>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Banner Message</label>
+            <textarea class="form-textarea" id="banner-text" placeholder="Enter announcement text — HTML allowed, e.g. &lt;strong&gt;bold&lt;/strong&gt;" style="min-height:80px;"></textarea>
+          </div>
+          <div class="upload-status" id="banner-status"></div>
+          <div style="display:flex;gap:0.6rem;">
+            <button class="btn btn-primary" id="banner-save-btn" style="flex:1;justify-content:center;">Save &amp; Show Banner</button>
+            <button id="banner-off-btn" style="flex:1;padding:0.6rem 1rem;border:1.5px solid var(--border);border-radius:6px;background:white;font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer;">Turn Off Banner</button>
+          </div>
         </div>
       </div>
     </section>
@@ -1164,11 +1221,105 @@
     input.click();
   });
 
+  // ══════════════════════════════════════
+  // ANNOUNCEMENT BANNER
+  // ══════════════════════════════════════
+
+  var ALL_PAGES = ['homepage','bushwhackers','scratch','bestball','40over',
+                   'spring-scramble','titos-classic','red-white-blue',
+                   'championship','fall-scramble','memorial-weekend'];
+
+  function getSelectedPages() {
+    var selected = [];
+    document.querySelectorAll('.banner-page-btn.selected').forEach(function(btn) {
+      selected.push(btn.dataset.value);
+    });
+    return selected;
+  }
+
+  function toggleBannerPage(btn) {
+    btn.classList.toggle('selected');
+  }
+
+  function uploadBannerJson(slug, payload, callback) {
+    var publicId = 'nmgc-docs/announcement-' + slug;
+    var json = JSON.stringify(payload);
+    var blob = new Blob([json], { type: 'application/json' });
+    var file = new File([blob], 'announcement-' + slug + '.json', { type: 'application/json' });
+    var fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    fd.append('public_id', publicId);
+    fd.append('overwrite', 'true');
+    fd.append('invalidate', 'true');
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
+    xhr.onload = function() { callback(xhr.status === 200 ? null : 'HTTP ' + xhr.status); };
+    xhr.onerror = function() { callback('Network error'); };
+    xhr.send(fd);
+  }
+
+  function saveBanner(active) {
+    var pages = getSelectedPages();
+    if (!pages.length) {
+      showBannerStatus('error', 'Please select at least one page.');
+      return;
+    }
+    var text = document.getElementById('banner-text').value.trim();
+    if (active && !text) {
+      showBannerStatus('error', 'Please enter a message before turning the banner on.');
+      return;
+    }
+    var saveBtn = document.getElementById('banner-save-btn');
+    var offBtn  = document.getElementById('banner-off-btn');
+    saveBtn.disabled = true;
+    offBtn.disabled  = true;
+    saveBtn.textContent = 'Saving...';
+
+    var payload = { active: active, text: text };
+    var remaining = pages.length;
+    var errors = [];
+
+    pages.forEach(function(slug) {
+      uploadBannerJson(slug, payload, function(err) {
+        if (err) errors.push(slug + ': ' + err);
+        remaining--;
+        if (remaining === 0) {
+          saveBtn.disabled = false;
+          offBtn.disabled  = false;
+          saveBtn.textContent = 'Save & Show Banner';
+          if (errors.length) {
+            showBannerStatus('error', 'Some pages failed: ' + errors.join(', '));
+          } else {
+            var pageCount = pages.length;
+            showBannerStatus('success', active
+              ? '✓ Banner is now live on ' + pageCount + ' page' + (pageCount > 1 ? 's' : '') + '.'
+              : '✓ Banner turned off on ' + pageCount + ' page' + (pageCount > 1 ? 's' : '') + '.');
+          }
+        }
+      });
+    });
+  }
+
+  function showBannerStatus(type, msg) {
+    var el = document.getElementById('banner-status');
+    el.className = 'upload-status ' + type;
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(function() { el.style.display = 'none'; }, 5000);
+  }
+
+  function loadBannerState() { /* no-op */ }
+
+  document.getElementById('banner-save-btn').addEventListener('click', function() { saveBanner(true); });
+  document.getElementById('banner-off-btn').addEventListener('click', function() { saveBanner(false); });
+
   // Load minutes list and check club doc statuses when commissioner logs in
   document.getElementById('gate-submit').addEventListener('click', function () {
     setTimeout(function () {
       loadMinutesList();
       checkClubDocStatuses();
+      loadBannerState();
     }, 300);
   });
 
