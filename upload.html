@@ -291,12 +291,28 @@
       color: #444;
       cursor: pointer;
       transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
     }
     .banner-page-btn:hover { border-color: var(--green); color: var(--green); }
     .banner-page-btn.selected {
       background: var(--green);
       border-color: var(--green);
       color: white;
+    }
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #e05c00;
+      flex-shrink: 0;
+      animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+    .banner-page-btn.selected .live-dot { background: #ffdd88; }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.75); }
     }
 
     /* ── Start over ── */
@@ -1250,8 +1266,6 @@
     fd.append('file', file);
     fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
     fd.append('public_id', publicId);
-    fd.append('overwrite', 'true');
-    fd.append('invalidate', 'true');
     var xhr = new XMLHttpRequest();
     xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
     xhr.onload = function() { callback(xhr.status === 200 ? null : 'HTTP ' + xhr.status); };
@@ -1293,8 +1307,9 @@
           } else {
             var pageCount = pages.length;
             showBannerStatus('success', active
-              ? '✓ Banner is now live on ' + pageCount + ' page' + (pageCount > 1 ? 's' : '') + '.'
-              : '✓ Banner turned off on ' + pageCount + ' page' + (pageCount > 1 ? 's' : '') + '.');
+              ? '\u2713 Banner is now live on ' + pageCount + ' page' + (pageCount > 1 ? 's' : '') + '.'
+              : '\u2713 Banner turned off on ' + pageCount + ' page' + (pageCount > 1 ? 's' : '') + '.');
+            setTimeout(loadBannerState, 1500);
           }
         }
       });
@@ -1309,7 +1324,26 @@
     setTimeout(function() { el.style.display = 'none'; }, 5000);
   }
 
-  function loadBannerState() { /* no-op */ }
+  function loadBannerState() {
+    var BASE = 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/';
+    ALL_PAGES.forEach(function(slug) {
+      fetch(BASE + 'announcement-' + slug + '.json?v=' + Date.now())
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .catch(function() { return null; })
+        .then(function(data) {
+          var btn = document.querySelector('.banner-page-btn[data-value="' + slug + '"]');
+          if (!btn) return;
+          var existing = btn.querySelector('.live-dot');
+          if (existing) existing.remove();
+          if (data && data.active) {
+            var dot = document.createElement('span');
+            dot.className = 'live-dot';
+            dot.title = 'Banner currently live';
+            btn.appendChild(dot);
+          }
+        });
+    });
+  }
 
   document.getElementById('banner-save-btn').addEventListener('click', function() { saveBanner(true); });
   document.getElementById('banner-off-btn').addEventListener('click', function() { saveBanner(false); });
