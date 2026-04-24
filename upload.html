@@ -279,4 +279,901 @@
       color: #bbb;
     }
 
+
     /* ── Start over ── */
+    .start-over-btn {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+    .start-over-btn:hover { color: #333; }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li class="has-dropdown">
+        <a href="#">Leagues</a>
+        <div class="dropdown-menu">
+          <a href="leagues/bushwhackers.html">Bushwhackers (Mon/Tue)</a>
+          <a href="leagues/scratch.html">Scratch League (Tue)</a>
+          <a href="leagues/bestball.html">Best Ball (Wed)</a>
+          <a href="leagues/40over.html">40 &amp; Over (Thu)</a>
+        </div>
+      </li>
+      <li class="has-dropdown">
+        <a href="#">Tournaments</a>
+        <div class="dropdown-menu">
+          <a href="tournaments/spring-scramble.html">Spring Scramble</a>
+          <a href="tournaments/titos-classic.html">Tito's Classic</a>
+          <a href="tournaments/red-white-blue.html">Red-White-Blue</a>
+          <a href="tournaments/championship.html">Men's Club Championship</a>
+          <a href="tournaments/fall-scramble.html">Fall Scramble</a>
+        </div>
+      </li>
+      <li><a href="resources.html">Resources</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-nav">
+    <div class="mobile-nav-group">
+      <div class="mobile-nav-label">Leagues</div>
+      <a href="leagues/bushwhackers.html">Bushwhackers (Mon/Tue)</a>
+      <a href="leagues/scratch.html">Scratch League (Tue)</a>
+      <a href="leagues/bestball.html">Best Ball (Wed)</a>
+      <a href="leagues/40over.html">40 &amp; Over (Thu)</a>
+      <a href="upload.html">Admin Login</a>
+    </div>
+    <div class="mobile-nav-group">
+      <div class="mobile-nav-label">Tournaments</div>
+      <a href="tournaments/spring-scramble.html">Spring Scramble</a>
+      <a href="tournaments/titos-classic.html">Tito's Classic</a>
+      <a href="tournaments/red-white-blue.html">Red-White-Blue</a>
+      <a href="tournaments/championship.html">Men's Club Championship</a>
+      <a href="tournaments/fall-scramble.html">Fall Scramble</a>
+    </div>
+    <hr class="mobile-nav-divider">
+    <a href="resources.html">Resources</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     PASSWORD GATE
+══════════════════════════════════════ -->
+<div id="password-gate">
+  <div class="gate-card">
+    <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">
+      <div style="width:36px;height:36px;background:var(--green);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🔒</div>
+      <div>
+        <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:#aaa;font-weight:700;">Nemadji Men's Golf Club</div>
+        <div style="font-size:1rem;font-weight:800;color:#1a1a1a;">Admin Login</div>
+      </div>
+    </div>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter the commissioner password to upload documents.</p>
+    <div class="form-group" style="margin-bottom:0.75rem;">
+      <label class="form-label" for="gate-password">Password</label>
+      <input class="form-input" type="password" id="gate-password" placeholder="Enter password" autocomplete="current-password">
+    </div>
+    <div id="password-error">Incorrect password. Please try again.</div>
+    <button class="btn btn-primary" id="gate-submit" style="width:100%;justify-content:center;margin-top:0.75rem;">Unlock</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     UPLOAD SECTION
+══════════════════════════════════════ -->
+<div id="upload-section">
+
+  <section class="hero" style="background-image:url('images/hero.jpg');background-size:cover;background-position:center;">
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      <div class="hero-label">Nemadji Men's Golf Club · Commissioners</div>
+      <h1>Upload Documents</h1>
+    </div>
+  </section>
+
+  <main class="page-content" style="max-width:580px;">
+
+    <section>
+      <div class="section-label">Document Upload</div>
+      <div class="card">
+        <div class="card-body">
+
+          <!-- Step progress indicator -->
+          <div class="step-progress" id="step-progress">
+            <div class="step-node active" id="node-1">
+              <div class="step-circle" id="circle-1">1</div>
+              <div class="step-label">League</div>
+            </div>
+            <div class="step-node" id="node-2">
+              <div class="step-circle" id="circle-2">2</div>
+              <div class="step-label">Division</div>
+            </div>
+            <div class="step-node" id="node-3">
+              <div class="step-circle" id="circle-3">3</div>
+              <div class="step-label">Document</div>
+            </div>
+          </div>
+
+          <!-- Selection chips (shows confirmed choices) -->
+          <div class="selection-summary" id="selection-summary" style="display:none;"></div>
+
+          <!-- ── STEP 1: League ── -->
+          <div class="step-panel active" id="step-1">
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;">Which league is this document for?</p>
+            <div class="option-grid single-col">
+              <button class="option-btn" data-value="bushwhackers" data-label="Bushwhackers" onclick="selectLeague(this)">Bushwhackers</button>
+              <button class="option-btn" data-value="scratch" data-label="Scratch League" onclick="selectLeague(this)">Scratch League</button>
+              <button class="option-btn" data-value="bestball" data-label="Best Ball" onclick="selectLeague(this)">Best Ball</button>
+              <button class="option-btn" data-value="40over" data-label="40 &amp; Over" onclick="selectLeague(this)">40 &amp; Over</button>
+              <button class="option-btn" data-value="club" data-label="Club" onclick="selectLeague(this)">Club (general documents)</button>
+            </div>
+          </div>
+
+          <!-- ── STEP 2: Division (Bushwhackers or Best Ball) ── -->
+          <div class="step-panel" id="step-2">
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;" id="step-2-label">Which division?</p>
+            <div class="option-grid" id="division-options"></div>
+          </div>
+
+          <!-- ── STEP 3: Document type ── -->
+          <div class="step-panel" id="step-3">
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;">What type of document is this?</p>
+            <div class="option-grid single-col">
+              <button class="option-btn" data-value="season-schedule"              data-label="Season Schedule"               onclick="selectDoctype(this)">Season Schedule</button>
+              <button class="option-btn" data-value="captains-list"               data-label="Captains List / Team Contacts"  onclick="selectDoctype(this)">Captains List / Team Contacts</button>
+              <button class="option-btn" data-value="standings"                   data-label="Standings"                      onclick="selectDoctype(this)">Standings</button>
+              <button class="option-btn" data-value="weekly-matchups"             data-label="Weekly Matchups"                onclick="selectDoctype(this)">Weekly Matchups</button>
+              <button class="option-btn" data-value="weekly-results"              data-label="Weekly Results"                 onclick="selectDoctype(this)">Weekly Results</button>
+              <button class="option-btn" data-value="playoff-bracket-consolation" data-label="Playoff Bracket — Consolation"  onclick="selectDoctype(this)">Playoff Bracket — Consolation</button>
+              <button class="option-btn" data-value="playoff-bracket-championship" data-label="Playoff Bracket — Championship" onclick="selectDoctype(this)">Playoff Bracket — Championship</button>
+              <button class="option-btn" data-value="final-playoff-standings"     data-label="Final Playoff Standings"        onclick="selectDoctype(this)">Final Playoff Standings</button>
+              <button class="option-btn" data-value="payouts"                     data-label="Payouts"                        onclick="selectDoctype(this)">Payouts</button>
+              <button class="option-btn" data-value="league-rules"                data-label="League Rules"                   onclick="selectDoctype(this)">League Rules</button>
+              <button class="option-btn" data-value="score-guide"                 data-label="Score Guide"                    onclick="selectDoctype(this)">Score Guide</button>
+              <button class="option-btn" data-value="handicap-guide"              data-label="Handicap Guide"                 onclick="selectDoctype(this)">Handicap Guide</button>
+              <button class="option-btn" data-value="budget"                      data-label="Budget"                         onclick="selectDoctype(this)">Budget</button>
+              <button class="option-btn" data-value="other"                       data-label="Other"                          onclick="selectDoctype(this)">Other</button>
+            </div>
+          </div>
+
+          <!-- ── STEP 4: Upload ── -->
+          <div class="step-panel" id="step-upload">
+
+            <!-- Filename preview -->
+            <div class="filename-preview">
+              <div class="filename-preview-label">File will be saved as</div>
+              <div class="filename-preview-text" id="filename-display"></div>
+            </div>
+
+            <!-- Drop zone -->
+            <div class="upload-zone" id="upload-zone">
+              <input type="file" id="file-input" accept=".pdf,application/pdf">
+              <div class="upload-zone-icon">📄</div>
+              <div class="upload-zone-label">Click to choose a PDF, or drag and drop</div>
+              <div class="upload-zone-sub">Any filename — it will be renamed automatically</div>
+              <div class="upload-zone-file" id="chosen-file"></div>
+            </div>
+
+            <div class="progress-wrap" id="progress-wrap">
+              <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <div class="upload-status" id="upload-status"></div>
+
+            <!-- Confirm step — hidden until file is chosen -->
+            <div id="confirm-wrap" style="display:none;background:#fff8e0;border:1.5px solid #e8cc60;border-radius:7px;padding:0.85rem 1rem;">
+              <div style="font-size:0.78rem;font-weight:700;color:#7a5800;margin-bottom:0.5rem;">⚠️ Confirm overwrite</div>
+              <div style="font-size:0.82rem;color:#7a5800;margin-bottom:0.75rem;">
+                This will permanently replace the existing <strong id="confirm-filename"></strong> on the website. Are you sure?
+              </div>
+              <div style="display:flex;gap:0.5rem;">
+                <button class="btn btn-primary" id="upload-btn" style="flex:1;justify-content:center;" disabled>
+                  Yes, upload &amp; overwrite
+                </button>
+                <button id="cancel-btn" style="flex:1;padding:0.6rem 1rem;border:1.5px solid var(--border);border-radius:6px;background:white;font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer;">
+                  Cancel
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Start over -->
+      <div style="text-align:center;margin-top:1rem;" id="start-over-row" style="display:none;">
+        <button class="start-over-btn" onclick="startOver()">← Start over</button>
+      </div>
+    </section>
+
+
+
+    <!-- ── Club Resources ── -->
+    <section style="margin-top:2rem;">
+      <div class="section-label">Club Resources</div>
+      <div class="card">
+        <div class="card-body" style="display:flex;flex-direction:column;gap:0.75rem;">
+          <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Upload PDFs for the Resources page. Each button replaces the existing file for that slot.</p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Club Bylaws / Constitution</div>
+                <span id="club-file-status-bylaws" class="club-file-badge">…</span>
+              </div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Governing rules of the NMGC</div>
+              <button id="club-btn-bylaws" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('bylaws','Club Bylaws / Constitution','nmgc-docs/club-bylaws')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Annual Budget</div>
+                <span id="club-file-status-budget" class="club-file-badge">…</span>
+              </div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Current season</div>
+              <button id="club-btn-budget" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('budget','Annual Budget','nmgc-docs/club-budget')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Financial Report</div>
+                <span id="club-file-status-financial-report" class="club-file-badge">…</span>
+              </div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Most recent year-end summary</div>
+              <button id="club-btn-financial-report" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('financial-report','Financial Report','nmgc-docs/club-financial-report')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Meeting Minutes</div>
+                <span id="club-file-status-meeting-minutes" class="club-file-badge">…</span>
+              </div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Most recent board meeting</div>
+              <button id="club-btn-meeting-minutes" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('meeting-minutes','Meeting Minutes','nmgc-docs/club-meeting-minutes')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">NMGC Handicap Guide</div>
+                <span id="club-file-status-handicap-guide" class="club-file-badge">…</span>
+              </div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">How the handicap system works</div>
+              <button id="club-btn-handicap-guide" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('handicap-guide','NMGC Handicap Guide','nmgc-docs/handicap-guide')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Peer-to-Peer Handicap Guide</div>
+                <span id="club-file-status-handicap-peer-to-peer" class="club-file-badge">…</span>
+              </div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Committee policies</div>
+              <button id="club-btn-handicap-peer-to-peer" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('handicap-peer-to-peer','Peer-to-Peer Handicap Guide','nmgc-docs/handicap-peer-to-peer')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Local Rules</div>
+                <span id="club-file-status-course-local-rules" class="club-file-badge">…</span>
+              </div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Course-specific rules at Nemadji</div>
+              <button id="club-btn-course-local-rules" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('course-local-rules','Local Rules','nmgc-docs/course-local-rules')">Upload PDF</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:8px;padding:0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="font-weight:700;font-size:0.85rem;">Scorecard</div>
+                <span id="club-file-status-course-scorecard" class="club-file-badge">…</span>
+              </div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.6rem;">Nemadji Golf Course</div>
+              <button id="club-btn-course-scorecard" class="btn btn-primary" style="font-size:0.78rem;padding:0.4rem 0.75rem;min-height:unset;" onclick="uploadClubDoc('course-scorecard','Scorecard','nmgc-docs/course-scorecard')">Upload PDF</button>
+            </div>
+          </div>
+
+          <div class="upload-status" id="club-doc-status"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Meeting Minutes Archive ── -->
+    <section style="margin-top:2rem;">
+      <div class="section-label">Meeting Minutes Archive</div>
+      <div class="card">
+        <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+          <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Add or remove entries in the Meeting Minutes Archive on the Resources page.</p>
+
+          <div>
+            <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;color:var(--text-muted);margin-bottom:0.5rem;">Archive Entries</div>
+            <div id="minutes-list" style="font-size:0.82rem;color:#888;">Loading…</div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--border);margin:0;">
+
+          <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:700;color:var(--text-muted);">Add Entry</div>
+
+          <div style="display:grid;grid-template-columns:1fr 80px;gap:0.6rem;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Title</label>
+              <input class="form-input" type="text" id="minutes-title" placeholder="e.g. Meeting Minutes — April 10, 2026">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Year</label>
+              <input class="form-input" type="text" id="minutes-year" placeholder="2026" maxlength="4">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Date <span style="font-size:0.72rem;font-weight:400;color:var(--text-muted)">(used for sorting)</span></label>
+            <input class="form-input" type="date" id="minutes-date">
+          </div>
+
+          <div class="upload-status" id="minutes-status"></div>
+
+          <button class="btn btn-primary" id="minutes-upload-btn" style="width:100%;justify-content:center;">
+            Choose PDF &amp; Add to Archive
+          </button>
+
+        </div>
+      </div>
+    </section>
+
+    <div style="text-align:center;margin-top:1.5rem;">
+      <a href="resources.html" style="font-size:0.82rem;color:var(--text-muted);">← Back to Resources</a>
+    </div>
+
+  </main>
+
+</div><!-- /upload-section -->
+
+<script src="js/nav.js"></script>
+<script>
+  var CLOUDINARY_CLOUD_NAME    = 'dy0kdvq96';
+  var CLOUDINARY_UPLOAD_PRESET = 'ufee4v7p';
+  var CORRECT_PASSWORD         = 'nmgc2026';
+
+  // ── Selections state ──
+  var sel = { league: null, leagueLabel: null, division: null, divisionLabel: null, doctype: null, doctypeLabel: null };
+
+  // ── Password gate ──
+  function unlock() {
+    if (document.getElementById('gate-password').value === CORRECT_PASSWORD) {
+      document.getElementById('password-gate').style.display = 'none';
+      document.getElementById('upload-section').style.display = 'block';
+    } else {
+      document.getElementById('password-error').style.display = 'block';
+      document.getElementById('gate-password').focus();
+    }
+  }
+  document.getElementById('gate-submit').addEventListener('click', unlock);
+  document.getElementById('gate-password').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') unlock();
+  });
+
+  // ── Step navigation ──
+  function showStep(stepId) {
+    document.querySelectorAll('.step-panel').forEach(function(p) { p.classList.remove('active'); });
+    var panel = document.getElementById(stepId);
+    if (panel) panel.classList.add('active');
+    document.getElementById('start-over-row').style.display = stepId === 'step-1' ? 'none' : 'block';
+  }
+
+  function setNodeState(nodeNum, state) {
+    var node   = document.getElementById('node-' + nodeNum);
+    var circle = document.getElementById('circle-' + nodeNum);
+    if (!node) return;
+    node.classList.remove('active', 'done');
+    if (state === 'active') node.classList.add('active');
+    if (state === 'done')   { node.classList.add('done'); circle.textContent = '✓'; }
+    if (state === 'idle')   circle.textContent = nodeNum;
+  }
+
+  // ── Step 1: League ──
+  var DIVISIONS = {
+    'bushwhackers': [
+      { value: 'monday',   label: 'Monday' },
+      { value: 'tuesday',  label: 'Tuesday' },
+      { value: '',         label: 'General (Both Divisions)' }
+    ],
+    'bestball': [
+      { value: 'division-one', label: 'Division One' },
+      { value: 'division-two', label: 'Division Two' },
+      { value: '',             label: 'General (Both Divisions)' }
+    ],
+    'scratch': [
+      { value: 'gold',  label: 'Gold Division' },
+      { value: 'green', label: 'Green Division' },
+      { value: '',      label: 'General (Both Divisions)' }
+    ]
+  };
+
+  function selectLeague(btn) {
+    sel.league        = btn.dataset.value;
+    sel.leagueLabel   = btn.dataset.label;
+    sel.division      = null;
+    sel.divisionLabel = null;
+    sel.doctype       = null;
+    sel.doctypeLabel  = null;
+
+    setNodeState(1, 'done');
+
+    var divisions = DIVISIONS[sel.league];
+    if (divisions) {
+      // Populate division options dynamically
+      var label = document.getElementById('step-2-label');
+      label.textContent = 'Which ' + sel.leagueLabel + ' division?';
+      var container = document.getElementById('division-options');
+      container.innerHTML = '';
+      divisions.forEach(function(d) {
+        var b = document.createElement('button');
+        b.className = 'option-btn';
+        b.dataset.value = d.value;
+        b.dataset.label = d.label;
+        b.textContent   = d.label;
+        b.onclick = function() { selectDivision(b); };
+        container.appendChild(b);
+      });
+
+      setNodeState(2, 'active');
+      setNodeState(3, 'idle');
+      document.getElementById('circle-3').textContent = '3';
+      showStep('step-2');
+    } else {
+      // No divisions — skip step 2
+      setNodeState(2, 'done');
+      document.getElementById('circle-2').textContent = '–';
+      setNodeState(3, 'active');
+      showStep('step-3');
+    }
+    updateChips();
+  }
+
+  // ── Step 2: Division ──
+  function selectDivision(btn) {
+    sel.division      = btn.dataset.value;
+    sel.divisionLabel = btn.dataset.label;
+    sel.doctype       = null;
+    sel.doctypeLabel  = null;
+
+    setNodeState(2, 'done');
+    setNodeState(3, 'active');
+    showStep('step-3');
+    updateChips();
+  }
+
+  // ── Step 3: Document type ──
+  function selectDoctype(btn) {
+    sel.doctype      = btn.dataset.value;
+    sel.doctypeLabel = btn.dataset.label;
+
+    setNodeState(3, 'done');
+    updateChips();
+    buildFilename();
+    showStep('step-upload');
+    // Reset upload state
+    selectedFile = null;
+    document.getElementById('chosen-file').textContent = '';
+    document.getElementById('file-input').value = '';
+    document.getElementById('upload-btn').disabled = true;
+    document.getElementById('upload-status').style.display = 'none';
+    document.getElementById('progress-wrap').style.display = 'none';
+  }
+
+  // ── Chip summary ──
+  function updateChips() {
+    var summary = document.getElementById('selection-summary');
+    summary.innerHTML = '';
+    var chips = [];
+    if (sel.leagueLabel)   chips.push({ label: sel.leagueLabel,   step: 'step-1' });
+    if (sel.divisionLabel) chips.push({ label: sel.divisionLabel,  step: 'step-2' });
+    if (sel.doctypeLabel)  chips.push({ label: sel.doctypeLabel,   step: 'step-3' });
+
+    chips.forEach(function(c) {
+      var chip = document.createElement('button');
+      chip.className = 'selection-chip';
+      chip.innerHTML = c.label + ' <span class="chip-x">✕</span>';
+      chip.onclick = function() { goBackTo(c.step); };
+      summary.appendChild(chip);
+    });
+    summary.style.display = chips.length ? 'flex' : 'none';
+  }
+
+  function goBackTo(stepId) {
+    if (stepId === 'step-1') {
+      sel = { league: null, leagueLabel: null, division: null, divisionLabel: null, doctype: null, doctypeLabel: null };
+      setNodeState(1, 'active');
+      setNodeState(2, 'idle'); document.getElementById('circle-2').textContent = '2';
+      setNodeState(3, 'idle'); document.getElementById('circle-3').textContent = '3';
+    } else if (stepId === 'step-2') {
+      sel.division = null; sel.divisionLabel = null;
+      sel.doctype  = null; sel.doctypeLabel  = null;
+      setNodeState(2, 'active');
+      setNodeState(3, 'idle'); document.getElementById('circle-3').textContent = '3';
+    } else if (stepId === 'step-3') {
+      sel.doctype = null; sel.doctypeLabel = null;
+      setNodeState(3, 'active');
+    }
+    updateChips();
+    showStep(stepId);
+  }
+
+  function startOver() {
+    goBackTo('step-1');
+  }
+
+  // ── Filename ──
+  function buildFilename() {
+    var parts = [sel.league];
+    if (sel.division) parts.push(sel.division);
+    parts.push(sel.doctype);
+    var name = parts.join('-') + '.pdf';
+    document.getElementById('filename-display').textContent = name;
+    return name;
+  }
+
+  function getFilename()  { return buildFilename(); }
+  function getPublicId()  {
+    var parts = [sel.league];
+    if (sel.division) parts.push(sel.division);
+    parts.push(sel.doctype);
+    return 'nmgc-docs/' + parts.join('-');
+  }
+
+  // ── File input ──
+  var selectedFile = null;
+
+  function fileChosen(file) {
+    if (!file) return;
+    selectedFile = file;
+    document.getElementById('chosen-file').textContent = file.name;
+    // Show confirm box with the target filename
+    document.getElementById('confirm-filename').textContent = getFilename();
+    document.getElementById('confirm-wrap').style.display = 'block';
+    document.getElementById('upload-btn').disabled = false;
+  }
+
+  function resetFileChoice() {
+    selectedFile = null;
+    document.getElementById('chosen-file').textContent = '';
+    document.getElementById('file-input').value = '';
+    document.getElementById('confirm-wrap').style.display = 'none';
+    document.getElementById('upload-btn').disabled = true;
+  }
+
+  document.getElementById('file-input').addEventListener('change', function() {
+    fileChosen(this.files[0] || null);
+  });
+
+  document.getElementById('cancel-btn').addEventListener('click', resetFileChoice);
+
+  var zone = document.getElementById('upload-zone');
+  zone.addEventListener('dragover',  function(e) { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', function()  { zone.classList.remove('dragover'); });
+  zone.addEventListener('drop',      function(e) {
+    e.preventDefault(); zone.classList.remove('dragover');
+    var file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') fileChosen(file);
+  });
+
+  // ── Upload ──
+  document.getElementById('upload-btn').addEventListener('click', function() {
+    if (!selectedFile) return;
+    var filename = getFilename();
+    var publicId = getPublicId();
+
+    var renamedFile = new File([selectedFile], filename, { type: 'application/pdf' });
+    var formData = new FormData();
+    formData.append('file', renamedFile);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    formData.append('public_id', publicId);
+
+    var progressWrap = document.getElementById('progress-wrap');
+    var progressBar  = document.getElementById('progress-bar');
+    var statusEl     = document.getElementById('upload-status');
+    var btn          = document.getElementById('upload-btn');
+
+    progressWrap.style.display = 'block';
+    progressBar.style.width    = '0%';
+    statusEl.style.display     = 'none';
+    btn.disabled               = true;
+    btn.textContent            = 'Uploading…';
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
+
+    xhr.upload.addEventListener('progress', function(e) {
+      if (e.lengthComputable) progressBar.style.width = Math.round((e.loaded / e.total) * 100) + '%';
+    });
+
+    xhr.addEventListener('load', function() {
+      progressBar.style.width = '100%';
+      btn.textContent         = 'Upload Document';
+
+      if (xhr.status === 200) {
+        var res = JSON.parse(xhr.responseText);
+        statusEl.className   = 'upload-status success';
+        statusEl.innerHTML   = '&#10003; Uploaded as <strong>' + filename + '</strong>.<br><small style="font-weight:400;opacity:0.8;">URL: ' + res.secure_url + '</small>';
+        statusEl.style.display = 'block';
+        resetFileChoice();
+        btn.disabled = true;
+      } else {
+        var errMsg = xhr.status + ' error';
+        try {
+          var errRes = JSON.parse(xhr.responseText);
+          if (errRes.error && errRes.error.message) errMsg = errRes.error.message;
+        } catch(e) {}
+        statusEl.className   = 'upload-status error';
+        statusEl.textContent = 'Upload failed: ' + errMsg;
+        statusEl.style.display = 'block';
+        btn.disabled = false;
+      }
+    });
+
+    xhr.addEventListener('error', function() {
+      btn.textContent    = 'Upload Document';
+      btn.disabled       = false;
+      statusEl.className = 'upload-status error';
+      statusEl.textContent = 'Network error — check your connection and try again.';
+      statusEl.style.display = 'block';
+    });
+
+    xhr.send(formData);
+  });
+
+  // ══════════════════════════════════════
+  // SHARED HELPERS
+  // ══════════════════════════════════════
+
+  function escHtml(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ══════════════════════════════════════
+  // CLUB RESOURCES — fixed-slot uploads
+  // ══════════════════════════════════════
+
+  var CLUB_DOCS = [
+    { id: 'bylaws',               url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-bylaws.pdf' },
+    { id: 'budget',               url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-budget.pdf' },
+    { id: 'financial-report',     url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-financial-report.pdf' },
+    { id: 'meeting-minutes',      url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-meeting-minutes.pdf' },
+    { id: 'handicap-guide',       url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/handicap-guide.pdf' },
+    { id: 'handicap-peer-to-peer',url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/handicap-peer-to-peer.pdf' },
+    { id: 'course-local-rules',   url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/course-local-rules.pdf' },
+    { id: 'course-scorecard',     url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/course-scorecard.pdf' }
+  ];
+
+  function setClubFileBadge(id, uploaded) {
+    var el = document.getElementById('club-file-status-' + id);
+    if (!el) return;
+    if (uploaded) {
+      el.textContent = '\u2713 Uploaded';
+      el.className = 'club-file-badge uploaded';
+    } else {
+      el.textContent = 'Not uploaded';
+      el.className = 'club-file-badge not-uploaded';
+    }
+  }
+
+  function checkClubDocStatuses() {
+    CLUB_DOCS.forEach(function (doc) {
+      fetch(doc.url + '?v=' + Date.now(), { method: 'HEAD' })
+        .then(function (r) { setClubFileBadge(doc.id, r.ok); })
+        .catch(function ()  { setClubFileBadge(doc.id, false); });
+    });
+  }
+
+  function uploadClubDoc(id, label, publicId) {
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,application/pdf';
+    input.onchange = function () {
+      var file = input.files[0];
+      if (!file) return;
+      var btn = document.getElementById('club-btn-' + id);
+      btn.disabled = true;
+      btn.textContent = 'Uploading…';
+      var renamed = new File([file], id + '.pdf', { type: 'application/pdf' });
+      var fd = new FormData();
+      fd.append('file', renamed);
+      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      fd.append('public_id', publicId);
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          showClubStatus('success', '\u2713 ' + label + ' uploaded.');
+          setClubFileBadge(id, true);
+        } else {
+          showClubStatus('error', 'Upload failed — try again.');
+        }
+        btn.disabled = false;
+        btn.textContent = 'Upload PDF';
+      };
+      xhr.onerror = function () {
+        showClubStatus('error', 'Network error.');
+        btn.disabled = false;
+        btn.textContent = 'Upload PDF';
+      };
+      xhr.send(fd);
+    };
+    input.click();
+  }
+
+  function showClubStatus(type, msg) {
+    var el = document.getElementById('club-doc-status');
+    el.className = 'upload-status ' + type;
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(function () { el.style.display = 'none'; }, 4000);
+  }
+
+  // ══════════════════════════════════════
+  // MEETING MINUTES ARCHIVE
+  // ══════════════════════════════════════
+
+  var MINUTES_PUBLIC_ID = 'nmgc-docs/minutes';
+  var MINUTES_URL = 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/' + MINUTES_PUBLIC_ID + '.json';
+
+  // Default entries seeded from old WordPress links
+  var MINUTES_DEFAULTS = [
+    { id:'min-1', date:'2025-03-19', title:'Meeting Minutes \u2014 March 19, 2025',     year:'2025', url:'https://nemadjimensclub.com/wp-content/uploads/2025/04/Nemadji-Mens-Club-meeting-minutes-3-19-2025.pdf' },
+    { id:'min-2', date:'2025-02-25', title:'Meeting Agenda \u2014 February 25, 2025',    year:'2025', url:'https://nemadjimensclub.com/wp-content/uploads/2025/04/Nemadji-Mens-Club-Agenda-2.25.2025-Revised-.pdf' },
+    { id:'min-3', date:'2024-03-20', title:'Annual Spring Meeting \u2014 March 20, 2024',year:'2024', url:'https://nemadjimensclub.com/wp-content/uploads/2025/03/Nemadji-Mens-Club-meeting-minutes-3-20-2024.pdf' },
+    { id:'min-4', date:'2024-02-21', title:'Meeting Minutes \u2014 February 21, 2024',   year:'2024', url:'https://nemadjimensclub.com/wp-content/uploads/2025/03/Nemadji-Mens-Club-meeting-minutes-2.21.2024.pdf' },
+    { id:'min-5', date:'2023-04-07', title:'Annual Spring Meeting \u2014 April 7, 2023', year:'2023', url:'https://nemadjimensclub.com/wp-content/uploads/2024/02/Agenda-Annual-Spring-Meeting-2023-Minutes.pdf' },
+    { id:'min-6', date:'2023-11-01', title:'Meeting Minutes \u2014 November 1, 2023',    year:'2023', url:'https://nemadjimensclub.com/wp-content/uploads/2024/02/Nemadji-Mens-Club-Meeting-11-1-23-meeting-minutes.pdf' }
+  ];
+
+  var _minutes = null;
+
+  function loadMinutesList() {
+    var list = document.getElementById('minutes-list');
+    if (!list) return;
+    fetch(MINUTES_URL + '?v=' + Date.now())
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
+      .then(function (data) {
+        _minutes = (data && data.minutes && data.minutes.length) ? data.minutes : JSON.parse(JSON.stringify(MINUTES_DEFAULTS));
+        renderMinutesList();
+      });
+  }
+
+  function renderMinutesList() {
+    var list = document.getElementById('minutes-list');
+    if (!_minutes || !_minutes.length) {
+      list.innerHTML = '<span style="color:#bbb;">No entries yet.</span>';
+      return;
+    }
+    var sorted = _minutes.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+    list.innerHTML = sorted.map(function (m) {
+      return '<div style="background:#f8f8f8;border:1.5px solid var(--border);border-radius:6px;padding:0.5rem 0.75rem;margin-bottom:0.4rem;display:flex;align-items:center;gap:0.5rem;">' +
+        '<div style="flex:1;">' +
+          '<div style="font-weight:700;font-size:0.85rem;">' + escHtml(m.title) + '</div>' +
+          '<div style="font-size:0.72rem;color:#999;">' + escHtml(m.year) + ' &nbsp;·&nbsp; ' + escHtml(m.date) + '</div>' +
+        '</div>' +
+        '<button onclick="deleteMinutesEntry(\'' + m.id + '\')" style="background:none;border:none;font-size:0.72rem;color:#c0392b;font-weight:600;cursor:pointer;padding:0 0.4rem;">Delete</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  function saveMinutesJson(onSuccess, onError) {
+    var json = JSON.stringify({ minutes: _minutes });
+    var blob = new Blob([json], { type: 'application/json' });
+    var file = new File([blob], 'minutes.json', { type: 'application/json' });
+    var fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    fd.append('public_id', MINUTES_PUBLIC_ID);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        try { var res = JSON.parse(xhr.responseText); if (res.version) localStorage.setItem('nmgc_minutes_ver', res.version); } catch(e) {}
+        onSuccess && onSuccess();
+      } else { onError && onError(xhr.responseText); }
+    };
+    xhr.onerror = function () { onError && onError('Network error'); };
+    xhr.send(fd);
+  }
+
+  function showMinutesStatus(type, msg) {
+    var el = document.getElementById('minutes-status');
+    el.className = 'upload-status ' + type;
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(function () { el.style.display = 'none'; }, 4000);
+  }
+
+  function deleteMinutesEntry(id) {
+    if (!confirm('Delete this entry from the archive?')) return;
+    _minutes = _minutes.filter(function (m) { return m.id !== id; });
+    renderMinutesList();
+    saveMinutesJson(function () { showMinutesStatus('success', '\u2713 Entry deleted.'); },
+                    function (e) { showMinutesStatus('error', 'Error: ' + e); });
+  }
+
+  document.getElementById('minutes-upload-btn').addEventListener('click', function () {
+    var title = document.getElementById('minutes-title').value.trim();
+    var year  = document.getElementById('minutes-year').value.trim();
+    var date  = document.getElementById('minutes-date').value;
+    if (!title) { showMinutesStatus('error', 'Please enter a title.'); return; }
+    if (!date)  { showMinutesStatus('error', 'Please select a date.'); return; }
+    if (!year)  year = date.slice(0, 4);
+
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,application/pdf';
+    input.onchange = function () {
+      var file = input.files[0];
+      if (!file) return;
+      var btn = document.getElementById('minutes-upload-btn');
+      btn.disabled = true;
+      btn.textContent = 'Uploading…';
+
+      var pdfPublicId = 'nmgc-docs/club-minutes-' + date;
+      var renamed = new File([file], 'club-minutes-' + date + '.pdf', { type: 'application/pdf' });
+      var fd = new FormData();
+      fd.append('file', renamed);
+      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      fd.append('public_id', pdfPublicId);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          var res = JSON.parse(xhr.responseText);
+          var ver = res.version ? '/v' + res.version + '/' : '/';
+          var url = 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload' + ver + pdfPublicId + '.pdf';
+          var entry = { id: 'min-' + Date.now(), date: date, title: title, year: year, url: url };
+          if (!_minutes) _minutes = [];
+          _minutes.push(entry);
+          renderMinutesList();
+          saveMinutesJson(function () {
+            showMinutesStatus('success', '\u2713 Entry added to archive.');
+            document.getElementById('minutes-title').value = '';
+            document.getElementById('minutes-year').value  = '';
+            document.getElementById('minutes-date').value  = '';
+            btn.disabled = false;
+            btn.textContent = 'Choose PDF & Add to Archive';
+          }, function (e) {
+            showMinutesStatus('error', 'PDF uploaded but could not save archive: ' + e);
+            btn.disabled = false;
+            btn.textContent = 'Choose PDF & Add to Archive';
+          });
+        } else {
+          showMinutesStatus('error', 'PDF upload failed.');
+          btn.disabled = false;
+          btn.textContent = 'Choose PDF & Add to Archive';
+        }
+      };
+      xhr.onerror = function () {
+        showMinutesStatus('error', 'Network error.');
+        btn.disabled = false;
+        btn.textContent = 'Choose PDF & Add to Archive';
+      };
+      xhr.send(fd);
+    };
+    input.click();
+  });
+
+
+  // Load minutes list and check club doc statuses when commissioner logs in
+  document.getElementById('gate-submit').addEventListener('click', function () {
+    setTimeout(function () {
+      loadMinutesList();
+      checkClubDocStatuses();
+    }, 300);
+  });
+
+</script>
+</body>
+</html>
