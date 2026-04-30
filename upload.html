@@ -404,8 +404,12 @@
               <div class="step-circle" id="circle-2">2</div>
               <div class="step-label">Division</div>
             </div>
-            <div class="step-node" id="node-3">
+            <div class="step-node" id="node-3" style="display:none;">
               <div class="step-circle" id="circle-3">3</div>
+              <div class="step-label">Conference</div>
+            </div>
+            <div class="step-node" id="node-4">
+              <div class="step-circle" id="circle-4">3</div>
               <div class="step-label">Document</div>
             </div>
           </div>
@@ -429,6 +433,12 @@
           <div class="step-panel" id="step-2">
             <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;" id="step-2-label">Which division?</p>
             <div class="option-grid" id="division-options"></div>
+          </div>
+
+          <!-- ── STEP 3 (Bushwhackers only): Conference ── -->
+          <div class="step-panel" id="step-conf">
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;" id="step-conf-label">Which conference?</p>
+            <div class="option-grid single-col" id="conference-options"></div>
           </div>
 
           <!-- ── STEP 3: Document type ── -->
@@ -641,7 +651,7 @@
   var CORRECT_PASSWORD         = 'nmgc2026';
 
   // ── Selections state ──
-  var sel = { league: null, leagueLabel: null, division: null, divisionLabel: null, doctype: null, doctypeLabel: null };
+  var sel = { league: null, leagueLabel: null, division: null, divisionLabel: null, conference: null, conferenceLabel: null, doctype: null, doctypeLabel: null };
 
   // ── Password gate ──
   function unlock() {
@@ -695,19 +705,37 @@
     ]
   };
 
+  var CONFERENCES = {
+    'bushwhackers-monday': [
+      { value: 'afc',   label: 'AFC' },
+      { value: 'nfc',   label: 'NFC' },
+      { value: '',      label: 'Both Conferences' }
+    ],
+    'bushwhackers-tuesday': [
+      { value: 'american', label: 'American' },
+      { value: 'national', label: 'National' },
+      { value: '',         label: 'Both Conferences' }
+    ]
+  };
+
   function selectLeague(btn) {
-    sel.league        = btn.dataset.value;
-    sel.leagueLabel   = btn.dataset.label;
-    sel.division      = null;
-    sel.divisionLabel = null;
-    sel.doctype       = null;
-    sel.doctypeLabel  = null;
+    sel.league          = btn.dataset.value;
+    sel.leagueLabel     = btn.dataset.label;
+    sel.division        = null;
+    sel.divisionLabel   = null;
+    sel.conference      = null;
+    sel.conferenceLabel = null;
+    sel.doctype         = null;
+    sel.doctypeLabel    = null;
+
+    var isBush = (sel.league === 'bushwhackers');
+    document.getElementById('node-3').style.display = isBush ? '' : 'none';
+    document.getElementById('circle-3').textContent = '3';
 
     setNodeState(1, 'done');
 
     var divisions = DIVISIONS[sel.league];
     if (divisions) {
-      // Populate division options dynamically
       var label = document.getElementById('step-2-label');
       label.textContent = 'Which ' + sel.leagueLabel + ' division?';
       var container = document.getElementById('division-options');
@@ -723,14 +751,15 @@
       });
 
       setNodeState(2, 'active');
-      setNodeState(3, 'idle');
-      document.getElementById('circle-3').textContent = '3';
+      if (isBush) { setNodeState(3, 'idle'); }
+      setNodeState(4, 'idle'); document.getElementById('circle-4').textContent = isBush ? '4' : '3';
       showStep('step-2');
     } else {
-      // No divisions — skip step 2
+      // No divisions — skip step 2 (and conference)
       setNodeState(2, 'done');
       document.getElementById('circle-2').textContent = '–';
-      setNodeState(3, 'active');
+      if (isBush) { setNodeState(3, 'done'); document.getElementById('circle-3').textContent = '–'; }
+      setNodeState(4, 'active'); document.getElementById('circle-4').textContent = isBush ? '4' : '3';
       showStep('step-3');
     }
     updateChips();
@@ -738,23 +767,66 @@
 
   // ── Step 2: Division ──
   function selectDivision(btn) {
-    sel.division      = btn.dataset.value;
-    sel.divisionLabel = btn.dataset.label;
-    sel.doctype       = null;
-    sel.doctypeLabel  = null;
+    sel.division        = btn.dataset.value;
+    sel.divisionLabel   = btn.dataset.label;
+    sel.conference      = null;
+    sel.conferenceLabel = null;
+    sel.doctype         = null;
+    sel.doctypeLabel    = null;
 
     setNodeState(2, 'done');
-    setNodeState(3, 'active');
+
+    if (sel.league === 'bushwhackers' && sel.division !== '') {
+      // Show conference step
+      var confKey = 'bushwhackers-' + sel.division;
+      var conferences = CONFERENCES[confKey];
+      var label = document.getElementById('step-conf-label');
+      label.textContent = 'Which ' + sel.divisionLabel + ' conference?';
+      var container = document.getElementById('conference-options');
+      container.innerHTML = '';
+      conferences.forEach(function(c) {
+        var b = document.createElement('button');
+        b.className = 'option-btn';
+        b.dataset.value = c.value;
+        b.dataset.label = c.label;
+        b.textContent   = c.label;
+        b.onclick = function() { selectConference(b); };
+        container.appendChild(b);
+      });
+      setNodeState(3, 'active');
+      setNodeState(4, 'idle'); document.getElementById('circle-4').textContent = '4';
+      showStep('step-conf');
+    } else if (sel.league === 'bushwhackers') {
+      // General (Both Divisions) — skip conference step
+      setNodeState(3, 'done'); document.getElementById('circle-3').textContent = '–';
+      setNodeState(4, 'active');
+      showStep('step-3');
+    } else {
+      setNodeState(4, 'active');
+      showStep('step-3');
+    }
+    updateChips();
+  }
+
+  // ── Step 3 (Bushwhackers only): Conference ──
+  function selectConference(btn) {
+    sel.conference      = btn.dataset.value;
+    sel.conferenceLabel = btn.dataset.label;
+    sel.doctype         = null;
+    sel.doctypeLabel    = null;
+
+    setNodeState(3, 'done');
+    setNodeState(4, 'active');
     showStep('step-3');
     updateChips();
   }
 
-  // ── Step 3: Document type ──
+  // ── Step 4 (or 3 for non-Bushwhackers): Document type ──
   function selectDoctype(btn) {
     sel.doctype      = btn.dataset.value;
     sel.doctypeLabel = btn.dataset.label;
 
-    setNodeState(3, 'done');
+    setNodeState(4, 'done');
     updateChips();
     buildFilename();
     showStep('step-upload');
@@ -772,9 +844,10 @@
     var summary = document.getElementById('selection-summary');
     summary.innerHTML = '';
     var chips = [];
-    if (sel.leagueLabel)   chips.push({ label: sel.leagueLabel,   step: 'step-1' });
-    if (sel.divisionLabel) chips.push({ label: sel.divisionLabel,  step: 'step-2' });
-    if (sel.doctypeLabel)  chips.push({ label: sel.doctypeLabel,   step: 'step-3' });
+    if (sel.leagueLabel)     chips.push({ label: sel.leagueLabel,     step: 'step-1' });
+    if (sel.divisionLabel)   chips.push({ label: sel.divisionLabel,   step: 'step-2' });
+    if (sel.conferenceLabel) chips.push({ label: sel.conferenceLabel, step: 'step-conf' });
+    if (sel.doctypeLabel)    chips.push({ label: sel.doctypeLabel,    step: 'step-3' });
 
     chips.forEach(function(c) {
       var chip = document.createElement('button');
@@ -787,19 +860,29 @@
   }
 
   function goBackTo(stepId) {
+    var isBush = (sel.league === 'bushwhackers');
     if (stepId === 'step-1') {
-      sel = { league: null, leagueLabel: null, division: null, divisionLabel: null, doctype: null, doctypeLabel: null };
+      sel = { league: null, leagueLabel: null, division: null, divisionLabel: null, conference: null, conferenceLabel: null, doctype: null, doctypeLabel: null };
       setNodeState(1, 'active');
       setNodeState(2, 'idle'); document.getElementById('circle-2').textContent = '2';
       setNodeState(3, 'idle'); document.getElementById('circle-3').textContent = '3';
+      document.getElementById('node-3').style.display = 'none';
+      setNodeState(4, 'idle'); document.getElementById('circle-4').textContent = '3';
     } else if (stepId === 'step-2') {
       sel.division = null; sel.divisionLabel = null;
+      sel.conference = null; sel.conferenceLabel = null;
       sel.doctype  = null; sel.doctypeLabel  = null;
       setNodeState(2, 'active');
-      setNodeState(3, 'idle'); document.getElementById('circle-3').textContent = '3';
+      if (isBush) { setNodeState(3, 'idle'); document.getElementById('circle-3').textContent = '3'; }
+      setNodeState(4, 'idle'); document.getElementById('circle-4').textContent = isBush ? '4' : '3';
+    } else if (stepId === 'step-conf') {
+      sel.conference = null; sel.conferenceLabel = null;
+      sel.doctype  = null; sel.doctypeLabel  = null;
+      setNodeState(3, 'active');
+      setNodeState(4, 'idle'); document.getElementById('circle-4').textContent = '4';
     } else if (stepId === 'step-3') {
       sel.doctype = null; sel.doctypeLabel = null;
-      setNodeState(3, 'active');
+      setNodeState(4, 'active'); document.getElementById('circle-4').textContent = isBush ? '4' : '3';
     }
     updateChips();
     showStep(stepId);
@@ -812,7 +895,8 @@
   // ── Filename ──
   function buildFilename() {
     var parts = [sel.league];
-    if (sel.division) parts.push(sel.division);
+    if (sel.division)   parts.push(sel.division);
+    if (sel.conference) parts.push(sel.conference);
     parts.push(sel.doctype);
     var name = parts.join('-') + '.pdf';
     document.getElementById('filename-display').textContent = name;
@@ -822,7 +906,8 @@
   function getFilename()  { return buildFilename(); }
   function getPublicId()  {
     var parts = [sel.league];
-    if (sel.division) parts.push(sel.division);
+    if (sel.division)   parts.push(sel.division);
+    if (sel.conference) parts.push(sel.conference);
     parts.push(sel.doctype);
     return 'nmgc-docs/' + parts.join('-');
   }
