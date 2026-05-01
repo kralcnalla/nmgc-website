@@ -996,6 +996,8 @@
     formData.append('file', renamedFile);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
     formData.append('public_id', publicId);
+    formData.append('overwrite', 'true');
+    formData.append('invalidate', 'true');
 
     var progressWrap = document.getElementById('progress-wrap');
     var progressBar  = document.getElementById('progress-bar');
@@ -1108,6 +1110,8 @@
       fd.append('file', renamed);
       fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
       fd.append('public_id', publicId);
+      fd.append('overwrite', 'true');
+      fd.append('invalidate', 'true');
       var xhr = new XMLHttpRequest();
       xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
       xhr.onload = function () {
@@ -1195,6 +1199,8 @@
     fd.append('file', file);
     fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
     fd.append('public_id', MINUTES_PUBLIC_ID);
+    fd.append('overwrite', 'true');
+    fd.append('invalidate', 'true');
     var xhr = new XMLHttpRequest();
     xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
     xhr.onload = function () {
@@ -1247,6 +1253,8 @@
       fd.append('file', renamed);
       fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
       fd.append('public_id', pdfPublicId);
+      fd.append('overwrite', 'true');
+      fd.append('invalidate', 'true');
 
       var xhr = new XMLHttpRequest();
       xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
