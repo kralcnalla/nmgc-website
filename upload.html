@@ -425,7 +425,8 @@
               <button class="option-btn" data-value="scratch" data-label="Scratch League" onclick="selectLeague(this)">Scratch League</button>
               <button class="option-btn" data-value="bestball" data-label="Best Ball" onclick="selectLeague(this)">Best Ball</button>
               <button class="option-btn" data-value="40over" data-label="40 &amp; Over" onclick="selectLeague(this)">40 &amp; Over</button>
-              <button class="option-btn" data-value="club" data-label="Club" onclick="selectLeague(this)">Club (general documents)</button>
+              <button class="option-btn" data-value="club"       data-label="Club"       onclick="selectLeague(this)">Club (general documents)</button>
+              <button class="option-btn" data-value="tournament" data-label="Tournament" onclick="selectLeague(this)">Tournament</button>
             </div>
           </div>
 
@@ -439,6 +440,17 @@
           <div class="step-panel" id="step-conf">
             <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;" id="step-conf-label">Which conference?</p>
             <div class="option-grid single-col" id="conference-options"></div>
+          </div>
+
+          <!-- ── STEP 3 (Tournaments): Document type ── -->
+          <div class="step-panel" id="step-3-tourn">
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;">What type of document is this?</p>
+            <div class="option-grid single-col">
+              <button class="option-btn" data-value="rules"    data-label="Tournament Rules"          onclick="selectDoctype(this)">Tournament Rules</button>
+              <button class="option-btn" data-value="results"  data-label="Results / Final Scores"    onclick="selectDoctype(this)">Results / Final Scores</button>
+              <button class="option-btn" data-value="pairings" data-label="Pairings / Starting Times" onclick="selectDoctype(this)">Pairings / Starting Times</button>
+              <button class="option-btn" data-value="payouts"  data-label="Payouts"                   onclick="selectDoctype(this)">Payouts</button>
+            </div>
           </div>
 
           <!-- ── STEP 3: Document type ── -->
@@ -702,6 +714,13 @@
       { value: 'gold',  label: 'Gold Division' },
       { value: 'green', label: 'Green Division' },
       { value: '',      label: 'General (Both Divisions)' }
+    ],
+    'tournament': [
+      { value: 'spring-scramble', label: 'Spring Scramble' },
+      { value: 'titos-classic',   label: "Tito's Classic" },
+      { value: 'red-white-blue',  label: 'Red-White-Blue' },
+      { value: 'championship',    label: "Men's Club Championship" },
+      { value: 'fall-scramble',   label: 'Fall Scramble' }
     ]
   };
 
@@ -737,7 +756,9 @@
     var divisions = DIVISIONS[sel.league];
     if (divisions) {
       var label = document.getElementById('step-2-label');
-      label.textContent = 'Which ' + sel.leagueLabel + ' division?';
+      label.textContent = sel.league === 'tournament'
+        ? 'Which tournament?'
+        : 'Which ' + sel.leagueLabel + ' division?';
       var container = document.getElementById('division-options');
       container.innerHTML = '';
       divisions.forEach(function(d) {
@@ -776,7 +797,10 @@
 
     setNodeState(2, 'done');
 
-    if (sel.league === 'bushwhackers' && sel.division !== '') {
+    if (sel.league === 'tournament') {
+      setNodeState(4, 'active');
+      showStep('step-3-tourn');
+    } else if (sel.league === 'bushwhackers' && sel.division !== '') {
       // Show conference step
       var confKey = 'bushwhackers-' + sel.division;
       var conferences = CONFERENCES[confKey];
@@ -883,6 +907,9 @@
     } else if (stepId === 'step-3') {
       sel.doctype = null; sel.doctypeLabel = null;
       setNodeState(4, 'active'); document.getElementById('circle-4').textContent = isBush ? '4' : '3';
+      updateChips();
+      showStep(sel.league === 'tournament' ? 'step-3-tourn' : 'step-3');
+      return;
     }
     updateChips();
     showStep(stepId);
@@ -894,10 +921,15 @@
 
   // ── Filename ──
   function buildFilename() {
-    var parts = [sel.league];
-    if (sel.division)   parts.push(sel.division);
-    if (sel.conference) parts.push(sel.conference);
-    parts.push(sel.doctype);
+    var parts = sel.league === 'tournament'
+      ? [sel.division, sel.doctype]
+      : (function() {
+          var p = [sel.league];
+          if (sel.division)   p.push(sel.division);
+          if (sel.conference) p.push(sel.conference);
+          p.push(sel.doctype);
+          return p;
+        })();
     var name = parts.join('-') + '.pdf';
     document.getElementById('filename-display').textContent = name;
     return name;
@@ -905,10 +937,15 @@
 
   function getFilename()  { return buildFilename(); }
   function getPublicId()  {
-    var parts = [sel.league];
-    if (sel.division)   parts.push(sel.division);
-    if (sel.conference) parts.push(sel.conference);
-    parts.push(sel.doctype);
+    var parts = sel.league === 'tournament'
+      ? [sel.division, sel.doctype]
+      : (function() {
+          var p = [sel.league];
+          if (sel.division)   p.push(sel.division);
+          if (sel.conference) p.push(sel.conference);
+          p.push(sel.doctype);
+          return p;
+        })();
     return 'nmgc-docs/' + parts.join('-');
   }
 
