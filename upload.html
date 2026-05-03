@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -986,19 +986,9 @@
   });
 
   // ── Upload ──
-  document.getElementById('upload-btn').addEventListener('click', function() {
+  document.getElementById('upload-btn').addEventListener('click', async function() {
     if (!selectedFile) return;
-    var filename = getFilename();
-    var publicId = getPublicId();
-
-    var renamedFile = new File([selectedFile], filename, { type: 'application/pdf' });
-    var formData = new FormData();
-    formData.append('file', renamedFile);
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('public_id', publicId);
-    formData.append('overwrite', 'true');
-    formData.append('invalidate', 'true');
-
+    var filename    = getFilename();
     var progressWrap = document.getElementById('progress-wrap');
     var progressBar  = document.getElementById('progress-bar');
     var statusEl     = document.getElementById('upload-status');
@@ -1010,51 +1000,51 @@
     btn.disabled               = true;
     btn.textContent            = 'Uploading…';
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
-
-    xhr.upload.addEventListener('progress', function(e) {
-      if (e.lengthComputable) progressBar.style.width = Math.round((e.loaded / e.total) * 100) + '%';
-    });
-
-    xhr.addEventListener('load', function() {
+    try {
+      progressBar.style.width = '40%';
+      var data = await uploadToGitHub(filename, selectedFile);
       progressBar.style.width = '100%';
       btn.textContent         = 'Upload Document';
-
-      if (xhr.status === 200) {
-        var res = JSON.parse(xhr.responseText);
-        statusEl.className   = 'upload-status success';
-        statusEl.innerHTML   = '&#10003; Uploaded as <strong>' + filename + '</strong>.<br><small style="font-weight:400;opacity:0.8;">URL: ' + res.secure_url + '</small>';
-        statusEl.style.display = 'block';
-        resetFileChoice();
-        btn.disabled = true;
-      } else {
-        var errMsg = xhr.status + ' error';
-        try {
-          var errRes = JSON.parse(xhr.responseText);
-          if (errRes.error && errRes.error.message) errMsg = errRes.error.message;
-        } catch(e) {}
-        statusEl.className   = 'upload-status error';
-        statusEl.textContent = 'Upload failed: ' + errMsg;
-        statusEl.style.display = 'block';
-        btn.disabled = false;
-      }
-    });
-
-    xhr.addEventListener('error', function() {
-      btn.textContent    = 'Upload Document';
-      btn.disabled       = false;
-      statusEl.className = 'upload-status error';
-      statusEl.textContent = 'Network error — check your connection and try again.';
-      statusEl.style.display = 'block';
-    });
-
-    xhr.send(formData);
+      statusEl.className      = 'upload-status success';
+      statusEl.innerHTML      = '&#10003; Uploaded as <strong>' + filename + '</strong>.<br>' +
+        '<small style="font-weight:400;opacity:0.8;">Live at: <a href="' + data.url + '" target="_blank">' + data.url + '</a></small>';
+      statusEl.style.display  = 'block';
+      resetFileChoice();
+      btn.disabled = true;
+    } catch (err) {
+      progressBar.style.width = '100%';
+      btn.textContent         = 'Upload Document';
+      btn.disabled            = false;
+      statusEl.className      = 'upload-status error';
+      statusEl.textContent    = 'Upload failed: ' + err.message;
+      statusEl.style.display  = 'block';
+    }
   });
 
   // ══════════════════════════════════════
   // SHARED HELPERS
   // ══════════════════════════════════════
+
+  function fileToBase64(file) {
+    return new Promise(function(resolve, reject) {
+      var reader = new FileReader();
+      reader.onload  = function() { resolve(reader.result.split(',')[1]); };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function uploadToGitHub(filename, file) {
+    var base64   = await fileToBase64(file);
+    var response = await fetch('/.netlify/functions/upload-pdf', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ filename: filename, content: base64, password: CORRECT_PASSWORD })
+    });
+    var data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Upload failed');
+    return data;
+  }
 
   function escHtml(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -1065,14 +1055,14 @@
   // ══════════════════════════════════════
 
   var CLUB_DOCS = [
-    { id: 'bylaws',               url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-bylaws.pdf' },
-    { id: 'budget',               url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-budget.pdf' },
-    { id: 'financial-report',     url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-financial-report.pdf' },
-    { id: 'meeting-minutes',      url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/club-meeting-minutes.pdf' },
-    { id: 'handicap-guide',       url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/handicap-guide.pdf' },
-    { id: 'handicap-peer-to-peer',url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/handicap-peer-to-peer.pdf' },
-    { id: 'course-local-rules',   url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/course-local-rules.pdf' },
-    { id: 'course-scorecard',     url: 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/nmgc-docs/course-scorecard.pdf' }
+    { id: 'bylaws',                url: '/pdfs/club-bylaws.pdf' },
+    { id: 'budget',                url: '/pdfs/club-budget.pdf' },
+    { id: 'financial-report',      url: '/pdfs/club-financial-report.pdf' },
+    { id: 'meeting-minutes',       url: '/pdfs/club-meeting-minutes.pdf' },
+    { id: 'handicap-guide',        url: '/pdfs/handicap-guide.pdf' },
+    { id: 'handicap-peer-to-peer', url: '/pdfs/handicap-peer-to-peer.pdf' },
+    { id: 'course-local-rules',    url: '/pdfs/course-local-rules.pdf' },
+    { id: 'course-scorecard',      url: '/pdfs/course-scorecard.pdf' }
   ];
 
   function setClubFileBadge(id, uploaded) {
@@ -1095,45 +1085,28 @@
     });
   }
 
-  function uploadClubDoc(id, label, publicId) {
+  function uploadClubDoc(id, label) {
     var input = document.createElement('input');
     input.type = 'file';
     input.accept = '.pdf,application/pdf';
-    input.onchange = function () {
+    input.onchange = async function () {
       var file = input.files[0];
       if (!file) return;
       var btn = document.getElementById('club-btn-' + id);
       btn.disabled = true;
-      btn.textContent = 'Uploading…';
-      var renamed = new File([file], id + '.pdf', { type: 'application/pdf' });
-      var fd = new FormData();
-      fd.append('file', renamed);
-      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-      fd.append('public_id', publicId);
-      fd.append('overwrite', 'true');
-      fd.append('invalidate', 'true');
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          showClubStatus('success', '\u2713 ' + label + ' uploaded.');
-          setClubFileBadge(id, true);
-        } else {
-          showClubStatus('error', 'Upload failed — try again.');
-        }
-        btn.disabled = false;
-        btn.textContent = 'Upload PDF';
-      };
-      xhr.onerror = function () {
-        showClubStatus('error', 'Network error.');
-        btn.disabled = false;
-        btn.textContent = 'Upload PDF';
-      };
-      xhr.send(fd);
+      btn.textContent = 'Uploading...';
+      try {
+        await uploadToGitHub(id + '.pdf', file);
+        showClubStatus('success', '✓ ' + label + ' uploaded.');
+        setClubFileBadge(id, true);
+      } catch (err) {
+        showClubStatus('error', 'Upload failed: ' + err.message);
+      }
+      btn.disabled = false;
+      btn.textContent = 'Upload PDF';
     };
     input.click();
   }
-
   function showClubStatus(type, msg) {
     var el = document.getElementById('club-doc-status');
     el.className = 'upload-status ' + type;
@@ -1240,57 +1213,38 @@
     var input = document.createElement('input');
     input.type = 'file';
     input.accept = '.pdf,application/pdf';
-    input.onchange = function () {
+    input.onchange = async function () {
       var file = input.files[0];
       if (!file) return;
       var btn = document.getElementById('minutes-upload-btn');
       btn.disabled = true;
       btn.textContent = 'Uploading…';
 
-      var pdfPublicId = 'nmgc-docs/club-minutes-' + date;
-      var renamed = new File([file], 'club-minutes-' + date + '.pdf', { type: 'application/pdf' });
-      var fd = new FormData();
-      fd.append('file', renamed);
-      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-      fd.append('public_id', pdfPublicId);
-      fd.append('overwrite', 'true');
-      fd.append('invalidate', 'true');
-
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          var res = JSON.parse(xhr.responseText);
-          var ver = res.version ? '/v' + res.version + '/' : '/';
-          var url = 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload' + ver + pdfPublicId + '.pdf';
-          var entry = { id: 'min-' + Date.now(), date: date, title: title, year: year, url: url };
-          if (!_minutes) _minutes = [];
-          _minutes.push(entry);
-          renderMinutesList();
-          saveMinutesJson(function () {
-            showMinutesStatus('success', '\u2713 Entry added to archive.');
-            document.getElementById('minutes-title').value = '';
-            document.getElementById('minutes-year').value  = '';
-            document.getElementById('minutes-date').value  = '';
-            btn.disabled = false;
-            btn.textContent = 'Choose PDF & Add to Archive';
-          }, function (e) {
-            showMinutesStatus('error', 'PDF uploaded but could not save archive: ' + e);
-            btn.disabled = false;
-            btn.textContent = 'Choose PDF & Add to Archive';
-          });
-        } else {
-          showMinutesStatus('error', 'PDF upload failed.');
+      var pdfFilename = 'club-minutes-' + date + '.pdf';
+      try {
+        var result = await uploadToGitHub(pdfFilename, file);
+        var url = result.url;
+        var entry = { id: 'min-' + Date.now(), date: date, title: title, year: year, url: url };
+        if (!_minutes) _minutes = [];
+        _minutes.push(entry);
+        renderMinutesList();
+        saveMinutesJson(function () {
+          showMinutesStatus('success', '✓ Entry added to archive.');
+          document.getElementById('minutes-title').value = '';
+          document.getElementById('minutes-year').value  = '';
+          document.getElementById('minutes-date').value  = '';
           btn.disabled = false;
           btn.textContent = 'Choose PDF & Add to Archive';
-        }
-      };
-      xhr.onerror = function () {
-        showMinutesStatus('error', 'Network error.');
+        }, function (e) {
+          showMinutesStatus('error', 'PDF uploaded but could not save archive: ' + e);
+          btn.disabled = false;
+          btn.textContent = 'Choose PDF & Add to Archive';
+        });
+      } catch (err) {
+        showMinutesStatus('error', 'PDF upload failed: ' + err.message);
         btn.disabled = false;
         btn.textContent = 'Choose PDF & Add to Archive';
-      };
-      xhr.send(fd);
+      }
     };
     input.click();
   });
