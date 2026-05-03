@@ -705,7 +705,7 @@
         html += `<tr class="player-row" data-idx="${idx}">
           <td class="team-cell" id="team-cell-${idx}">${teamLabel}</td>
           <td class="name-cell"><input type="text" placeholder="Player name" data-idx="${idx}" data-field="name" value="${p.name}"></td>
-          <td class="hcp-cell"><input type="number" min="0" max="36" step="0.1" inputmode="decimal" data-idx="${idx}" data-field="hcp" value="${p.hcp || ''}" placeholder="0.0"></td>`;
+          <td class="hcp-cell"><input type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" data-idx="${idx}" data-field="hcp" value="${p.hcp || ''}" placeholder="0.0"></td>`;
         for (let h = 0; h < 9; h++) {
           const s = p.holeStrokes[h];
           const cls = s === 1 ? 'score-cell stroke' : s >= 2 ? 'score-cell stroke-2' : 'score-cell';
@@ -747,7 +747,7 @@
       });
     });
     t.querySelectorAll('input[data-field="hcp"]').forEach(inp => {
-      inp.addEventListener('input', e => {
+      inp.addEventListener('change', e => {
         players[+e.target.dataset.idx].hcp = parseFloat(e.target.value) || 0;
         build();
       });
