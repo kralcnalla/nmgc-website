@@ -1,38 +1,27 @@
-// NMGC PDF Loader
-// Reads from /_leagues/{league}/{league}.md and updates all PDF links on the page
-
+// NMGC PDF availability checker
+// HEAD-checks every /pdfs/ link on the page.
+// Rows start disabled; each one is enabled as soon as its file is confirmed available.
 (function() {
-  var league = document.body.getAttribute('data-league');
-  if (!league) return;
+  var rows = document.querySelectorAll('a.pdf-row[href^="/pdfs/"]');
+  if (!rows.length) return;
 
-  var url = league === 'resources'
-    ? '/_resources/resources.md'
-    : '/_leagues/' + league + '/' + league + '.md';
+  rows.forEach(function(row) {
+    // Disable immediately and inject badge (idempotent — skips if already present)
+    row.classList.add('pdf-disabled');
+    if (!row.querySelector('.pdf-not-uploaded')) {
+      var badge = document.createElement('div');
+      badge.className = 'pdf-not-uploaded';
+      badge.textContent = 'Not yet uploaded';
+      var dl = row.querySelector('.pdf-dl');
+      if (dl) row.insertBefore(badge, dl);
+      else row.appendChild(badge);
+    }
 
-  fetch(url)
-    .then(function(r) { return r.text(); })
-    .then(function(text) {
-      var match = text.match(/^---\n([\s\S]*?)\n---/);
-      if (!match) return;
-
-      // Parse all key: "value" pairs from frontmatter
-      var fm = match[1];
-      var pairs = fm.match(/(\w+):\s*"([^"]*)"/g) || [];
-
-      pairs.forEach(function(pair) {
-        var m = pair.match(/(\w+):\s*"([^"]*)"/);
-        if (!m || !m[2]) return;
-
-        var key = m[1];
-        var val = m[2];
-
-        // Find the link with data-pdf="key" and update href
-        var el = document.querySelector('[data-pdf="' + key + '"]');
-        if (el && val) {
-          el.setAttribute('href', val);
-          el.classList.remove('pdf-disabled');
-        }
-      });
-    })
-    .catch(function() {});
+    // Enable the row as soon as the file is confirmed to exist
+    fetch(row.getAttribute('href'), { method: 'HEAD' })
+      .then(function(res) {
+        if (res.ok) row.classList.remove('pdf-disabled');
+      })
+      .catch(function() { /* leave disabled on network error */ });
+  });
 })();
