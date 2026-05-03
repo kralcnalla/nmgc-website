@@ -1041,8 +1041,10 @@
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ filename: filename, content: base64, password: CORRECT_PASSWORD })
     });
-    var data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'Upload failed');
+    var text = await response.text();
+    var data = {};
+    try { data = JSON.parse(text); } catch (e) { data = { error: 'HTTP ' + response.status + ' — ' + text.slice(0, 120) }; }
+    if (!response.ok) throw new Error(data.error || 'HTTP ' + response.status);
     return data;
   }
 
