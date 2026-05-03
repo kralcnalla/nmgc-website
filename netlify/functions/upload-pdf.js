@@ -11,9 +11,11 @@ exports.handler = async (event) => {
 
   let body;
   try { body = JSON.parse(event.body); }
-  catch { return respond(400, { error: 'Invalid request body' }); }
+  catch (e) { return respond(400, { error: 'Invalid request body' }); }
 
-  const { filename, content, password } = body;
+  const filename = body.filename;
+  const content  = body.content;
+  const password = body.password;
 
   const expectedPassword = process.env.UPLOAD_PASSWORD;
   if (expectedPassword && password !== expectedPassword) {
@@ -25,7 +27,7 @@ exports.handler = async (event) => {
   }
 
   // Prevent path traversal — letters, numbers, hyphens, underscores, dots only
-  if (!/^[a-zA-Z0-9_\-.]+$/.test(filename) || filename.startsWith('.')) {
+  if (!/^[a-zA-Z0-9_.][a-zA-Z0-9_.-]*$/.test(filename)) {
     return respond(400, { error: 'Invalid filename' });
   }
 
@@ -34,12 +36,12 @@ exports.handler = async (event) => {
     return respond(500, { error: 'GITHUB_TOKEN not configured on server' });
   }
 
-  const path = `pdfs/${filename}`;
+  const filePath = 'pdfs/' + filename;
 
   try {
-    const sha = await getFileSha(token, path);
-    await commitFile(token, path, content, sha, `Upload ${filename} via admin wizard`);
-    return respond(200, { url: `https://nemadjimensclub.com/pdfs/${filename}` });
+    const sha = await getFileSha(token, filePath);
+    await commitFile(token, filePath, content, sha, 'Upload ' + filename + ' via admin wizard');
+    return respond(200, { url: 'https://nemadjimensclub.com/pdfs/' + filename });
   } catch (err) {
     return respond(500, { error: err.message || 'Upload failed' });
   }
@@ -48,63 +50,62 @@ exports.handler = async (event) => {
 // ── GitHub API helpers ──────────────────────────────────────
 
 function githubRequest(token, method, apiPath, data) {
-  return new Promise((resolve, reject) => {
-    const bodyStr = data ? JSON.stringify(data) : null;
-    const req = https.request(
-      {
-        hostname: 'api.github.com',
-        path: apiPath,
-        method,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'User-Agent': 'nmgc-upload-function',
-          'Accept': 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-          ...(bodyStr ? {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(bodyStr)
-          } : {})
-        }
-      },
-      (res) => {
-        let raw = '';
-        res.on('data', chunk => { raw += chunk; });
-        res.on('end', () => {
-          try { resolve({ status: res.statusCode, body: raw ? JSON.parse(raw) : null }); }
-          catch { resolve({ status: res.statusCode, body: null }); }
-        });
+  return new Promise(function(resolve, reject) {
+    var bodyStr = data ? JSON.stringify(data) : null;
+    var options = {
+      hostname: 'api.github.com',
+      path: apiPath,
+      method: method,
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'User-Agent': 'nmgc-upload-function',
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
       }
-    );
+    };
+    if (bodyStr) {
+      options.headers['Content-Type']   = 'application/json';
+      options.headers['Content-Length'] = Buffer.byteLength(bodyStr);
+    }
+
+    var req = https.request(options, function(res) {
+      var raw = '';
+      res.on('data', function(chunk) { raw += chunk; });
+      res.on('end', function() {
+        var parsed = null;
+        try { parsed = raw ? JSON.parse(raw) : null; } catch (e) { parsed = null; }
+        resolve({ status: res.statusCode, body: parsed });
+      });
+    });
+
     req.on('error', reject);
     if (bodyStr) req.write(bodyStr);
     req.end();
   });
 }
 
-async function getFileSha(token, path) {
-  const res = await githubRequest(
-    token, 'GET',
-    `/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`
-  );
-  return res.status === 200 ? res.body.sha : null;
+function getFileSha(token, filePath) {
+  return githubRequest(token, 'GET', '/repos/' + OWNER + '/' + REPO + '/contents/' + filePath + '?ref=' + BRANCH)
+    .then(function(res) {
+      return res.status === 200 ? res.body.sha : null;
+    });
 }
 
-async function commitFile(token, path, content, sha, message) {
-  const data = { message, content, branch: BRANCH };
+function commitFile(token, filePath, content, sha, message) {
+  var data = { message: message, content: content, branch: BRANCH };
   if (sha) data.sha = sha;
-  const res = await githubRequest(
-    token, 'PUT',
-    `/repos/${OWNER}/${REPO}/contents/${path}`,
-    data
-  );
-  if (res.status !== 200 && res.status !== 201) {
-    throw new Error((res.body && res.body.message) || `GitHub API error ${res.status}`);
-  }
+  return githubRequest(token, 'PUT', '/repos/' + OWNER + '/' + REPO + '/contents/' + filePath, data)
+    .then(function(res) {
+      if (res.status !== 200 && res.status !== 201) {
+        var msg = (res.body && res.body.message) ? res.body.message : 'GitHub API error ' + res.status;
+        throw new Error(msg);
+      }
+    });
 }
 
 function respond(statusCode, body) {
   return {
-    statusCode,
+    statusCode: statusCode,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   };
