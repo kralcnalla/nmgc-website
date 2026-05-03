@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scoring Calculator | Bushwhackers League</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #1a4d2e;
+    --green-mid: #2d6a4f;
+    --green-light: #d8e8dc;
+    --cream: #f7f3ec;
+    --paper: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #555555;
+    --border: #b8b8b8;
+    --border-strong: #555555;
+    --stroke-mark: #fff8dc;
+    --stroke-border: #c79a0a;
+    --winner: #c8e0cd;
+    --par-bg: #f0ede5;
+    --hcp-bg: #ebe5d4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.4;
+    padding: 16px;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--paper);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+
+  header.page-head {
+    background: var(--green-dark);
+    color: var(--paper);
+    padding: 24px 20px;
+    text-align: center;
+  }
+
+  header.page-head h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  header.page-head p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  .controls {
+    padding: 16px 20px;
+    background: var(--green-light);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .control-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .control-row label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--green-dark);
+  }
+
+  select {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 10px 14px;
+    border: 2px solid var(--green-mid);
+    border-radius: 6px;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 44px;
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .reset-btn {
+    background: var(--paper);
+    color: var(--green-dark);
+    border: 2px solid var(--green-mid);
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 44px;
+    font-size: 0.95rem;
+  }
+
+  .reset-btn:hover { background: var(--green-light); }
+
+  .team-names-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .team-name-block {
+    background: var(--green-mid);
+    color: var(--paper);
+    padding: 14px 16px;
+    text-align: center;
+  }
+
+  .team-name-block label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+    margin-bottom: 4px;
+  }
+
+  .team-name-block input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed rgba(255,255,255,0.4);
+    color: var(--paper);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    padding: 4px 6px;
+    text-align: center;
+    width: 80%;
+    max-width: 240px;
+  }
+
+  .team-name-block input:focus {
+    outline: none;
+    border-bottom-color: rgba(255,255,255,0.9);
+    border-bottom-style: solid;
+  }
+
+  .team-name-block input::placeholder {
+    color: rgba(255,255,255,0.6);
+  }
+
+  .scorecard-wrap {
+    padding: 20px;
+    overflow-x: auto;
+  }
+
+  .scroll-hint {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--muted);
+    padding: 0 0 10px;
+    font-style: italic;
+  }
+
+  @media (min-width: 820px) {
+    .scroll-hint { display: none; }
+  }
+
+  table.scorecard {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    border: 2px solid var(--border-strong);
+  }
+
+  table.scorecard th,
+  table.scorecard td {
+    border: 1px solid var(--border);
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  col.col-name { width: 170px; }
+  col.col-hcp { width: 60px; }
+  col.col-hole { width: 50px; }
+  col.col-tot { width: 60px; }
+
+  .head-top th {
+    background: var(--green-dark);
+    color: var(--paper);
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    padding: 10px 6px;
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .info-row td,
+  .info-row th {
+    padding: 7px 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--green-dark);
+  }
+
+  .info-row.par td,
+  .info-row.par th { background: var(--par-bg); }
+
+  .info-row.hcp td,
+  .info-row.hcp th { background: var(--hcp-bg); }
+
+  .info-row .row-label {
+    text-align: left;
+    padding-left: 12px;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+  }
+
+  .match-band td {
+    background: var(--green-mid);
+    color: var(--paper);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 9px 12px;
+    text-align: left;
+    border: 1px solid var(--green-mid);
+  }
+
+  .match-band .match-status {
+    float: right;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 0.95;
+  }
+
+  .player-row td { background: var(--paper); height: 48px; }
+
+  .player-row td.team-cell {
+    text-align: left;
+    padding: 0 8px;
+    background: var(--par-bg);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    font-weight: 600;
+    width: 50px;
+    max-width: 50px;
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .player-row td.name-cell {
+    text-align: left;
+    padding: 0;
+    border-right: 2px solid var(--border-strong);
+  }
+
+  .player-row td.name-cell input {
+    width: 100%;
+    height: 100%;
+    min-height: 46px;
+    border: none;
+    padding: 4px 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: transparent;
+    font-weight: 500;
+  }
+
+  .player-row td.hcp-cell {
+    padding: 0;
+    border-right: 2px solid var(--border-strong);
+    background: #fafafa;
+  }
+
+  .player-row td.hcp-cell input {
+    width: 100%;
+    height: 100%;
+    min-height: 46px;
+    border: none;
+    text-align: center;
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: transparent;
+    font-weight: 600;
+    color: var(--green-dark);
+  }
+
+  .player-row td.score-cell { padding: 0; position: relative; }
+
+  .player-row td.score-cell input {
+    width: 100%;
+    height: 100%;
+    min-height: 46px;
+    border: none;
+    text-align: center;
+    font-family: inherit;
+    font-size: 1.05rem;
+    background: transparent;
+    font-weight: 500;
+  }
+
+  .player-row td.score-cell.stroke {
+    background: var(--stroke-mark);
+    box-shadow: inset 0 -3px 0 var(--stroke-border);
+  }
+
+  .player-row td.score-cell.stroke-2 {
+    background: var(--stroke-mark);
+    box-shadow: inset 0 -3px 0 var(--stroke-border), inset 0 -7px 0 var(--paper), inset 0 -10px 0 var(--stroke-border);
+  }
+
+  .player-row td.tot-cell {
+    background: var(--par-bg);
+    font-weight: 700;
+    color: var(--green-dark);
+    border-left: 2px solid var(--border-strong);
+    font-size: 1rem;
+  }
+
+  .points-row td {
+    background: var(--green-light);
+    font-weight: 700;
+    color: var(--green-dark);
+    height: 38px;
+    font-size: 0.95rem;
+  }
+
+  .points-row td.label {
+    text-align: left;
+    padding-left: 12px;
+    font-size: 0.85rem;
+    font-family: 'Playfair Display', serif;
+    border-right: 2px solid var(--border-strong);
+  }
+
+  .points-row td.win { background: var(--winner); }
+
+  .points-row td.tot-cell {
+    background: var(--green-mid);
+    color: var(--paper);
+    border-left: 2px solid var(--border-strong);
+  }
+
+  .match-spacer td {
+    background: var(--cream);
+    height: 14px;
+    border-left: none;
+    border-right: none;
+  }
+
+  .summary {
+    padding: 24px 20px;
+    background: var(--green-dark);
+    color: var(--paper);
+  }
+
+  .summary h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  .summary .subhead {
+    text-align: center;
+    font-size: 0.85rem;
+    opacity: 0.85;
+    margin-bottom: 16px;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .summary-team {
+    background: rgba(255,255,255,0.08);
+    padding: 16px;
+    border-radius: 6px;
+    text-align: center;
+  }
+
+  .summary-team h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    font-weight: 600;
+    word-wrap: break-word;
+  }
+
+  .summary-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 0.9rem;
+  }
+
+  .summary-line.indent {
+    padding-left: 12px;
+    font-size: 0.78rem;
+    opacity: 0.85;
+  }
+
+  .summary-divider {
+    border-top: 1px solid rgba(255,255,255,0.15);
+    margin: 6px 0 2px;
+  }
+
+  .summary-total {
+    border-top: 1px solid rgba(255,255,255,0.3);
+    margin-top: 8px;
+    padding-top: 8px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .legend {
+    padding: 14px 20px;
+    background: #fafafa;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 20px;
+    margin-bottom: 4px;
+  }
+
+  .legend-swatch {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    background: var(--stroke-mark);
+    box-shadow: inset 0 -3px 0 var(--stroke-border);
+    border-radius: 2px;
+  }
+
+  .legend-swatch-2 {
+    box-shadow: inset 0 -3px 0 var(--stroke-border), inset 0 -7px 0 var(--paper), inset 0 -10px 0 var(--stroke-border);
+  }
+
+  @media (max-width: 720px) {
+    body { padding: 8px; }
+    .controls, .summary { padding: 14px; }
+    .scorecard-wrap { padding: 12px 8px 8px; }
+    .summary-grid { grid-template-columns: 1fr; }
+    header.page-head h1 { font-size: 1.4rem; }
+    table.scorecard { font-size: 0.85rem; }
+    .player-row td.name-cell input { padding: 4px 8px; font-size: 0.88rem; }
+    .team-name-block input { font-size: 1rem; }
+    .player-row td.team-cell { width: 40px; font-size: 0.65rem; padding-left: 5px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="page-head">
+    <h1>Bushwhackers League</h1>
+    <p>Match Scoring Calculator</p>
+  </header>
+
+  <div class="controls">
+    <div class="control-row">
+      <label for="nine">Nine:</label>
+      <select id="nine">
+        <option value="north">North Nine</option>
+        <option value="south">South Nine</option>
+        <option value="east" selected>East Nine</option>
+        <option value="west">West Nine</option>
+      </select>
+      <button class="reset-btn" id="reset">Reset</button>
+    </div>
+  </div>
+
+  <div class="team-names-bar">
+    <div class="team-name-block">
+      <input type="text" id="team-name-1" value="Team 1" placeholder="Team 1">
+    </div>
+    <div class="team-name-block">
+      <input type="text" id="team-name-2" value="Team 2" placeholder="Team 2">
+    </div>
+  </div>
+
+  <div class="scorecard-wrap">
+    <p class="scroll-hint">Swipe to see all holes →</p>
+    <table class="scorecard" id="scorecard"></table>
+  </div>
+
+  <div class="summary">
+    <h2>Match Result</h2>
+    <p class="subhead">44 total points: 4 matches × (9 hole points + 2 medal points)</p>
+    <div class="summary-grid" id="summary-grid"></div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="legend-swatch"></span> Player receives 1 stroke on this hole</span>
+    <span class="legend-item"><span class="legend-swatch legend-swatch-2"></span> Player receives 2 strokes on this hole</span>
+  </div>
+</div>
+
+<script>
+  const NINES = {
+    north: { name: 'North', par: [4,5,3,4,3,4,4,3,5], hcp: [11,1,5,9,15,13,7,3,17] },
+    south: { name: 'South', par: [4,5,3,4,3,5,4,4,3], hcp: [16,2,14,6,18,4,8,10,12] },
+    east:  { name: 'East',  par: [4,5,3,4,3,4,5,4,4], hcp: [9,3,17,13,7,15,1,5,11] },
+    west:  { name: 'West',  par: [4,4,3,5,3,5,3,5,4], hcp: [10,6,2,14,8,18,4,16,12] }
+  };
+
+  const teams = {
+    1: { name: 'Team 1' },
+    2: { name: 'Team 2' }
+  };
+
+  // 8 players in 4 matches (1v1 each)
+  // Each match: one Team A player vs one Team B player
+  const players = [
+    { match: 0, team: 1, name: 'Player 1', hcp: 0, scores: Array(9).fill(null) },
+    { match: 0, team: 2, name: 'Player 2', hcp: 0, scores: Array(9).fill(null) },
+    { match: 1, team: 1, name: 'Player 3', hcp: 0, scores: Array(9).fill(null) },
+    { match: 1, team: 2, name: 'Player 4', hcp: 0, scores: Array(9).fill(null) },
+    { match: 2, team: 1, name: 'Player 5', hcp: 0, scores: Array(9).fill(null) },
+    { match: 2, team: 2, name: 'Player 6', hcp: 0, scores: Array(9).fill(null) },
+    { match: 3, team: 1, name: 'Player 7', hcp: 0, scores: Array(9).fill(null) },
+    { match: 3, team: 2, name: 'Player 8', hcp: 0, scores: Array(9).fill(null) }
+  ];
+
+  let currentNine = 'east';
+
+  function strokesPerHoleForPlayer(strokesReceived, nine) {
+    const cap = Math.min(strokesReceived, 18);
+    const holes = Array(9).fill(0);
+    const order = [...Array(9).keys()].sort((a, b) => nine.hcp[a] - nine.hcp[b]);
+    let remaining = cap;
+    for (let i = 0; i < 9 && remaining > 0; i++) {
+      holes[order[i]] = 1;
+      remaining--;
+    }
+    for (let i = 0; i < 9 && remaining > 0; i++) {
+      if (nine.par[order[i]] === 3) continue;
+      holes[order[i]] = 2;
+      remaining--;
+    }
+    let pass = 3;
+    while (remaining > 0 && pass < 10) {
+      for (let i = 0; i < 9 && remaining > 0; i++) {
+        if (nine.par[order[i]] === 3) continue;
+        holes[order[i]]++;
+        remaining--;
+      }
+      pass++;
+    }
+    return holes;
+  }
+
+  function build() {
+    const nine = NINES[currentNine];
+
+    // Each 1v1 match: lower hcp gets 0 strokes, higher gets the difference
+    [0, 1, 2, 3].forEach(matchIdx => {
+      const mp = players.filter(p => p.match === matchIdx);
+      const lowHcp = Math.min(...mp.map(p => Math.min(p.hcp, 18)));
+      mp.forEach(p => {
+        p.strokesReceived = Math.max(0, Math.min(p.hcp, 18) - lowHcp);
+        p.holeStrokes = strokesPerHoleForPlayer(p.strokesReceived, nine);
+      });
+    });
+
+    const t = document.getElementById('scorecard');
+    let html = '';
+
+    html += `<colgroup>
+      <col style="width:50px">
+      <col class="col-name">
+      <col class="col-hcp">
+      ${Array.from({length:9},()=>`<col class="col-hole">`).join('')}
+      <col class="col-tot">
+    </colgroup>`;
+
+    html += `<thead>
+      <tr class="head-top">
+        <th></th>
+        <th>Player</th>
+        <th>Hcp</th>
+        ${Array.from({length:9},(_,i)=>`<th>${i+1}</th>`).join('')}
+        <th>Tot</th>
+      </tr>
+      <tr class="info-row par">
+        <th class="row-label" colspan="3">Par</th>
+        ${nine.par.map(p=>`<td>${p}</td>`).join('')}
+        <td>${nine.par.reduce((a,b)=>a+b,0)}</td>
+      </tr>
+      <tr class="info-row hcp">
+        <th class="row-label" colspan="3">Handicap</th>
+        ${nine.hcp.map(h=>`<td>${h}</td>`).join('')}
+        <td></td>
+      </tr>
+    </thead>`;
+
+    html += '<tbody>';
+
+    [0, 1, 2, 3].forEach(matchIdx => {
+      if (matchIdx > 0) {
+        html += `<tr class="match-spacer"><td colspan="13"></td></tr>`;
+      }
+
+      html += `<tr class="match-band">
+        <td colspan="13">Match ${matchIdx + 1} <span class="match-status" id="match-status-${matchIdx}">— vs —</span></td>
+      </tr>`;
+
+      players.forEach((p, idx) => {
+        if (p.match !== matchIdx) return;
+        const teamLabel = teams[p.team].name || `Team ${p.team}`;
+        html += `<tr class="player-row" data-idx="${idx}">
+          <td class="team-cell" id="team-cell-${idx}">${teamLabel}</td>
+          <td class="name-cell"><input type="text" placeholder="Player name" data-idx="${idx}" data-field="name" value="${p.name}"></td>
+          <td class="hcp-cell"><input type="number" min="0" max="36" inputmode="numeric" data-idx="${idx}" data-field="hcp" value="${p.hcp || ''}" placeholder="0"></td>`;
+        for (let h = 0; h < 9; h++) {
+          const s = p.holeStrokes[h];
+          const cls = s === 1 ? 'score-cell stroke' : s >= 2 ? 'score-cell stroke-2' : 'score-cell';
+          const val = p.scores[h] != null ? p.scores[h] : '';
+          html += `<td class="${cls}"><input type="number" min="1" max="20" inputmode="numeric" data-idx="${idx}" data-hole="${h}" value="${val}"></td>`;
+        }
+        const gross = p.scores.reduce((s,v) => s + (v || 0), 0);
+        const grossDisplay = p.scores.some(v => v != null) ? gross : '—';
+        html += `<td class="tot-cell" id="gross-${idx}">${grossDisplay}</td></tr>`;
+      });
+
+      // Two points rows per match — one per team
+      html += `<tr class="points-row" id="points-row-m${matchIdx}-t1">
+        <td class="label" colspan="3"><span id="pts-label-m${matchIdx}-t1">Team A points</span></td>
+        ${Array.from({length:9},()=>`<td>—</td>`).join('')}
+        <td class="tot-cell">0</td>
+      </tr>`;
+      html += `<tr class="points-row" id="points-row-m${matchIdx}-t2">
+        <td class="label" colspan="3"><span id="pts-label-m${matchIdx}-t2">Team B points</span></td>
+        ${Array.from({length:9},()=>`<td>—</td>`).join('')}
+        <td class="tot-cell">0</td>
+      </tr>`;
+    });
+
+    html += '</tbody>';
+    t.innerHTML = html;
+
+    // Build summary panels (4 match rows for each team)
+    buildSummaryPanels();
+
+    // Wire up
+    t.querySelectorAll('input[data-field="name"]').forEach(inp => {
+      inp.addEventListener('focus', e => {
+        if (/^Player [1-8]$/.test(e.target.value)) e.target.select();
+      });
+      inp.addEventListener('input', e => {
+        players[+e.target.dataset.idx].name = e.target.value;
+        renderMatchStatus();
+      });
+    });
+    t.querySelectorAll('input[data-field="hcp"]').forEach(inp => {
+      inp.addEventListener('input', e => {
+        players[+e.target.dataset.idx].hcp = parseInt(e.target.value) || 0;
+        build();
+      });
+    });
+    t.querySelectorAll('input[data-hole]').forEach(inp => {
+      inp.addEventListener('input', e => {
+        const idx = +e.target.dataset.idx;
+        const hole = +e.target.dataset.hole;
+        const v = e.target.value;
+        players[idx].scores[hole] = v === '' ? null : parseInt(v);
+        renderScores();
+      });
+    });
+
+    renderScores();
+    renderMatchStatus();
+    renderSummaryHeaders();
+  }
+
+  function buildSummaryPanels() {
+    const grid = document.getElementById('summary-grid');
+    let html = '';
+    [1, 2].forEach(teamNum => {
+      html += `<div class="summary-team">
+        <h3 id="sum-name-${teamNum}">Team ${teamNum}</h3>`;
+      [0, 1, 2, 3].forEach(matchIdx => {
+        html += `<div class="summary-line"><span>Match ${matchIdx + 1}:</span><span id="sum-m${matchIdx}-t${teamNum}">0</span></div>
+        <div class="summary-line indent"><span>Holes / Medal:</span><span><span id="sum-m${matchIdx}-holes-t${teamNum}">0</span> / <span id="sum-m${matchIdx}-medal-t${teamNum}">0</span></span></div>`;
+        if (matchIdx < 3) html += `<div class="summary-divider"></div>`;
+      });
+      html += `<div class="summary-line summary-total"><span>Total:</span><span id="sum-total-${teamNum}">0</span></div>
+      </div>`;
+    });
+    grid.innerHTML = html;
+  }
+
+  function renderSummaryHeaders() {
+    document.getElementById('sum-name-1').textContent = teams[1].name || 'Team 1';
+    document.getElementById('sum-name-2').textContent = teams[2].name || 'Team 2';
+  }
+
+  function renderMatchStatus() {
+    [0, 1, 2, 3].forEach(matchIdx => {
+      const mp = players.filter(p => p.match === matchIdx);
+      const t1 = mp.find(p => p.team === 1);
+      const t2 = mp.find(p => p.team === 2);
+      const status = document.getElementById(`match-status-${matchIdx}`);
+      if (status) status.textContent = `${t1.name} vs ${t2.name}`;
+    });
+
+    [0, 1, 2, 3].forEach(matchIdx => {
+      const l1 = document.getElementById(`pts-label-m${matchIdx}-t1`);
+      const l2 = document.getElementById(`pts-label-m${matchIdx}-t2`);
+      if (l1) l1.textContent = `${teams[1].name} points`;
+      if (l2) l2.textContent = `${teams[2].name} points`;
+    });
+  }
+
+  function renderScores() {
+    players.forEach((p, idx) => {
+      const cell = document.getElementById(`gross-${idx}`);
+      if (cell) {
+        const gross = p.scores.reduce((s,v)=>s+(v||0),0);
+        cell.textContent = p.scores.some(v => v != null) ? gross : '—';
+      }
+    });
+
+    let team1Total = 0, team2Total = 0;
+
+    [0, 1, 2, 3].forEach(matchIdx => {
+      const t1Player = players.find(p => p.match === matchIdx && p.team === 1);
+      const t2Player = players.find(p => p.match === matchIdx && p.team === 2);
+
+      // Hole-by-hole
+      let t1HolePts = 0, t2HolePts = 0;
+      const perHole = [];
+      for (let h = 0; h < 9; h++) {
+        if (t1Player.scores[h] == null || t2Player.scores[h] == null) {
+          perHole.push({ t1: null, t2: null });
+          continue;
+        }
+        const t1Net = t1Player.scores[h] - t1Player.holeStrokes[h];
+        const t2Net = t2Player.scores[h] - t2Player.holeStrokes[h];
+        if (t1Net < t2Net) { t1HolePts += 1; perHole.push({ t1: 1, t2: 0 }); }
+        else if (t2Net < t1Net) { t2HolePts += 1; perHole.push({ t1: 0, t2: 1 }); }
+        else { t1HolePts += 0.5; t2HolePts += 0.5; perHole.push({ t1: 0.5, t2: 0.5 }); }
+      }
+
+      [1, 2].forEach(teamNum => {
+        const row = document.getElementById(`points-row-m${matchIdx}-t${teamNum}`);
+        const cells = row.querySelectorAll('td');
+        let teamTotal = 0;
+        let allEmpty = true;
+        for (let h = 0; h < 9; h++) {
+          const td = cells[1 + h];
+          const pt = perHole[h];
+          const val = pt.t1 == null ? null : (teamNum === 1 ? pt.t1 : pt.t2);
+          if (val === null) {
+            td.textContent = '—';
+            td.classList.remove('win');
+          } else {
+            allEmpty = false;
+            td.textContent = val === 0.5 ? '½' : val;
+            td.classList.toggle('win', val === 1);
+            teamTotal += val;
+          }
+        }
+        cells[cells.length - 1].textContent = allEmpty ? '0' : teamTotal;
+      });
+
+      // Medal — head-to-head between the two players
+      let t1MedalPts = 0, t2MedalPts = 0;
+      const t1Complete = t1Player.scores.every(s => s != null);
+      const t2Complete = t2Player.scores.every(s => s != null);
+      if (t1Complete && t2Complete) {
+        const t1Medal = t1Player.scores.reduce((a,b)=>a+b,0) - Math.min(t1Player.hcp, 18);
+        const t2Medal = t2Player.scores.reduce((a,b)=>a+b,0) - Math.min(t2Player.hcp, 18);
+        if (t1Medal < t2Medal) t1MedalPts = 2;
+        else if (t2Medal < t1Medal) t2MedalPts = 2;
+        else { t1MedalPts = 1; t2MedalPts = 1; }
+      }
+
+      // Update summary lines
+      document.getElementById(`sum-m${matchIdx}-holes-t1`).textContent = t1HolePts;
+      document.getElementById(`sum-m${matchIdx}-medal-t1`).textContent = t1MedalPts;
+      document.getElementById(`sum-m${matchIdx}-t1`).textContent = t1HolePts + t1MedalPts;
+      document.getElementById(`sum-m${matchIdx}-holes-t2`).textContent = t2HolePts;
+      document.getElementById(`sum-m${matchIdx}-medal-t2`).textContent = t2MedalPts;
+      document.getElementById(`sum-m${matchIdx}-t2`).textContent = t2HolePts + t2MedalPts;
+
+      team1Total += t1HolePts + t1MedalPts;
+      team2Total += t2HolePts + t2MedalPts;
+    });
+
+    document.getElementById('sum-total-1').textContent = team1Total;
+    document.getElementById('sum-total-2').textContent = team2Total;
+    renderSummaryHeaders();
+  }
+
+  ['team-name-1', 'team-name-2'].forEach((id, i) => {
+    const inp = document.getElementById(id);
+    inp.addEventListener('focus', e => {
+      if (/^Team [12]$/.test(e.target.value)) e.target.select();
+    });
+    inp.addEventListener('input', e => {
+      teams[i + 1].name = e.target.value;
+      // Update team labels in player rows
+      players.forEach((p, idx) => {
+        if (p.team === i + 1) {
+          const cell = document.getElementById(`team-cell-${idx}`);
+          if (cell) cell.textContent = teams[p.team].name || `Team ${p.team}`;
+        }
+      });
+      renderSummaryHeaders();
+      renderMatchStatus();
+    });
+  });
+
+  document.getElementById('nine').addEventListener('change', e => {
+    currentNine = e.target.value;
+    build();
+  });
+
+  document.getElementById('reset').addEventListener('click', () => {
+    if (!confirm('Reset all entries?')) return;
+    teams[1].name = 'Team 1';
+    teams[2].name = 'Team 2';
+    document.getElementById('team-name-1').value = 'Team 1';
+    document.getElementById('team-name-2').value = 'Team 2';
+    const defaults = ['Player 1','Player 2','Player 3','Player 4','Player 5','Player 6','Player 7','Player 8'];
+    players.forEach((p, i) => { p.name = defaults[i]; p.hcp = 0; p.scores = Array(9).fill(null); });
+    build();
+  });
+
+  build();
+</script>
+</body>
+</html>
