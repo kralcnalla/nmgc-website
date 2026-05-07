@@ -1,23 +1,8 @@
 // NMGC — Resources page
-// 1. HEAD-checks each pdf-row URL and removes pdf-disabled when the file exists.
-// 2. Fetches minutes.json from Cloudinary and renders the Meeting Minutes Archive.
+// Fetches minutes.json from S3 and renders the Meeting Minutes Archive.
 
 (function () {
-  var CLOUD       = 'dy0kdvq96';
-  var MINUTES_URL = 'https://res.cloudinary.com/' + CLOUD + '/raw/upload/nmgc-docs/minutes.json?v=' + Date.now();
-
-  // ── PDF availability checks ──────────────────────────────────────────────
-  // For each pdf-row that has a real Cloudinary URL, HEAD-request it.
-  // If the file exists (2xx), remove pdf-disabled so the row becomes clickable.
-  document.querySelectorAll('a.pdf-row.pdf-disabled[href]').forEach(function (el) {
-    var url = el.getAttribute('href');
-    if (!url || url === '#') return;
-    fetch(url, { method: 'HEAD' })
-      .then(function (r) {
-        if (r.ok) el.classList.remove('pdf-disabled');
-      })
-      .catch(function () { /* leave disabled */ });
-  });
+  var MINUTES_URL = 'https://nmgc-pdfs.s3.us-east-2.amazonaws.com/minutes.json?v=' + Date.now();
 
   // ── Meeting Minutes Archive ──────────────────────────────────────────────
   function esc(s) {
@@ -43,7 +28,7 @@
           '<div class="pdf-name">' + esc(m.title) + '</div>' +
           '<div class="pdf-sub">' + esc(m.year) + '</div>' +
         '</div>' +
-        '<div class="pdf-dl">\u2193</div>' +
+        '<div class="pdf-dl">↓</div>' +
       '</a>';
     }).join('');
   }

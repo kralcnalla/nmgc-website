@@ -293,6 +293,7 @@
     }
     .start-over-btn:hover { color: #333; }
   </style>
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1691.0.min.js"></script>
 </head>
 <body>
 
@@ -658,9 +659,17 @@
 
 <script src="js/nav.js"></script>
 <script>
-  var CLOUDINARY_CLOUD_NAME    = 'dy0kdvq96';
-  var CLOUDINARY_UPLOAD_PRESET = 'ufee4v7p';
-  var CORRECT_PASSWORD         = 'nmgc2026';
+  var S3_BUCKET        = 'nmgc-pdfs';
+  var S3_REGION        = 'us-east-2';
+  var S3_BASE_URL      = 'https://nmgc-pdfs.s3.us-east-2.amazonaws.com/';
+  var CORRECT_PASSWORD = 'nmgc2026';
+
+  AWS.config.update({
+    accessKeyId:     'AKIA573C7WOVE6AIWAZW',
+    secretAccessKey: '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',
+    region:          S3_REGION
+  });
+  var s3 = new AWS.S3();
 
   // ── Selections state ──
   var sel = { league: null, leagueLabel: null, division: null, divisionLabel: null, conference: null, conferenceLabel: null, doctype: null, doctypeLabel: null };
@@ -1002,7 +1011,7 @@
 
     try {
       progressBar.style.width = '40%';
-      var data = await uploadToGitHub(filename, selectedFile);
+      var data = await uploadToS3(filename, selectedFile);
       progressBar.style.width = '100%';
       btn.textContent         = 'Upload Document';
       statusEl.className      = 'upload-status success';
@@ -1025,27 +1034,19 @@
   // SHARED HELPERS
   // ══════════════════════════════════════
 
-  function fileToBase64(file) {
+  function uploadToS3(filename, file) {
     return new Promise(function(resolve, reject) {
-      var reader = new FileReader();
-      reader.onload  = function() { resolve(reader.result.split(',')[1]); };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+      s3.upload({
+        Bucket:      S3_BUCKET,
+        Key:         filename,
+        Body:        file,
+        ContentType: file.type || 'application/pdf',
+        ACL:         'public-read'
+      }, function(err) {
+        if (err) { reject(err); return; }
+        resolve({ url: S3_BASE_URL + filename });
+      });
     });
-  }
-
-  async function uploadToGitHub(filename, file) {
-    var base64   = await fileToBase64(file);
-    var response = await fetch('/.netlify/functions/upload-pdf', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ filename: filename, content: base64, password: CORRECT_PASSWORD })
-    });
-    var text = await response.text();
-    var data = {};
-    try { data = JSON.parse(text); } catch (e) { data = { error: 'HTTP ' + response.status + ' — ' + text.slice(0, 120) }; }
-    if (!response.ok) throw new Error(data.error || 'HTTP ' + response.status);
-    return data;
   }
 
   function escHtml(s) {
@@ -1057,14 +1058,14 @@
   // ══════════════════════════════════════
 
   var CLUB_DOCS = [
-    { id: 'bylaws',                url: '/pdfs/club-bylaws.pdf' },
-    { id: 'budget',                url: '/pdfs/club-budget.pdf' },
-    { id: 'financial-report',      url: '/pdfs/club-financial-report.pdf' },
-    { id: 'meeting-minutes',       url: '/pdfs/club-meeting-minutes.pdf' },
-    { id: 'handicap-guide',        url: '/pdfs/handicap-guide.pdf' },
-    { id: 'handicap-peer-to-peer', url: '/pdfs/handicap-peer-to-peer.pdf' },
-    { id: 'course-local-rules',    url: '/pdfs/course-local-rules.pdf' },
-    { id: 'course-scorecard',      url: '/pdfs/course-scorecard.pdf' }
+    { id: 'bylaws',                key: 'club-bylaws.pdf',           url: S3_BASE_URL + 'club-bylaws.pdf' },
+    { id: 'budget',                key: 'club-budget.pdf',           url: S3_BASE_URL + 'club-budget.pdf' },
+    { id: 'financial-report',      key: 'club-financial-report.pdf', url: S3_BASE_URL + 'club-financial-report.pdf' },
+    { id: 'meeting-minutes',       key: 'club-meeting-minutes.pdf',  url: S3_BASE_URL + 'club-meeting-minutes.pdf' },
+    { id: 'handicap-guide',        key: 'handicap-guide.pdf',        url: S3_BASE_URL + 'handicap-guide.pdf' },
+    { id: 'handicap-peer-to-peer', key: 'handicap-peer-to-peer.pdf', url: S3_BASE_URL + 'handicap-peer-to-peer.pdf' },
+    { id: 'course-local-rules',    key: 'course-local-rules.pdf',    url: S3_BASE_URL + 'course-local-rules.pdf' },
+    { id: 'course-scorecard',      key: 'course-scorecard.pdf',      url: S3_BASE_URL + 'course-scorecard.pdf' }
   ];
 
   function setClubFileBadge(id, uploaded) {
@@ -1088,6 +1089,7 @@
   }
 
   function uploadClubDoc(id, label) {
+    var doc   = CLUB_DOCS.find(function(d) { return d.id === id; });
     var input = document.createElement('input');
     input.type = 'file';
     input.accept = '.pdf,application/pdf';
@@ -1098,7 +1100,7 @@
       btn.disabled = true;
       btn.textContent = 'Uploading...';
       try {
-        await uploadToGitHub(id + '.pdf', file);
+        await uploadToS3(doc.key, file);
         showClubStatus('success', '✓ ' + label + ' uploaded.');
         setClubFileBadge(id, true);
       } catch (err) {
@@ -1121,8 +1123,7 @@
   // MEETING MINUTES ARCHIVE
   // ══════════════════════════════════════
 
-  var MINUTES_PUBLIC_ID = 'nmgc-docs/minutes';
-  var MINUTES_URL = 'https://res.cloudinary.com/' + CLOUDINARY_CLOUD_NAME + '/raw/upload/' + MINUTES_PUBLIC_ID + '.json';
+  var MINUTES_URL = S3_BASE_URL + 'minutes.json';
 
   // Default entries seeded from old WordPress links
   var MINUTES_DEFAULTS = [
@@ -1167,25 +1168,17 @@
   }
 
   function saveMinutesJson(onSuccess, onError) {
-    var json = JSON.stringify({ minutes: _minutes });
-    var blob = new Blob([json], { type: 'application/json' });
-    var file = new File([blob], 'minutes.json', { type: 'application/json' });
-    var fd = new FormData();
-    fd.append('file', file);
-    fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    fd.append('public_id', MINUTES_PUBLIC_ID);
-    fd.append('overwrite', 'true');
-    fd.append('invalidate', 'true');
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/raw/upload');
-    xhr.onload = function () {
-      if (xhr.status === 200) {
-        try { var res = JSON.parse(xhr.responseText); if (res.version) localStorage.setItem('nmgc_minutes_ver', res.version); } catch(e) {}
-        onSuccess && onSuccess();
-      } else { onError && onError(xhr.responseText); }
-    };
-    xhr.onerror = function () { onError && onError('Network error'); };
-    xhr.send(fd);
+    var blob = new Blob([JSON.stringify({ minutes: _minutes })], { type: 'application/json' });
+    s3.upload({
+      Bucket:      S3_BUCKET,
+      Key:         'minutes.json',
+      Body:        blob,
+      ContentType: 'application/json',
+      ACL:         'public-read'
+    }, function(err) {
+      if (err) { onError && onError(err.message); }
+      else     { onSuccess && onSuccess(); }
+    });
   }
 
   function showMinutesStatus(type, msg) {
@@ -1224,7 +1217,7 @@
 
       var pdfFilename = 'club-minutes-' + date + '.pdf';
       try {
-        var result = await uploadToGitHub(pdfFilename, file);
+        var result = await uploadToS3(pdfFilename, file);
         var url = result.url;
         var entry = { id: 'min-' + Date.now(), date: date, title: title, year: year, url: url };
         if (!_minutes) _minutes = [];
