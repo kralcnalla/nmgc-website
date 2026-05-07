@@ -1,6 +1,33 @@
-// NMGC PDF row links — all shown as active, navigate directly on click.
 (function() {
-  document.querySelectorAll('a.pdf-row').forEach(function(row) {
-    row.classList.remove('pdf-disabled');
+  document.querySelectorAll('a.pdf-row[href]').forEach(function(row) {
+    var href = row.getAttribute('href');
+    if (!href || href === '#') return;
+
+    row.addEventListener('click', function(e) {
+      e.preventDefault();
+      fetch(href)
+        .then(function(res) {
+          if (res.ok) {
+            window.open(href, '_blank', 'noopener');
+          } else {
+            showMsg(row);
+          }
+        })
+        .catch(function() { showMsg(row); });
+    });
   });
+
+  function showMsg(row) {
+    if (row.querySelector('.pdf-unavailable')) return;
+    var msg = document.createElement('div');
+    msg.className = 'pdf-unavailable';
+    msg.textContent = 'This document hasn’t been uploaded yet. Check back soon.';
+    Object.assign(msg.style, {
+      fontSize: '0.78rem', fontWeight: '600', color: '#8b4513',
+      background: '#fff3e0', border: '1px solid #f0a060',
+      borderRadius: '5px', padding: '0.4rem 0.7rem', marginTop: '0.4rem'
+    });
+    row.insertAdjacentElement('afterend', msg);
+    setTimeout(function() { msg.remove(); }, 4000);
+  }
 })();
