@@ -4,6 +4,14 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
 
+// Force nav repaint on bfcache restore (iOS back from PDF)
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted) {
+    var nav = document.querySelector('.site-nav');
+    if (nav) { nav.style.display = 'none'; requestAnimationFrame(function() { nav.style.display = ''; }); }
+  }
+});
+
 document.addEventListener('DOMContentLoaded', function () {
   // Floating back button — always present, history.back() is a no-op if nothing to go back to
   var back = document.createElement('button');
