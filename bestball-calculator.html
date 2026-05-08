@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
 <style>
   :root {
     --green-dark: #1a4d2e;
@@ -483,6 +484,60 @@
 </style>
 </head>
 <body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="/index.html" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a>
+    <ul class="nav-links">
+      <li><a href="/index.html">Home</a></li>
+      <li class="has-dropdown">
+        <a href="#" class="active">Leagues</a>
+        <div class="dropdown-menu">
+          <a href="/leagues/bushwhackers.html">Bushwhackers (Mon/Tue)</a>
+          <a href="/leagues/scratch.html">Scratch League (Tue)</a>
+          <a href="/leagues/bestball.html" style="color:#7e9d10;">Best Ball (Wed)</a>
+          <a href="/leagues/40over.html">40 &amp; Over (Thu)</a>
+        </div>
+      </li>
+      <li class="has-dropdown">
+        <a href="#">Tournaments</a>
+        <div class="dropdown-menu">
+          <a href="/tournaments/spring-scramble.html">Spring Scramble</a>
+          <a href="/tournaments/titos-classic.html">Tito's Classic</a>
+          <a href="/tournaments/red-white-blue.html">Red-White-Blue</a>
+          <a href="/tournaments/championship.html">Men's Club Championship</a>
+          <a href="/tournaments/fall-scramble.html">Fall Scramble</a>
+        </div>
+      </li>
+      <li><a href="/resources.html">Resources</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/contact.html">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-nav">
+    <div class="mobile-nav-group">
+      <div class="mobile-nav-label">Leagues</div>
+      <a href="/leagues/bushwhackers.html">Bushwhackers (Mon/Tue)</a>
+      <a href="/leagues/scratch.html">Scratch League (Tue)</a>
+      <a href="/leagues/bestball.html">Best Ball (Wed)</a>
+      <a href="/leagues/40over.html">40 &amp; Over (Thu)</a>
+    </div>
+    <div class="mobile-nav-group">
+      <div class="mobile-nav-label">Tournaments</div>
+      <a href="/tournaments/spring-scramble.html">Spring Scramble</a>
+      <a href="/tournaments/titos-classic.html">Tito's Classic</a>
+      <a href="/tournaments/red-white-blue.html">Red-White-Blue</a>
+      <a href="/tournaments/championship.html">Men's Club Championship</a>
+      <a href="/tournaments/fall-scramble.html">Fall Scramble</a>
+    </div>
+    <hr class="mobile-nav-divider">
+    <a href="/resources.html">Resources</a>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
+  </div>
+</nav>
+
 <div class="container">
   <header class="page-head">
     <h1>Wednesday 2-Man Best Ball</h1>
@@ -804,5 +859,6 @@
   function showHcpInfo() { document.getElementById('hcp-modal').classList.add('open'); }
   function closeHcpInfo() { document.getElementById('hcp-modal').classList.remove('open'); }
 </script>
+<script src="js/nav.js"></script>
 </body>
 </html>
