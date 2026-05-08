@@ -484,6 +484,8 @@ img { max-width: 100%; display: block; }
   transition: background 0.15s, border-color 0.15s;
   min-height: 64px;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(0,0,0,0.05);
 }
 
 .pdf-row:last-child { margin-bottom: 0; }
