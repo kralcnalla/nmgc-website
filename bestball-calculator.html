@@ -426,20 +426,26 @@
   }
 
   .info-btn {
-    background: none;
-    border: 1px solid rgba(255,255,255,0.6);
-    color: rgba(255,255,255,0.9);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.15);
+    border: 1.5px solid rgba(255,255,255,0.5);
+    color: white;
     border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 0.7rem;
+    width: 22px;
+    height: 22px;
+    font-size: 0.78rem;
+    font-weight: 700;
     cursor: pointer;
     padding: 0;
-    line-height: 1;
+    margin-left: 4px;
     vertical-align: middle;
     font-family: inherit;
+    touch-action: manipulation;
+    line-height: 1;
   }
-  .info-btn:hover { background: rgba(255,255,255,0.2); }
+  .info-btn:hover { background: rgba(255,255,255,0.3); }
 
   .info-modal-overlay {
     display: none;
@@ -591,7 +597,7 @@
     <!-- Step 1: Division -->
     <div class="mf-step active" id="mf-s1">
       <div class="mf-label">Week</div>
-      <select id="mf-week-sel" onchange="mfChangeWeek(this.value)" style="width:100%;padding:10px 12px;font-family:inherit;font-size:0.95rem;border:2px solid var(--border);border-radius:8px;background:white;margin-bottom:14px;"></select>
+      <select id="mf-week-sel" onchange="mfChangeWeek(this.value)" style="width:100%;padding:14px 12px;font-family:inherit;font-size:1.05rem;font-weight:600;border:2px solid var(--border);border-radius:8px;background:white;margin-bottom:14px;min-height:52px;"></select>
       <div class="mf-label">Which division are you in?</div>
       <div class="mf-btn-row">
         <button class="mf-btn" onclick="mfSelectDiv(1)">Division 1</button>
@@ -638,9 +644,9 @@
     </div>
   </div>
 
-  <div id="hcp-reminder" style="display:none;margin:0;padding:10px 20px;background:#fff8e0;border-bottom:2px solid #e8cc60;font-size:0.82rem;font-weight:600;color:#7a5800;display:flex;align-items:center;gap:8px;">
-    <span>💡 Don't forget to enter each player's Course Handicap in the <strong>Hcp</strong> column — tap <strong>ⓘ</strong> for help.</span>
-    <button onclick="document.getElementById('hcp-reminder').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#7a5800;margin-left:auto;padding:0;line-height:1;">✕</button>
+  <div id="hcp-reminder" style="display:none;margin:0;padding:10px 20px;background:#fff8e0;border-bottom:2px solid #e8cc60;font-size:0.82rem;font-weight:600;color:#7a5800;align-items:center;gap:8px;">
+    <span>💡 Don't forget to enter each player's Course Handicap in the <strong>Hcp</strong> column — tap <strong>What's this?</strong> for help.</span>
+    <button onclick="document.getElementById('hcp-reminder').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#7a5800;margin-left:auto;padding:0;line-height:1;touch-action:manipulation;">✕</button>
   </div>
 
   <div class="scorecard-wrap">
@@ -753,6 +759,7 @@ const MF_SCHEDULE = [
 // ── Match Finder state ──────────────────────────────────────
 var mfDiv = null, mfWeek = null, mfMatch = null;
 var mfSelected = { 1: [], 2: [] }; // selected player names per team slot
+var mfMatchStarted = false;
 
 function mfFindWeek() {
   // Next upcoming scheduled date (or today)
@@ -913,6 +920,7 @@ function mfStart() {
 
   currentNine = divData.course;
   document.getElementById('nine').value = currentNine;
+  mfMatchStarted = true;
   document.getElementById('mf-overlay').style.display = 'none';
   build();
   saveState(true);
@@ -996,7 +1004,7 @@ mfInit();
     html += `<thead>
       <tr class="head-top">
         <th>Player</th>
-        <th>Hcp <button class="info-btn" onclick="showHcpInfo()">ⓘ</button></th>
+        <th>Hcp <button class="info-btn" onclick="showHcpInfo()">?</button></th>
         ${Array.from({length:9},(_,i)=>`<th>${i+1}</th>`).join('')}
         <th>Tot</th>
       </tr>
@@ -1088,7 +1096,11 @@ mfInit();
     renderScores();
     renderSummaryNames();
     const anyHcp = players.some(p => p.hcp > 0);
-    document.getElementById('hcp-reminder').style.display = anyHcp ? 'none' : 'flex';
+    if (mfMatchStarted) {
+      const rem = document.getElementById('hcp-reminder');
+      rem.style.display = anyHcp ? 'none' : 'flex';
+      if (!anyHcp) rem.style.alignItems = 'center';
+    }
   }
 
   function renderScores() {
@@ -1237,6 +1249,7 @@ mfInit();
   });
 
   if (loadState()) {
+    mfMatchStarted = true;
     document.getElementById('mf-overlay').style.display = 'none';
   }
   build();
