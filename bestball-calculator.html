@@ -186,7 +186,13 @@
     left: 0;
     z-index: 2;
     box-shadow: 2px 0 0 var(--border-strong);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 230px;
+    transition: max-width 0.25s ease;
   }
+  table.scorecard.scrolled .info-row .row-label { max-width: 140px; }
 
   .team-band td {
     background: var(--green-mid);
