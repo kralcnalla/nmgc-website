@@ -610,7 +610,7 @@
     <div class="mf-step" id="mf-s2">
       <div class="mf-label">Select your tee time</div>
       <div id="mf-match-list"></div>
-      <button class="mf-back" onclick="history.back()">← Back</button>
+      <button class="mf-back" onclick="mfShowStep(1)">← Back</button>
     </div>
 
     <!-- Step 3: Players -->
@@ -618,7 +618,7 @@
       <div class="mf-label">Confirm players</div>
       <div id="mf-players-list"></div>
       <button class="mf-btn primary" onclick="mfStart()">Start Scoring →</button>
-      <br><button class="mf-back" onclick="history.back()">← Back</button>
+      <br><button class="mf-back" onclick="mfShowStep(2)">← Back</button>
     </div>
 
   </div>
@@ -760,7 +760,6 @@ const MF_SCHEDULE = [
 var mfDiv = null, mfWeek = null, mfMatch = null;
 var mfSelected = { 1: [], 2: [] }; // selected player names per team slot
 var mfMatchStarted = false;
-var mfHistoryDepth = 0;
 
 function mfFindWeek() {
   // Next upcoming scheduled date (or today)
@@ -801,23 +800,11 @@ function mfChangeWeek(dateStr) {
   label.textContent = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
 }
 
-function mfShowStep(n, noPush) {
+function mfShowStep(n) {
   document.querySelectorAll('.mf-step').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById('mf-s' + n).classList.add('active');
-  if (!noPush) {
-    if (n === 1) { history.replaceState({ mfStep: 1 }, ''); }
-    else { history.pushState({ mfStep: n }, ''); mfHistoryDepth++; }
-  }
+  history.replaceState({ mfStep: n }, '');
 }
-
-window.addEventListener('popstate', function(e) {
-  var overlay = document.getElementById('mf-overlay');
-  if (overlay.style.display === 'none') return;
-  var step = (e.state && e.state.mfStep) ? e.state.mfStep : 1;
-  mfShowStep(step, true); // show without pushing
-  if (step <= 1) history.pushState({ mfStep: 1 }, ''); // prevent leaving finder via back
-  else mfHistoryDepth = Math.max(0, mfHistoryDepth - 1);
-});
 
 function mfSelectDiv(div) {
   mfDiv = div;
@@ -936,22 +923,14 @@ function mfStart() {
   document.getElementById('nine').value = currentNine;
   mfMatchStarted = true;
   document.getElementById('mf-overlay').style.display = 'none';
+  history.replaceState(null, '');
   build();
   saveState(true);
-  // Collapse finder history so iOS back = one swipe back to Best Ball
-  if (mfHistoryDepth > 0) {
-    var depth = mfHistoryDepth;
-    mfHistoryDepth = 0;
-    window.addEventListener('popstate', function() {
-      history.replaceState(null, '');
-    }, { once: true });
-    history.go(-depth);
-  }
 }
 
 function mfSkip() {
-  history.replaceState(null, '');
   document.getElementById('mf-overlay').style.display = 'none';
+  history.replaceState(null, '');
 }
 
 mfInit();
@@ -1264,6 +1243,8 @@ history.replaceState({ mfStep: 1 }, '');
     const defaults = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
     players.forEach((p, i) => { p.name = defaults[i]; p.hcp = 0; p.scores = Array(9).fill(null); });
     localStorage.removeItem(STORAGE_KEY);
+    mfMatchStarted = false;
+    mfSelected = { 1: [], 2: [] };
     build();
     document.getElementById('mf-overlay').style.display = 'flex';
     mfShowStep(1);
