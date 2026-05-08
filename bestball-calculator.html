@@ -882,7 +882,7 @@ function mfStart() {
   document.getElementById('nine').value = currentNine;
   document.getElementById('mf-overlay').style.display = 'none';
   build();
-  saveState();
+  saveState(true);
 }
 
 function mfSkip() {
@@ -1019,7 +1019,7 @@ mfInit();
       inp.addEventListener('input', e => {
         teams[+e.target.dataset.team].name = e.target.value;
         renderSummaryNames();
-        saveState();
+        saveState(true);
       });
     });
 
@@ -1030,7 +1030,7 @@ mfInit();
       inp.addEventListener('input', e => {
         players[+e.target.dataset.idx].name = e.target.value;
         renderSummaryNames();
-        saveState();
+        saveState(true);
       });
     });
     t.querySelectorAll('input[data-field="hcp"]').forEach(inp => {
@@ -1038,7 +1038,7 @@ mfInit();
         players[+e.target.dataset.idx].hcp = parseFloat(e.target.value) || 0;
         document.getElementById('hcp-reminder').style.display = 'none';
         build();
-        saveState();
+        saveState(true);
       });
     });
     t.querySelectorAll('input[data-hole]').forEach(inp => {
@@ -1048,7 +1048,7 @@ mfInit();
         const v = e.target.value;
         players[idx].scores[hole] = v === '' ? null : parseInt(v);
         renderScores();
-        saveState();
+        saveState(true);
       });
     });
 
@@ -1145,13 +1145,14 @@ mfInit();
   const STORAGE_KEY = 'nmgc_bestball';
   const EXPIRY_MS   = 8 * 60 * 60 * 1000;
 
-  function saveState() {
+  function saveState(matchStarted) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        ts:      Date.now(),
-        nine:    currentNine,
-        teams:   { 1: teams[1].name, 2: teams[2].name },
-        players: players.map(p => ({ name: p.name, hcp: p.hcp, scores: p.scores }))
+        ts:           Date.now(),
+        matchStarted: matchStarted === true,
+        nine:         currentNine,
+        teams:        { 1: teams[1].name, 2: teams[2].name },
+        players:      players.map(p => ({ name: p.name, hcp: p.hcp, scores: p.scores }))
       }));
     } catch(e) {}
   }
@@ -1162,6 +1163,7 @@ mfInit();
       if (!raw) return false;
       const data = JSON.parse(raw);
       if (Date.now() - data.ts > EXPIRY_MS) { localStorage.removeItem(STORAGE_KEY); return false; }
+      if (!data.matchStarted) return false;
       currentNine = data.nine;
       document.getElementById('nine').value = currentNine;
       teams[1].name = data.teams[1];
@@ -1175,13 +1177,13 @@ mfInit();
   document.getElementById('nine').addEventListener('change', e => {
     currentNine = e.target.value;
     build();
-    saveState();
+    saveState(true);
   });
 
   document.getElementById('clear-scores').addEventListener('click', () => {
     if (!confirm('Clear all scores?')) return;
     players.forEach(p => { p.scores = Array(9).fill(null); });
-    saveState();
+    saveState(true);
     build();
   });
 
