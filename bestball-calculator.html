@@ -938,6 +938,15 @@ function mfStart() {
   document.getElementById('mf-overlay').style.display = 'none';
   build();
   saveState(true);
+  // Collapse finder history so iOS back = one swipe back to Best Ball
+  if (mfHistoryDepth > 0) {
+    var depth = mfHistoryDepth;
+    mfHistoryDepth = 0;
+    window.addEventListener('popstate', function() {
+      history.replaceState(null, '');
+    }, { once: true });
+    history.go(-depth);
+  }
 }
 
 function mfSkip() {
