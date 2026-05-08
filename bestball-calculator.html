@@ -748,7 +748,6 @@ const MF_SCHEDULE = [
 // ── Match Finder state ──────────────────────────────────────
 var mfDiv = null, mfWeek = null, mfMatch = null;
 var mfSelected = { 1: [], 2: [] }; // selected player names per team slot
-var mfSubs = { 1: '', 2: '' };
 
 function mfFindWeek() {
   // Next upcoming scheduled date (or today)
@@ -821,7 +820,6 @@ function mfSelectMatch(m) {
   mfMatch = m;
   const teams = MF_TEAMS[mfDiv];
   mfSelected = { 1: [], 2: [] };
-  mfSubs = { 1: '', 2: '' };
   const container = document.getElementById('mf-players-list');
   container.innerHTML = [1, 2].map(function(slot) {
     const teamNum = slot === 1 ? m.a : m.b;
@@ -855,7 +853,38 @@ function mfToggle(btn, slot, name) {
 
 function mfAddSub(btn, slot) {
   const row = btn.parentElement;
-  row.innerHTML = '<input class="mf-sub-input" placeholder="Sub name" oninput="mfSubs[' + slot + ']=this.value">';
+  row.innerHTML =
+    '<div style="display:flex;gap:6px;padding:4px 0;">' +
+      '<input class="mf-sub-input" id="mf-sub-inp-' + slot + '" placeholder="Sub name" style="flex:1;" onkeydown="if(event.key===\'Enter\')mfConfirmSub(' + slot + ')">' +
+      '<button onclick="mfConfirmSub(' + slot + ')" style="background:var(--green-dark);color:white;border:none;border-radius:6px;padding:8px 12px;font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer;touch-action:manipulation;">Add</button>' +
+    '</div>';
+  document.getElementById('mf-sub-inp-' + slot).focus();
+}
+
+function mfConfirmSub(slot) {
+  const inp = document.getElementById('mf-sub-inp-' + slot);
+  const name = inp.value.trim();
+  if (!name) return;
+
+  // Add as a proper toggleable row
+  const section = inp.closest('.mf-player-section');
+  const subRow = document.createElement('div');
+  subRow.className = 'mf-player-row';
+  const isOn = mfSelected[slot].length < 2;
+  if (isOn) mfSelected[slot].push(name);
+  subRow.innerHTML =
+    '<button class="mf-toggle ' + (isOn ? 'on' : '') + '" onclick="mfToggle(this,' + slot + ',\'' + name.replace(/'/g,"\\'") + '\')">' + (isOn ? '✓' : '') + '</button>' +
+    '<span class="mf-player-name">' + name + ' <span class="mf-cap-badge">(sub)</span></span>';
+
+  // Replace the input row with the new player row + a fresh Add sub button
+  const inputRow = inp.closest('.mf-sub-row');
+  inputRow.replaceWith(subRow);
+
+  // Re-append the add sub button
+  const addRow = document.createElement('div');
+  addRow.className = 'mf-sub-row';
+  addRow.innerHTML = '<button class="mf-add-sub" onclick="mfAddSub(this,' + slot + ')">+ Add sub</button>';
+  section.appendChild(addRow);
 }
 
 function mfStart() {
@@ -867,7 +896,6 @@ function mfStart() {
     const tNum = teamNums[slot];
     const tName = divTeams[tNum].name;
     const selPlayers = mfSelected[slot].slice(0, 2);
-    if (mfSubs[slot]) selPlayers.push(mfSubs[slot]);
     const p1 = selPlayers[0] || 'Player ' + (slot * 2 - 1);
     const p2 = selPlayers[1] || 'Player ' + (slot * 2);
     teams[slot].name = tName;
