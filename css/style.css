@@ -40,6 +40,7 @@ img { max-width: 100%; display: block; }
   top: 0;
   z-index: 1000;
   border-bottom: 3px solid var(--green);
+  padding-top: env(safe-area-inset-top);
 }
 
 .nav-inner {
