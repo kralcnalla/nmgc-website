@@ -894,11 +894,12 @@
   function uploadToS3(filename, file) {
     return new Promise(function(resolve, reject) {
       s3.upload({
-        Bucket:      S3_BUCKET,
-        Key:         filename,
-        Body:        file,
-        ContentType: file.type || 'application/pdf',
-        ACL:         'public-read'
+        Bucket:             S3_BUCKET,
+        Key:                filename,
+        Body:               file,
+        ContentType:        'application/pdf',
+        ContentDisposition: 'inline',
+        ACL:                'public-read'
       }, function(err) {
         if (err) { reject(err); return; }
         resolve({ url: S3_BASE_URL + filename });
