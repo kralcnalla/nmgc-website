@@ -610,7 +610,7 @@
     <div class="mf-step" id="mf-s2">
       <div class="mf-label">Select your tee time</div>
       <div id="mf-match-list"></div>
-      <button class="mf-back" onclick="mfShowStep(1)">← Back</button>
+      <button class="mf-back" onclick="history.back()">← Back</button>
     </div>
 
     <!-- Step 3: Players -->
@@ -618,7 +618,7 @@
       <div class="mf-label">Confirm players</div>
       <div id="mf-players-list"></div>
       <button class="mf-btn primary" onclick="mfStart()">Start Scoring →</button>
-      <br><button class="mf-back" onclick="mfShowStep(2)">← Back</button>
+      <br><button class="mf-back" onclick="history.back()">← Back</button>
     </div>
 
   </div>
@@ -760,6 +760,7 @@ const MF_SCHEDULE = [
 var mfDiv = null, mfWeek = null, mfMatch = null;
 var mfSelected = { 1: [], 2: [] }; // selected player names per team slot
 var mfMatchStarted = false;
+var mfHistoryDepth = 0;
 
 function mfFindWeek() {
   // Next upcoming scheduled date (or today)
@@ -800,10 +801,23 @@ function mfChangeWeek(dateStr) {
   label.textContent = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
 }
 
-function mfShowStep(n) {
+function mfShowStep(n, noPush) {
   document.querySelectorAll('.mf-step').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById('mf-s' + n).classList.add('active');
+  if (!noPush) {
+    if (n === 1) { history.replaceState({ mfStep: 1 }, ''); }
+    else { history.pushState({ mfStep: n }, ''); mfHistoryDepth++; }
+  }
 }
+
+window.addEventListener('popstate', function(e) {
+  var overlay = document.getElementById('mf-overlay');
+  if (overlay.style.display === 'none') return;
+  var step = (e.state && e.state.mfStep) ? e.state.mfStep : 1;
+  mfShowStep(step, true); // show without pushing
+  if (step <= 1) history.pushState({ mfStep: 1 }, ''); // prevent leaving finder via back
+  else mfHistoryDepth = Math.max(0, mfHistoryDepth - 1);
+});
 
 function mfSelectDiv(div) {
   mfDiv = div;
@@ -927,10 +941,12 @@ function mfStart() {
 }
 
 function mfSkip() {
+  history.replaceState(null, '');
   document.getElementById('mf-overlay').style.display = 'none';
 }
 
 mfInit();
+history.replaceState({ mfStep: 1 }, '');
 // ──────────────────────────────────────────────────────────
 </script>
 
