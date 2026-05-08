@@ -5,15 +5,13 @@ if ('serviceWorker' in navigator) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  // Floating back button — shows when there's history to go back to
-  if (window.history.length > 1) {
-    var back = document.createElement('button');
-    back.className = 'back-btn visible';
-    back.setAttribute('aria-label', 'Go back');
-    back.textContent = '←';
-    back.onclick = function() { history.back(); };
-    document.body.appendChild(back);
-  }
+  // Floating back button — always present, history.back() is a no-op if nothing to go back to
+  var back = document.createElement('button');
+  back.className = 'back-btn visible';
+  back.setAttribute('aria-label', 'Go back');
+  back.textContent = '←';
+  back.onclick = function() { history.back(); };
+  document.body.appendChild(back);
 
   var toggle = document.querySelector('.nav-toggle');
   var mobileNav = document.querySelector('.mobile-nav');
