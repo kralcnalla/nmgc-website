@@ -266,35 +266,16 @@
 
   .player-row td.score-cell { padding: 0; position: relative; }
 
-  .stepper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .player-row td.score-cell input {
+    width: 100%;
     height: 100%;
     min-height: 46px;
-    gap: 1px;
-  }
-  .step-btn {
-    background: none;
     border: none;
-    cursor: pointer;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--green-dark);
-    padding: 4px 5px;
-    line-height: 1;
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
-    border-radius: 3px;
-    min-width: 22px;
-  }
-  .step-btn:hover { background: var(--green-light); }
-  .step-val {
-    font-size: 1.05rem;
-    font-weight: 500;
-    min-width: 16px;
     text-align: center;
+    font-family: inherit;
+    font-size: 1.05rem;
+    background: transparent;
+    font-weight: 500;
   }
 
   .player-row td.score-cell.stroke {
@@ -654,9 +635,8 @@
         for (let h = 0; h < 9; h++) {
           const s = p.holeStrokes[h];
           const cls = s === 1 ? 'score-cell stroke' : s >= 2 ? 'score-cell stroke-2' : 'score-cell';
-          const val = p.scores[h];
-          const display = val != null ? val : '—';
-          html += `<td class="${cls}"><div class="stepper" data-idx="${idx}" data-hole="${h}"><button class="step-btn step-dn" type="button">−</button><span class="step-val">${display}</span><button class="step-btn step-up" type="button">+</button></div></td>`;
+          const val = p.scores[h] != null ? p.scores[h] : '';
+          html += `<td class="${cls}"><input type="number" min="1" max="20" inputmode="numeric" data-idx="${idx}" data-hole="${h}" value="${val}"></td>`;
         }
         const gross = p.scores.reduce((s,v) => s + (v || 0), 0);
         const grossDisplay = p.scores.some(v => v != null) ? gross : '—';
@@ -698,23 +678,14 @@
         build();
       });
     });
-    t.addEventListener('click', e => {
-      const btn = e.target.closest('.step-btn');
-      if (!btn) return;
-      const stepper = btn.closest('.stepper');
-      const idx = +stepper.dataset.idx;
-      const hole = +stepper.dataset.hole;
-      const cur = players[idx].scores[hole];
-      const nine = NINES[currentNine];
-      if (btn.classList.contains('step-up')) {
-        players[idx].scores[hole] = cur == null ? nine.par[hole] : Math.min(cur + 1, 20);
-      } else {
-        if (cur == null) return;
-        players[idx].scores[hole] = cur <= 1 ? null : cur - 1;
-      }
-      const newVal = players[idx].scores[hole];
-      stepper.querySelector('.step-val').textContent = newVal != null ? newVal : '—';
-      renderScores();
+    t.querySelectorAll('input[data-hole]').forEach(inp => {
+      inp.addEventListener('input', e => {
+        const idx = +e.target.dataset.idx;
+        const hole = +e.target.dataset.hole;
+        const v = e.target.value;
+        players[idx].scores[hole] = v === '' ? null : parseInt(v);
+        renderScores();
+      });
     });
 
     renderScores();
