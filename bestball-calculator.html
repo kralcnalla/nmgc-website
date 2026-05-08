@@ -145,7 +145,8 @@
     vertical-align: middle;
   }
 
-  col.col-name { width: 170px; }
+  col.col-name { width: 170px; transition: width 0.25s ease; }
+  table.scorecard.scrolled col.col-name { width: 80px; }
   col.col-hcp { width: 60px; }
   col.col-hole { width: 50px; }
   col.col-tot { width: 60px; }
@@ -852,6 +853,10 @@
     const defaults = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
     players.forEach((p, i) => { p.name = defaults[i]; p.hcp = 0; p.scores = Array(9).fill(null); });
     build();
+  });
+
+  document.querySelector('.scorecard-wrap').addEventListener('scroll', function() {
+    document.getElementById('scorecard').classList.toggle('scrolled', this.scrollLeft > 10);
   });
 
   build();
