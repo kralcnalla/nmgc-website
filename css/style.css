@@ -937,7 +937,7 @@ img { max-width: 100%; display: block; }
   right: 1.5rem;
   width: 44px;
   height: 44px;
-  background: var(--green);
+  background: rgba(45,106,79,0.45);
   color: white;
   border: none;
   border-radius: 50%;
@@ -946,12 +946,15 @@ img { max-width: 100%; display: block; }
   display: none;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   z-index: 999;
   transition: background 0.15s;
+  touch-action: manipulation;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
-.back-to-top:hover { background: var(--green-dark); }
+.back-to-top:hover { background: rgba(45,106,79,0.75); }
 .back-to-top.visible { display: flex; }
 
 .back-btn {
