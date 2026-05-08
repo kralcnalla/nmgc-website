@@ -41,14 +41,16 @@
     line-height: 1.4;
     padding: 16px;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
   .container {
     max-width: 1200px;
+    width: 100%;
     margin: 0 auto;
     background: var(--paper);
     border-radius: 8px;
-    overflow: hidden;
+    overflow-x: hidden;
     box-shadow: 0 2px 16px rgba(0,0,0,0.06);
   }
 
@@ -100,7 +102,8 @@
     color: var(--ink);
     min-height: 44px;
     flex: 1;
-    min-width: 140px;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .reset-btn {
