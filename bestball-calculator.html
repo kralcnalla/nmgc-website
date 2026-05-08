@@ -726,6 +726,7 @@
       inp.addEventListener('input', e => {
         teams[+e.target.dataset.team].name = e.target.value;
         renderSummaryNames();
+        saveState();
       });
     });
 
@@ -736,12 +737,14 @@
       inp.addEventListener('input', e => {
         players[+e.target.dataset.idx].name = e.target.value;
         renderSummaryNames();
+        saveState();
       });
     });
     t.querySelectorAll('input[data-field="hcp"]').forEach(inp => {
       inp.addEventListener('change', e => {
         players[+e.target.dataset.idx].hcp = parseFloat(e.target.value) || 0;
         build();
+        saveState();
       });
     });
     t.querySelectorAll('input[data-hole]').forEach(inp => {
@@ -751,6 +754,7 @@
         const v = e.target.value;
         players[idx].scores[hole] = v === '' ? null : parseInt(v);
         renderScores();
+        saveState();
       });
     });
 
@@ -841,9 +845,41 @@
     document.getElementById('sum-players-2').textContent = t2Players;
   }
 
+  // ── Persistence — 8-hour localStorage ──────────────────────────────────
+  const STORAGE_KEY = 'nmgc_bestball';
+  const EXPIRY_MS   = 8 * 60 * 60 * 1000;
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        ts:      Date.now(),
+        nine:    currentNine,
+        teams:   { 1: teams[1].name, 2: teams[2].name },
+        players: players.map(p => ({ name: p.name, hcp: p.hcp, scores: p.scores }))
+      }));
+    } catch(e) {}
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      const data = JSON.parse(raw);
+      if (Date.now() - data.ts > EXPIRY_MS) { localStorage.removeItem(STORAGE_KEY); return false; }
+      currentNine = data.nine;
+      document.getElementById('nine').value = currentNine;
+      teams[1].name = data.teams[1];
+      teams[2].name = data.teams[2];
+      data.players.forEach((p, i) => { players[i].name = p.name; players[i].hcp = p.hcp; players[i].scores = p.scores; });
+      return true;
+    } catch(e) { return false; }
+  }
+  // ────────────────────────────────────────────────────────────────────────
+
   document.getElementById('nine').addEventListener('change', e => {
     currentNine = e.target.value;
     build();
+    saveState();
   });
 
   document.getElementById('reset').addEventListener('click', () => {
@@ -852,6 +888,7 @@
     teams[2].name = 'Team 2';
     const defaults = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
     players.forEach((p, i) => { p.name = defaults[i]; p.hcp = 0; p.scores = Array(9).fill(null); });
+    localStorage.removeItem(STORAGE_KEY);
     build();
   });
 
@@ -859,6 +896,7 @@
     document.getElementById('scorecard').classList.toggle('scrolled', this.scrollLeft > 10);
   });
 
+  loadState();
   build();
 
   function showHcpInfo() { document.getElementById('hcp-modal').classList.add('open'); }
