@@ -1,4 +1,4 @@
-const CACHE = 'nmgc-v3';
+const CACHE = 'nmgc-v4';
 
 const PRECACHE = [
   '/',
