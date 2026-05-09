@@ -71,19 +71,32 @@
     padding: 16px 20px;
     background: var(--green-light);
     border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .control-row {
     display: flex;
-    gap: 12px;
-    align-items: center;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 5px;
   }
 
   .control-row label {
     font-weight: 600;
     font-size: 0.95rem;
     color: var(--green-dark);
+  }
+
+  .control-row select {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .control-btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
   select {
@@ -95,8 +108,6 @@
     background: var(--paper);
     color: var(--ink);
     min-height: 44px;
-    flex: 1;
-    min-width: 0;
     max-width: 100%;
   }
 
@@ -634,13 +645,15 @@
 <div class="container">
   <div class="controls">
     <div class="control-row">
-      <label for="nine">Course:</label>
+      <label for="nine">Course</label>
       <select id="nine">
         <option value="north">North Nine</option>
         <option value="south">South Nine</option>
         <option value="east" selected>East Nine</option>
         <option value="west">West Nine</option>
       </select>
+    </div>
+    <div class="control-btns">
       <button class="reset-btn" id="clear-scores">Clear Scores</button>
       <button class="reset-btn" id="new-match">New Match</button>
     </div>
