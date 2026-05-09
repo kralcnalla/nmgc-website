@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Scorecard Reader — NMGC</title>
+<link rel="icon" type="image/png" href="images/N_logo.png">
+<link rel="stylesheet" href="css/style.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: #f7f3ec;
+  color: #1a1a1a;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Header ── */
+.sr-header {
+  background: #1a4d2e;
+  padding: 14px 16px;
+  padding-top: calc(14px + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sr-header-title { color: white; font-size: 1rem; font-weight: 700; }
+.sr-header-back  { color: rgba(255,255,255,0.85); font-size: 0.85rem; font-weight: 600; text-decoration: none; touch-action: manipulation; }
+
+/* ── Step dots ── */
+.sr-steps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+}
+.sr-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #ddd;
+  transition: background 0.25s;
+}
+.sr-dot.active { background: #1a4d2e; transform: scale(1.2); }
+.sr-dot.done   { background: #7e9d10; }
+
+/* ── Content wrapper ── */
+.sr-content {
+  padding: 20px 16px 40px;
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.sr-step { display: none; }
+.sr-step.active { display: block; }
+
+.sr-step-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1a4d2e;
+  margin-bottom: 16px;
+}
+
+/* ── Upload zone ── */
+.sr-upload-zone {
+  border: 2.5px dashed #1a4d2e;
+  border-radius: 14px;
+  padding: 48px 20px;
+  text-align: center;
+  background: white;
+  cursor: pointer;
+  position: relative;
+  touch-action: manipulation;
+}
+.sr-upload-zone input[type="file"] {
+  position: absolute; inset: 0;
+  opacity: 0; width: 100%; height: 100%;
+  cursor: pointer;
+}
+.sr-upload-icon  { font-size: 3rem; margin-bottom: 12px; }
+.sr-upload-title { font-size: 1.05rem; font-weight: 700; color: #1a4d2e; margin-bottom: 6px; }
+.sr-upload-sub   { font-size: 0.85rem; color: #888; }
+
+.sr-preview {
+  width: 100%; border-radius: 12px;
+  margin-top: 16px; display: none;
+  border: 1.5px solid #ddd;
+}
+
+/* ── Buttons ── */
+.sr-btn {
+  display: block; width: 100%;
+  padding: 16px;
+  border: none; border-radius: 10px;
+  font-family: inherit; font-size: 1rem; font-weight: 700;
+  cursor: pointer; touch-action: manipulation;
+  margin-top: 12px; text-align: center;
+}
+.sr-btn-primary { background: #1a4d2e; color: white; }
+.sr-btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.sr-btn-secondary { background: white; color: #1a4d2e; border: 2px solid #1a4d2e; }
+
+/* ── Status ── */
+.sr-status {
+  margin-top: 14px; padding: 12px 14px;
+  border-radius: 8px; font-size: 0.88rem; font-weight: 600;
+  display: none;
+}
+.sr-status.loading { background: #e8f4ff; color: #1a56db; display: block; }
+.sr-status.error   { background: #fde8e8; color: #8b0000; display: block; }
+
+/* ── Verify grid ── */
+.sr-hint { font-size: 0.83rem; color: #666; margin-bottom: 14px; }
+.sr-grid-wrap {
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  border-radius: 10px; border: 1.5px solid #ddd; background: white;
+}
+.sr-grid {
+  border-collapse: collapse;
+  min-width: 100%; font-size: 0.8rem;
+}
+.sr-grid th {
+  background: #1a4d2e; color: white;
+  padding: 8px 6px; font-size: 0.72rem;
+  text-align: center; border: 1px solid #166038;
+  white-space: nowrap;
+}
+.sr-grid th.sr-th-left { text-align: left; padding: 8px 10px; min-width: 110px; }
+.sr-grid td { border: 1px solid #e5e5e5; padding: 0; text-align: center; min-width: 36px; }
+.sr-grid input {
+  width: 100%; border: none; background: transparent;
+  text-align: center; padding: 7px 2px;
+  font-family: inherit; font-size: 0.8rem;
+  min-height: 36px; -webkit-appearance: none;
+}
+.sr-grid input.sr-name-inp {
+  text-align: left; padding: 7px 10px; min-width: 110px;
+  font-weight: 600;
+}
+.sr-grid .sr-par-cell { background: #f5f5f5; padding: 7px 4px; font-weight: 700; color: #555; }
+.sr-grid .sr-tot-cell { background: #f5f5f5; padding: 7px 4px; font-weight: 700; }
+
+/* ── Game buttons ── */
+.sr-game-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px;
+}
+.sr-game-btn {
+  padding: 22px 12px; border-radius: 12px;
+  border: 2px solid #1a4d2e; background: white;
+  font-family: inherit; font-size: 1rem; font-weight: 700;
+  color: #1a4d2e; cursor: pointer; touch-action: manipulation;
+  text-align: center; line-height: 1.4;
+}
+.sr-game-btn:active { background: #d8e8dc; }
+.sr-game-btn.sr-soon { opacity: 0.45; cursor: default; }
+.sr-soon-tag { display: block; font-size: 0.68rem; font-weight: 600; color: #aaa; margin-top: 4px; }
+
+/* ── Team assignment ── */
+.sr-section-label {
+  font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: #888; margin: 18px 0 10px;
+}
+.sr-assign-row {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  background: white; border-radius: 10px;
+  padding: 12px 14px; border: 1.5px solid #ddd;
+  margin-bottom: 8px;
+}
+.sr-assign-name { font-weight: 600; font-size: 0.95rem; }
+.sr-team-toggle { display: flex; gap: 6px; }
+.sr-team-btn {
+  padding: 7px 16px; border-radius: 7px;
+  border: 1.5px solid #ccc; background: white;
+  font-family: inherit; font-size: 0.82rem; font-weight: 700;
+  cursor: pointer; touch-action: manipulation; color: #555;
+}
+.sr-team-btn.on-a { border-color: #1a4d2e; background: #1a4d2e; color: white; }
+.sr-team-btn.on-b { border-color: #c8a830; background: #c8a830; color: white; }
+
+/* ── Results ── */
+.sr-result-card {
+  background: white; border-radius: 12px;
+  overflow: hidden; border: 1.5px solid #ddd; margin-bottom: 14px;
+}
+.sr-result-head {
+  background: #1a4d2e; color: white;
+  padding: 11px 16px; font-weight: 700; font-size: 0.95rem;
+}
+.sr-result-body { padding: 4px 0; }
+.sr-result-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px; border-bottom: 1px solid #f0f0f0;
+  font-size: 0.88rem;
+}
+.sr-result-row:last-child { border-bottom: none; }
+.sr-result-pos { font-weight: 700; color: #1a4d2e; }
+.sr-result-winner { font-weight: 700; color: #1a4d2e; }
+.sr-result-final {
+  text-align: center; padding: 20px 16px;
+  font-size: 1.3rem; font-weight: 800; color: #1a4d2e;
+}
+.sr-result-sub { font-size: 0.88rem; font-weight: 400; color: #666; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="sr-header">
+  <span class="sr-header-title">📷 Scorecard Reader</span>
+  <a href="index.html" class="sr-header-back">← Home</a>
+</div>
+
+<!-- Step dots -->
+<div class="sr-steps">
+  <div class="sr-dot active" id="dot-1"></div>
+  <div class="sr-dot" id="dot-2"></div>
+  <div class="sr-dot" id="dot-3"></div>
+  <div class="sr-dot" id="dot-4"></div>
+</div>
+
+<div class="sr-content">
+
+  <!-- ══ STEP 1 — Photo ══ -->
+  <div class="sr-step active" id="step-1">
+    <div class="sr-step-title">Take a photo</div>
+
+    <div style="margin-bottom:16px;">
+      <label style="display:block;font-size:0.78rem;font-weight:700;color:#555;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Anthropic API Key</label>
+      <input type="password" id="api-key-inp" placeholder="sk-ant-api03-…" style="width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;font-size:0.88rem;">
+      <div style="font-size:0.72rem;color:#aaa;margin-top:4px;">Saved locally on this device — never sent anywhere except Anthropic.</div>
+    </div>
+
+    <div class="sr-upload-zone">
+      <input type="file" id="photo-input" accept="image/*" capture="environment">
+      <div class="sr-upload-icon">📷</div>
+      <div class="sr-upload-title">Tap to open camera</div>
+      <div class="sr-upload-sub">or choose a photo from your library</div>
+    </div>
+
+    <img id="preview" class="sr-preview" alt="Scorecard preview">
+
+    <button class="sr-btn sr-btn-primary" id="read-btn" style="display:none" disabled>Read Scorecard</button>
+    <div class="sr-status" id="api-status"></div>
+  </div>
+
+  <!-- ══ STEP 2 — Verify ══ -->
+  <div class="sr-step" id="step-2">
+    <div class="sr-step-title">Verify the data</div>
+    <p class="sr-hint">Edit any names, handicaps, or scores that look wrong.</p>
+    <div class="sr-grid-wrap">
+      <table class="sr-grid" id="verify-grid"></table>
+    </div>
+    <button class="sr-btn sr-btn-primary" id="proceed-btn">Looks good →</button>
+    <button class="sr-btn sr-btn-secondary" onclick="goStep(1)">← Retake photo</button>
+  </div>
+
+  <!-- ══ STEP 3 — Choose Game ══ -->
+  <div class="sr-step" id="step-3">
+    <div class="sr-step-title">Choose a game</div>
+    <div class="sr-game-grid">
+      <button class="sr-game-btn" onclick="selectGame('bestball')">
+        ⛳<br>Best Ball
+        <span style="display:block;font-size:0.7rem;font-weight:400;color:#555;margin-top:4px;">2-man teams · match play</span>
+      </button>
+      <button class="sr-game-btn" onclick="selectGame('stroke')">
+        📊<br>Stroke Play
+        <span style="display:block;font-size:0.7rem;font-weight:400;color:#555;margin-top:4px;">Net leaderboard</span>
+      </button>
+      <button class="sr-game-btn sr-soon" onclick="comingSoon()">
+        🤝<br>Bushwhackers
+        <span class="sr-soon-tag">Coming soon</span>
+      </button>
+      <button class="sr-game-btn sr-soon" onclick="comingSoon()">
+        💰<br>Skins
+        <span class="sr-soon-tag">Coming soon</span>
+      </button>
+    </div>
+
+    <!-- Best Ball team assignment (shown after selecting Best Ball) -->
+    <div id="bb-assign" style="display:none;">
+      <div class="sr-section-label">Assign players to teams</div>
+      <div id="assign-list"></div>
+      <button class="sr-btn sr-btn-primary" onclick="calcBestBall()">Calculate →</button>
+    </div>
+
+    <button class="sr-btn sr-btn-secondary" onclick="goStep(2); document.getElementById(\'bb-assign\').style.display=\'none\'">← Back</button>
+  </div>
+
+  <!-- ══ STEP 4 — Results ══ -->
+  <div class="sr-step" id="step-4">
+    <div class="sr-step-title" id="results-title">Results</div>
+    <div id="results-content"></div>
+    <button class="sr-btn sr-btn-secondary" onclick="startOver()">Start Over</button>
+  </div>
+
+</div>
+
+<script>
+// ── Config ─────────────────────────────────────────────────────────────────
+const ANTHROPIC_KEY_STORE = 'nmgc_sr_key';
+function getKey() { return localStorage.getItem(ANTHROPIC_KEY_STORE) || ''; }
+const MODEL = 'claude-sonnet-4-20250514';
+
+// ── App state ───────────────────────────────────────────────────────────────
+var S = { file: null, data: null, teams: {} };
+
+// Pre-fill key from localStorage
+(function() {
+  const saved = getKey();
+  if (saved) document.getElementById('api-key-inp').value = saved;
+})();
+
+// ── Navigation ──────────────────────────────────────────────────────────────
+function goStep(n) {
+  document.querySelectorAll('.sr-step').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sr-dot').forEach((d, i) => {
+    d.classList.remove('active', 'done');
+    if (i === n - 1) d.classList.add('active');
+    else if (i < n - 1) d.classList.add('done');
+  });
+  document.getElementById('step-' + n).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── Step 1 — Photo & API ────────────────────────────────────────────────────
+document.getElementById('photo-input').addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+  S.file = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('preview');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    const btn = document.getElementById('read-btn');
+    btn.style.display = 'block';
+    btn.disabled = false;
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('read-btn').addEventListener('click', async function() {
+  const keyInp = document.getElementById('api-key-inp');
+  const key = keyInp.value.trim() || getKey();
+  if (!key) {
+    document.getElementById('api-status').className = 'sr-status error';
+    document.getElementById('api-status').textContent = '⚠ Please enter your Anthropic API key above.';
+    return;
+  }
+  localStorage.setItem(ANTHROPIC_KEY_STORE, key);
+
+  const status = document.getElementById('api-status');
+  const btn = this;
+  btn.disabled = true;
+  btn.textContent = 'Reading…';
+  status.className = 'sr-status loading';
+  status.textContent = '🔍 Analyzing scorecard with AI — this may take a few seconds…';
+
+  try {
+    S.data = await callVisionAPI(S.file, key);
+    buildGrid(S.data);
+    goStep(2);
+    status.className = 'sr-status';
+  } catch (err) {
+    status.className = 'sr-status error';
+    status.textContent = '⚠ ' + (err.message || 'Could not read scorecard. Try a clearer photo.');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Read Scorecard';
+});
+
+async function resizeImage(file, maxPx) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let w = img.width, h = img.height;
+      if (w > maxPx || h > maxPx) {
+        if (w >= h) { h = Math.round(h * maxPx / w); w = maxPx; }
+        else        { w = Math.round(w * maxPx / h); h = maxPx; }
+      }
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      c.toBlob(b => resolve(b), 'image/jpeg', 0.85);
+    };
+    img.src = url;
+  });
+}
+
+async function callVisionAPI(file, key) {
+  const resized = await resizeImage(file, 1600);
+  const b64 = await new Promise(res => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result.split(',')[1]);
+    r.readAsDataURL(resized);
+  });
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-client-side-secret': 'true',
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 2048,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } },
+          { type: 'text', text: 'This is a golf scorecard. Return valid JSON only — no markdown, no explanation:\n{"course":"string or null","date":"string or null","players":[{"name":"string","handicap":number_or_null,"scores":[nine_integers]}],"par":[nine_integers]}\nUse 0 for unreadable scores. Estimate par [4,4,3,5,4,3,4,3,5] if not visible. Include every player you can find.' }
+        ]
+      }]
+    })
+  });
+
+  if (!resp.ok) {
+    let msg = 'API error ' + resp.status;
+    try { const e = await resp.json(); msg = e.error?.message || msg; } catch(_) {}
+    throw new Error(msg);
+  }
+
+  const result = await resp.json();
+  const text = result.content?.[0]?.text || '';
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('AI returned unexpected format. Try a clearer photo.');
+
+  const parsed = JSON.parse(match[0]);
+  if (!Array.isArray(parsed.players)) throw new Error('Could not find players in response.');
+  parsed.par = (Array.isArray(parsed.par) && parsed.par.length === 9) ? parsed.par : [4,4,3,5,4,3,4,3,5];
+  parsed.players.forEach(p => {
+    p.scores = Array.isArray(p.scores) ? p.scores.slice(0, 9).map(Number) : [];
+    while (p.scores.length < 9) p.scores.push(0);
+    p.handicap = (p.handicap != null && !isNaN(p.handicap)) ? +p.handicap : null;
+  });
+  return parsed;
+}
+
+// ── Step 2 — Verify grid ───────────────────────────────────────────────────
+function buildGrid(data) {
+  const t = document.getElementById('verify-grid');
+  let html = '<thead><tr>';
+  html += '<th class="sr-th-left">Player</th><th>Hcp</th>';
+  for (let h = 1; h <= 9; h++) html += '<th>' + h + '</th>';
+  html += '<th>Tot</th></tr></thead><tbody>';
+
+  // Par row
+  html += '<tr><td style="background:#f5f5f5;padding:0;"><input class="sr-name-inp" value="Par" disabled style="color:#888;font-weight:700;"></td>';
+  html += '<td class="sr-par-cell"></td>';
+  data.par.forEach((p, i) => html += '<td class="sr-par-cell"><input type="number" value="' + p + '" min="3" max="6" data-par="' + i + '" inputmode="numeric"></td>');
+  html += '<td class="sr-tot-cell" id="par-tot">' + data.par.reduce((a,b)=>a+b,0) + '</td></tr>';
+
+  // Player rows
+  data.players.forEach((p, pi) => {
+    const tot = p.scores.reduce((a,b)=>a+b,0);
+    html += '<tr>';
+    html += '<td style="padding:0;"><input class="sr-name-inp" type="text" value="' + esc(p.name) + '" data-pi="' + pi + '" data-f="name"></td>';
+    html += '<td style="padding:0;"><input type="text" value="' + (p.handicap != null ? p.handicap : '') + '" data-pi="' + pi + '" data-f="hcp" inputmode="decimal" style="text-align:center;min-width:40px;"></td>';
+    p.scores.forEach((s, si) => html += '<td style="padding:0;"><input type="number" value="' + s + '" min="1" max="20" data-pi="' + pi + '" data-si="' + si + '" inputmode="numeric"></td>');
+    html += '<td class="sr-tot-cell" id="tot-' + pi + '">' + (tot || '—') + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody>';
+  t.innerHTML = html;
+
+  // Wire events
+  t.querySelectorAll('input[data-si]').forEach(inp => inp.addEventListener('input', syncAndRefresh));
+  t.querySelectorAll('input[data-f]').forEach(inp => inp.addEventListener('input', syncState));
+  t.querySelectorAll('input[data-par]').forEach(inp => inp.addEventListener('input', syncAndRefresh));
+}
+
+function syncAndRefresh() {
+  syncState();
+  S.data.players.forEach((p, pi) => {
+    const tot = p.scores.reduce((a,b)=>a+b,0);
+    const el = document.getElementById('tot-' + pi);
+    if (el) el.textContent = tot || '—';
+  });
+  const parEl = document.getElementById('par-tot');
+  if (parEl) parEl.textContent = S.data.par.reduce((a,b)=>a+b,0);
+}
+
+function syncState() {
+  const t = document.getElementById('verify-grid');
+  t.querySelectorAll('input[data-si]').forEach(inp => {
+    S.data.players[+inp.dataset.pi].scores[+inp.dataset.si] = parseInt(inp.value) || 0;
+  });
+  t.querySelectorAll('input[data-f="name"]').forEach(inp => { S.data.players[+inp.dataset.pi].name = inp.value; });
+  t.querySelectorAll('input[data-f="hcp"]').forEach(inp => { S.data.players[+inp.dataset.pi].handicap = parseFloat(inp.value) || 0; });
+  t.querySelectorAll('input[data-par]').forEach(inp => { S.data.par[+inp.dataset.par] = parseInt(inp.value) || 4; });
+}
+
+document.getElementById('proceed-btn').addEventListener('click', () => { syncState(); goStep(3); });
+
+// ── Step 3 — Game selection ────────────────────────────────────────────────
+function comingSoon() { alert('Coming soon!'); }
+
+function selectGame(game) {
+  syncState();
+  document.getElementById('bb-assign').style.display = 'none';
+  if (game === 'bestball') {
+    buildTeamAssign();
+    document.getElementById('bb-assign').style.display = 'block';
+  } else if (game === 'stroke') {
+    calcStroke();
+  }
+}
+
+function buildTeamAssign() {
+  S.teams = {};
+  document.getElementById('assign-list').innerHTML = S.data.players.map((p, pi) =>
+    '<div class="sr-assign-row">' +
+      '<span class="sr-assign-name">' + esc(p.name) + '</span>' +
+      '<div class="sr-team-toggle">' +
+        '<button class="sr-team-btn" id="tb-' + pi + '-A" onclick="pickTeam(' + pi + ',\'A\')">A</button>' +
+        '<button class="sr-team-btn" id="tb-' + pi + '-B" onclick="pickTeam(' + pi + ',\'B\')">B</button>' +
+      '</div>' +
+    '</div>'
+  ).join('');
+}
+
+function pickTeam(pi, team) {
+  S.teams[pi] = team;
+  ['A','B'].forEach(t => {
+    const btn = document.getElementById('tb-' + pi + '-' + t);
+    if (btn) { btn.classList.remove('on-a','on-b'); if (t === team) btn.classList.add('on-' + team.toLowerCase()); }
+  });
+}
+
+function calcBestBall() {
+  const aPl = S.data.players.filter((_, i) => S.teams[i] === 'A');
+  const bPl = S.data.players.filter((_, i) => S.teams[i] === 'B');
+  if (!aPl.length || !bPl.length) { alert('Assign at least one player to each team.'); return; }
+
+  const lowHcp = Math.min(...S.data.players.map(p => p.handicap || 0));
+
+  function playerStrokes(p) {
+    const diff = Math.max(0, Math.round((p.handicap || 0) - lowHcp));
+    const arr = Array(9).fill(0);
+    // Distribute strokes across holes in order of hole difficulty (use 1-9 rank as proxy)
+    for (let i = 0; i < Math.min(diff, 9); i++) arr[i] = 1;
+    return arr;
+  }
+
+  function bestNet(teamPlayers, h) {
+    return Math.min(...teamPlayers.map(p => p.scores[h] - playerStrokes(p)[h]));
+  }
+
+  let aPts = 0, bPts = 0;
+  const holeResults = [];
+  for (let h = 0; h < 9; h++) {
+    const aN = bestNet(aPl, h), bN = bestNet(bPl, h);
+    let aP = 0, bP = 0, winner = 'Tie';
+    if (aN < bN) { aP = 1; winner = 'A'; }
+    else if (bN < aN) { bP = 1; winner = 'B'; }
+    else { aP = 0.5; bP = 0.5; }
+    aPts += aP; bPts += bP;
+    holeResults.push({ h: h+1, par: S.data.par[h], aN, bN, winner, aP, bP });
+  }
+
+  const teamNet = pl => pl.reduce((s, p) => s + p.scores.reduce((a,b)=>a+b,0) - (p.handicap||0), 0);
+  const aNet = teamNet(aPl), bNet = teamNet(bPl);
+  let aMed = 0, bMed = 0;
+  if (aNet < bNet) aMed = 2; else if (bNet < aNet) bMed = 2; else { aMed = 1; bMed = 1; }
+
+  const aTotal = aPts + aMed, bTotal = bPts + bMed;
+  const teamALabel = 'Team A (' + aPl.map(p=>p.name).join(' & ') + ')';
+  const teamBLabel = 'Team B (' + bPl.map(p=>p.name).join(' & ') + ')';
+
+  let html = '<div class="sr-result-card"><div class="sr-result-head">Hole by Hole</div><div class="sr-result-body">';
+  holeResults.forEach(r => {
+    const winStr = r.winner === 'A' ? 'Team A' : r.winner === 'B' ? 'Team B' : 'Tie';
+    html += '<div class="sr-result-row"><span>Hole ' + r.h + ' &nbsp;<small style="color:#aaa;">par ' + r.par + '</small></span>' +
+      '<span class="' + (r.winner !== 'Tie' ? 'sr-result-winner' : '') + '">' + winStr + ' &nbsp;<small>(' + r.aP + '–' + r.bP + ')</small></span></div>';
+  });
+  html += '</div></div>';
+
+  html += '<div class="sr-result-card"><div class="sr-result-head">Match Summary</div><div class="sr-result-body">';
+  html += '<div class="sr-result-row"><span>' + teamALabel + '</span><span>Hole pts: <b>' + aPts + '</b> · Medal pts: <b>' + aMed + '</b></span></div>';
+  html += '<div class="sr-result-row"><span>' + teamBLabel + '</span><span>Hole pts: <b>' + bPts + '</b> · Medal pts: <b>' + bMed + '</b></span></div>';
+  html += '</div></div>';
+
+  const winnerLabel = aTotal > bTotal ? teamALabel : bTotal > aTotal ? teamBLabel : 'Tie';
+  html += '<div class="sr-result-final">' + winnerLabel + '<div class="sr-result-sub">' + aTotal + ' – ' + bTotal + '</div></div>';
+
+  document.getElementById('results-title').textContent = 'Best Ball Results';
+  document.getElementById('results-content').innerHTML = html;
+  goStep(4);
+}
+
+function calcStroke() {
+  const ranked = S.data.players.map(p => ({
+    name: p.name,
+    gross: p.scores.reduce((a,b)=>a+b,0),
+    hcp: p.handicap || 0,
+    net: p.scores.reduce((a,b)=>a+b,0) - (p.handicap || 0)
+  })).sort((a,b) => a.net - b.net);
+
+  let html = '<div class="sr-result-card"><div class="sr-result-head">Net Leaderboard</div><div class="sr-result-body">';
+  ranked.forEach((p, i) => {
+    html += '<div class="sr-result-row">' +
+      '<span><span class="sr-result-pos">' + (i+1) + '.&nbsp;</span>' + esc(p.name) + '</span>' +
+      '<span class="' + (i===0?'sr-result-winner':'') + '">Net ' + p.net + ' &nbsp;<small style="color:#aaa;">(Gross ' + p.gross + ')</small></span>' +
+    '</div>';
+  });
+  html += '</div></div>';
+
+  document.getElementById('results-title').textContent = 'Stroke Play Results';
+  document.getElementById('results-content').innerHTML = html;
+  goStep(4);
+}
+
+// ── Utilities ───────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function startOver() {
+  S = { file: null, data: null, teams: {} };
+  document.getElementById('photo-input').value = '';
+  document.getElementById('preview').style.display = 'none';
+  const btn = document.getElementById('read-btn');
+  btn.style.display = 'none'; btn.disabled = true;
+  const st = document.getElementById('api-status');
+  st.className = 'sr-status'; st.textContent = '';
+  document.getElementById('bb-assign').style.display = 'none';
+  goStep(1);
+}
+</script>
+</body>
+</html>
