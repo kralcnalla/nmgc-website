@@ -1611,6 +1611,10 @@ history.replaceState({ mfStep: 1 }, '');
   }
 
   function exitScorecardMode() {
+    // Close any open popups before leaving scorecard mode
+    document.getElementById('score-popup-overlay').classList.remove('open');
+    document.getElementById('hcp-popup-overlay').classList.remove('open');
+    document.getElementById('resultsModal').style.display = 'none';
     document.body.classList.remove('scorecard-mode');
     window.scrollTo(0, 0);
   }
