@@ -157,7 +157,12 @@
     padding: 0;
     text-align: center;
     vertical-align: middle;
+    box-sizing: border-box;
   }
+
+  /* Lock row heights so sticky and scrolling cells stay aligned */
+  table.scorecard tr.player-row { height: 48px; }
+  table.scorecard tr.points-row { height: 38px; }
 
   col.col-name { width: 170px; transition: width 0.25s ease; }
   table.scorecard.scrolled col.col-name { width: 80px; }
@@ -248,7 +253,7 @@
     opacity: 0.95;
   }
 
-  .player-row td { background: var(--paper); height: 48px; }
+  .player-row td { background: var(--paper); height: 48px; box-sizing: border-box; overflow: hidden; }
 
   .player-row td.name-cell {
     text-align: left;
@@ -263,14 +268,14 @@
 
   .player-row td.name-cell input {
     width: 100%;
-    height: 100%;
-    min-height: 46px;
+    height: 48px;
     border: none;
-    padding: 4px 12px;
+    padding: 0 12px;
     font-family: inherit;
     font-size: 0.95rem;
     background: transparent;
     font-weight: 500;
+    box-sizing: border-box;
   }
 
   .player-row td.hcp-cell {
@@ -281,8 +286,7 @@
 
   .player-row td.hcp-cell input {
     width: 100%;
-    height: 100%;
-    min-height: 46px;
+    height: 48px;
     border: none;
     text-align: center;
     font-family: inherit;
@@ -290,6 +294,7 @@
     background: transparent;
     font-weight: 600;
     color: var(--green-dark);
+    box-sizing: border-box;
   }
 
   .player-row td.score-cell { padding: 0; position: relative; }
