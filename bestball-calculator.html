@@ -1229,7 +1229,15 @@ history.replaceState({ mfStep: 1 }, '');
   function openScorePopup(idx, hole, par) {
     _popup = { idx, hole, par };
     const p = players[idx];
-    const cur = p.scores[hole] != null ? p.scores[hole] : par;
+    // Commit par immediately so Done always saves a score
+    if (p.scores[hole] == null) {
+      p.scores[hole] = par;
+      const cell = document.getElementById('sv-' + idx + '-' + hole);
+      if (cell) { cell.textContent = par; cell.className = 'step-val sc-par'; }
+      renderScores();
+      saveState(true);
+    }
+    const cur = p.scores[hole];
     document.getElementById('sp-hole-label').textContent = 'Hole ' + (hole + 1) + ' · Par ' + par;
     document.getElementById('sp-player-label').textContent = p.name;
     updatePopupDisplay(cur, par);
