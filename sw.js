@@ -1,22 +1,7 @@
-const CACHE = 'nmgc-v13';
+const CACHE = 'nmgc-v14';
 
-const PRECACHE = [
-  '/',
-  '/index.html',
-  '/about.html',
-  '/contact.html',
-  '/resources.html',
-  '/tournaments.html',
-  '/leagues/bushwhackers.html',
-  '/leagues/scratch.html',
-  '/leagues/bestball.html',
-  '/leagues/40over.html',
-  '/tournaments/spring-scramble.html',
-  '/tournaments/titos-classic.html',
-  '/tournaments/red-white-blue.html',
-  '/tournaments/championship.html',
-  '/tournaments/fall-scramble.html',
-  '/bestball-calculator.html',
+// Only cache static assets — HTML always comes fresh from the network
+const STATIC_ASSETS = [
   '/css/style.css',
   '/js/nav.js',
   '/js/pdfs.js',
@@ -27,7 +12,7 @@ const PRECACHE = [
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(PRECACHE)));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC_ASSETS)));
   self.skipWaiting();
 });
 
@@ -42,16 +27,33 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  // Navigation: network first, fall back to cached page or home
-  if (e.request.mode === 'navigate') {
+
+  const url = new URL(e.request.url);
+
+  // HTML pages — always network, never serve stale HTML from cache
+  if (url.pathname.endsWith('.html') || url.pathname === '/' || url.pathname === '') {
     e.respondWith(
-      fetch(e.request)
-        .catch(() => caches.match(e.request).then(r => r || caches.match('/index.html')))
+      fetch(e.request).catch(() =>
+        caches.match('/index.html').then(r => r ||
+          new Response('<h1 style="font-family:sans-serif;padding:2rem">You are offline.</h1>',
+            { headers: { 'Content-Type': 'text/html' } })
+        )
+      )
     );
     return;
   }
-  // Everything else: cache first, then network
+
+  // Static assets — cache first, update in background
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+    caches.match(e.request).then(cached => {
+      const network = fetch(e.request).then(response => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return response;
+      });
+      return cached || network;
+    })
   );
 });
