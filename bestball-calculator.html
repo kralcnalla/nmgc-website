@@ -93,6 +93,54 @@
     max-width: 320px;
   }
 
+  /* ── Scorecard mode ── */
+  body.scorecard-mode > *:not(.scorecard-fullscreen):not(#hcp-popup-overlay):not(#score-popup-overlay):not(#hcp-modal) {
+    display: none !important;
+  }
+  .scorecard-fullscreen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--paper, #fff);
+    z-index: 9999;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  body.scorecard-mode .scorecard-fullscreen { display: block; }
+  .scorecard-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--green-dark, #1a4d2e);
+    color: white;
+    padding: 10px 14px;
+    padding-top: calc(10px + env(safe-area-inset-top));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+  .topbar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .topbar-back {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+  .topbar-back:active { opacity: 0.7; }
+  .scorecard-fullscreen-content { padding: 0; }
+
   .control-btns {
     display: flex;
     gap: 8px;
@@ -691,6 +739,7 @@
   </div>
 </div>
 
+<!-- Setup area — hidden in scorecard mode -->
 <div class="container">
   <div class="controls">
     <div class="control-row">
@@ -703,44 +752,61 @@
       </select>
     </div>
     <div class="control-btns">
-      <button class="reset-btn" id="clear-scores">Clear Scores</button>
-      <button class="reset-btn" id="new-match">New Match</button>
+      <button class="btn btn-primary" id="startRoundBtn" type="button" style="flex:2;">Start Round →</button>
     </div>
   </div>
+</div>
 
-  <div id="hcp-reminder" style="display:none;margin:0;padding:10px 20px;background:#fff8e0;border-bottom:2px solid #e8cc60;font-size:0.82rem;font-weight:600;color:#7a5800;align-items:center;gap:8px;">
-    <span>💡 Don't forget to enter each player's Course Handicap in the <strong>Hcp</strong> column — tap <strong>What's this?</strong> for help.</span>
-    <button onclick="document.getElementById('hcp-reminder').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#7a5800;margin-left:auto;padding:0;line-height:1;touch-action:manipulation;">✕</button>
+<!-- Scorecard fullscreen — shown in scorecard mode -->
+<div class="scorecard-fullscreen">
+  <div class="scorecard-topbar">
+    <span class="topbar-title" id="topbarTitle">Best Ball Scorecard</span>
+    <button type="button" class="topbar-back" id="backToSetupBtn">← Back to Setup</button>
   </div>
+  <div class="scorecard-fullscreen-content">
 
-  <div class="scorecard-wrap">
-    <p class="scroll-hint">Swipe to see all holes →</p>
-    <table class="scorecard" id="scorecard"></table>
-  </div>
-
-  <div class="summary">
-    <h2>Match Result</h2>
-    <div class="summary-grid">
-      <div class="summary-team">
-        <h3 id="sum-name-1">Team 1</h3>
-        <div class="summary-players" id="sum-players-1">Player 1 &amp; Player 2</div>
-        <div class="summary-line"><span>Hole points:</span><span id="sum-holes-1">0</span></div>
-        <div class="summary-line"><span>Medal points:</span><span id="sum-medal-1">0</span></div>
-        <div class="summary-line summary-total"><span>Total:</span><span id="sum-total-1">0</span></div>
-      </div>
-      <div class="summary-team">
-        <h3 id="sum-name-2">Team 2</h3>
-        <div class="summary-players" id="sum-players-2">Player 3 &amp; Player 4</div>
-        <div class="summary-line"><span>Hole points:</span><span id="sum-holes-2">0</span></div>
-        <div class="summary-line"><span>Medal points:</span><span id="sum-medal-2">0</span></div>
-        <div class="summary-line summary-total"><span>Total:</span><span id="sum-total-2">0</span></div>
+    <div class="controls" style="border-bottom:1px solid var(--border);">
+      <div class="control-btns">
+        <button class="reset-btn" id="clear-scores">Clear Scores</button>
+        <button class="reset-btn" id="new-match">New Match</button>
       </div>
     </div>
-  </div>
 
-  <div class="legend">
-    <span class="legend-item"><span class="legend-swatch"></span> Player receives 1 stroke on this hole</span>
-    <span class="legend-item"><span class="legend-swatch legend-swatch-2"></span> Player receives 2 strokes on this hole</span>
+    <div id="hcp-reminder" style="display:none;margin:0;padding:10px 20px;background:#fff8e0;border-bottom:2px solid #e8cc60;font-size:0.82rem;font-weight:600;color:#7a5800;align-items:center;gap:8px;">
+      <span>💡 Don't forget to enter each player's Course Handicap in the <strong>Hcp</strong> column — tap <strong>What's this?</strong> for help.</span>
+      <button onclick="document.getElementById('hcp-reminder').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#7a5800;margin-left:auto;padding:0;line-height:1;touch-action:manipulation;">✕</button>
+    </div>
+
+    <div class="scorecard-wrap">
+      <p class="scroll-hint">Swipe to see all holes →</p>
+      <table class="scorecard" id="scorecard"></table>
+    </div>
+
+    <div class="summary">
+      <h2>Match Result</h2>
+      <div class="summary-grid">
+        <div class="summary-team">
+          <h3 id="sum-name-1">Team 1</h3>
+          <div class="summary-players" id="sum-players-1">Player 1 &amp; Player 2</div>
+          <div class="summary-line"><span>Hole points:</span><span id="sum-holes-1">0</span></div>
+          <div class="summary-line"><span>Medal points:</span><span id="sum-medal-1">0</span></div>
+          <div class="summary-line summary-total"><span>Total:</span><span id="sum-total-1">0</span></div>
+        </div>
+        <div class="summary-team">
+          <h3 id="sum-name-2">Team 2</h3>
+          <div class="summary-players" id="sum-players-2">Player 3 &amp; Player 4</div>
+          <div class="summary-line"><span>Hole points:</span><span id="sum-holes-2">0</span></div>
+          <div class="summary-line"><span>Medal points:</span><span id="sum-medal-2">0</span></div>
+          <div class="summary-line summary-total"><span>Total:</span><span id="sum-total-2">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch"></span> Player receives 1 stroke on this hole</span>
+      <span class="legend-item"><span class="legend-swatch legend-swatch-2"></span> Player receives 2 strokes on this hole</span>
+    </div>
+
   </div>
 </div>
 
@@ -1450,6 +1516,7 @@ history.replaceState({ mfStep: 1 }, '');
     mfMatchStarted = false;
     mfSelected = { 1: [], 2: [] };
     build();
+    exitScorecardMode();
     document.getElementById('mf-overlay').style.display = 'flex';
     mfShowStep(1);
   });
@@ -1464,8 +1531,31 @@ history.replaceState({ mfStep: 1 }, '');
   }
   build();
 
+  // Auto-enter scorecard mode if a round is in progress
+  if (mfMatchStarted && players.some(p => p.scores.some(s => s !== null))) {
+    enterScorecardMode();
+  }
+
   function showHcpInfo() { document.getElementById('hcp-modal').classList.add('open'); }
   function closeHcpInfo() { document.getElementById('hcp-modal').classList.remove('open'); }
+
+  // ── Scorecard mode ────────────────────────────────────────────────────────
+  function enterScorecardMode() {
+    const nine = NINES[currentNine];
+    document.getElementById('topbarTitle').textContent =
+      nine ? (nine.name + ' Nine — Best Ball') : 'Best Ball Scorecard';
+    document.body.classList.add('scorecard-mode');
+    window.scrollTo(0, 0);
+  }
+
+  function exitScorecardMode() {
+    document.body.classList.remove('scorecard-mode');
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById('startRoundBtn').addEventListener('click', enterScorecardMode);
+  document.getElementById('backToSetupBtn').addEventListener('click', exitScorecardMode);
+  // ────────────────────────────────────────────────────────────────────────
 </script>
 <div style="text-align:center;padding:1rem;font-size:12px;color:#999;">nemadjimensclub.com</div>
 </body>
