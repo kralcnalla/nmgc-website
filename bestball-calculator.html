@@ -1303,9 +1303,16 @@ history.replaceState({ mfStep: 1 }, '');
 
   document.getElementById('clear-scores').addEventListener('click', () => {
     if (!confirm('Clear all scores?')) return;
-    players.forEach(p => { p.scores = Array(9).fill(null); });
+    const nine = NINES[currentNine];
+    players.forEach((p, idx) => {
+      p.scores = Array(9).fill(null);
+      for (let h = 0; h < 9; h++) {
+        const cell = document.getElementById('sv-' + idx + '-' + h);
+        if (cell) { cell.textContent = nine.par[h]; cell.className = 'step-val sc-unset'; }
+      }
+    });
+    renderScores();
     saveState(true);
-    build();
   });
 
   document.getElementById('new-match').addEventListener('click', () => {
