@@ -771,11 +771,17 @@
     <div class="sp-label">Course Handicap</div>
     <div class="sp-player" id="hp-player-name">Player</div>
     <div id="hp-last-used" style="font-size:0.75rem;color:#888;margin-bottom:14px;min-height:1em;"></div>
-    <div class="sp-controls">
+    <!-- Stepper mode: shown when a remembered value exists -->
+    <div class="sp-controls" id="hp-stepper">
       <button class="sp-adj" onclick="adjustHcp(-0.1)">−</button>
-      <input type="text" inputmode="decimal" id="hp-val"
-        style="font-size:2.4rem;font-weight:800;width:80px;text-align:center;border:none;border-bottom:2px solid var(--green-dark);color:var(--green-dark);background:transparent;font-family:inherit;padding:4px 0;" value="0.0">
+      <div class="sp-score" id="hp-val" style="color:var(--green-dark);">0.0</div>
       <button class="sp-adj" onclick="adjustHcp(0.1)">+</button>
+    </div>
+    <!-- Type mode: shown when no remembered value -->
+    <div id="hp-type" style="display:none;margin-bottom:8px;">
+      <input type="text" inputmode="decimal" id="hp-type-input"
+        placeholder="e.g. 8.4"
+        style="font-size:2rem;font-weight:700;width:100%;text-align:center;border:none;border-bottom:2.5px solid var(--green-dark);color:var(--green-dark);background:transparent;font-family:inherit;padding:8px 0;outline:none;">
     </div>
     <button class="sp-done" onclick="confirmHcp()">Confirm &amp; Save</button>
     <button onclick="closeHcpPopup()" style="width:100%;padding:10px;background:none;border:none;font-family:inherit;font-size:0.88rem;color:#aaa;cursor:pointer;margin-top:6px;touch-action:manipulation;">Skip</button>
@@ -1409,24 +1415,35 @@ history.replaceState({ mfStep: 1 }, '');
     const saved = storedHcp(p.name);
     _hcpVal = p.hcp || saved || 0;
     document.getElementById('hp-player-name').textContent = p.name;
-    document.getElementById('hp-last-used').textContent = saved !== null ? 'Last saved: ' + saved.toFixed(1) : 'Type your handicap below';
-    const hpInp = document.getElementById('hp-val');
-    hpInp.value = _hcpVal > 0 ? _hcpVal.toFixed(1) : '';
-    hpInp.placeholder = '0.0';
+    if (saved !== null) {
+      // Stepper mode — show remembered value
+      document.getElementById('hp-last-used').textContent = 'Last saved: ' + saved.toFixed(1);
+      document.getElementById('hp-stepper').style.display = 'flex';
+      document.getElementById('hp-type').style.display = 'none';
+      document.getElementById('hp-val').textContent = _hcpVal.toFixed(1);
+    } else {
+      // Type mode — no remembered value, let user type
+      document.getElementById('hp-last-used').textContent = 'Enter this player\'s course handicap';
+      document.getElementById('hp-stepper').style.display = 'none';
+      document.getElementById('hp-type').style.display = 'block';
+      document.getElementById('hp-type-input').value = '';
+      setTimeout(() => document.getElementById('hp-type-input').focus(), 100);
+    }
     document.getElementById('hcp-popup-overlay').classList.add('open');
-    if (!saved) setTimeout(() => hpInp.focus(), 100);
   }
 
   function adjustHcp(delta) {
-    const inp = document.getElementById('hp-val');
-    _hcpVal = Math.max(0, Math.round(((parseFloat(inp.value) || _hcpVal) + delta) * 10) / 10);
-    inp.value = _hcpVal.toFixed(1);
+    _hcpVal = Math.max(0, Math.round((_hcpVal + delta) * 10) / 10);
+    document.getElementById('hp-val').textContent = _hcpVal.toFixed(1);
   }
 
   function confirmHcp() {
     if (_hcpIdx !== null) {
       const p = players[_hcpIdx];
-      _hcpVal = Math.max(0, parseFloat(document.getElementById('hp-val').value) || 0);
+      // Read from whichever mode is active
+      if (document.getElementById('hp-type').style.display !== 'none') {
+        _hcpVal = Math.max(0, parseFloat(document.getElementById('hp-type-input').value) || 0);
+      }
       p.hcp = _hcpVal;
       localStorage.setItem(HCP_KEY + p.name.trim().toLowerCase(), _hcpVal.toFixed(1));
       const cell = document.getElementById('hcp-val-' + _hcpIdx);
