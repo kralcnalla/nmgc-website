@@ -253,7 +253,7 @@
     opacity: 0.95;
   }
 
-  .player-row td { background: var(--paper); height: 48px; box-sizing: border-box; overflow: hidden; }
+  .player-row td { background: var(--paper); height: 48px; box-sizing: border-box; }
 
   .player-row td.name-cell {
     text-align: left;
@@ -302,13 +302,22 @@
   /* Score cells — tap to open popup */
   .score-cell { cursor: pointer; }
   .score-cell:active { opacity: 0.7; }
-  .step-val { font-size:0.95rem; font-weight:600; min-width:20px; text-align:center; line-height:46px; display:block; }
-  .sc-unset  { color:#ccc; font-weight:400; }
-  .sc-eagle  { color:#1a6b3c; font-weight:800; }
-  .sc-birdie { color:#2d8a4f; font-weight:700; }
-  .sc-par    { color:#555; font-weight:500; }
-  .sc-bogey  { color:#c0392b; font-weight:600; }
-  .sc-double { color:#8b0000; font-weight:800; }
+  .step-val {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--green-dark);
+  }
+  .sc-unset  { color: #ccc; font-weight: 400; }
+  .sc-par    { }
+  .sc-birdie { border: 2px solid var(--green-dark); border-radius: 50%; }
+  .sc-eagle  { border: 2px solid var(--green-dark); border-radius: 50%;
+               box-shadow: 0 0 0 4px var(--green-dark); }
+  .sc-bogey  { border: 2px solid var(--green-dark); border-radius: 2px; }
+  .sc-double { border: 2px solid var(--green-dark); border-radius: 2px;
+               box-shadow: 0 0 0 4px var(--green-dark); }
+  .sc-triple { border: 2px solid var(--green-dark); border-radius: 2px;
+               box-shadow: 0 0 0 4px var(--green-dark), 0 0 0 7px var(--green-dark); }
 
   /* Score popup */
   .score-popup-overlay {
@@ -345,9 +354,16 @@
   }
   .sp-adj:active { background: #b8cf6e; }
   .sp-score {
-    font-size: 3rem; font-weight: 800;
-    min-width: 70px; line-height: 1;
+    font-size: 2.6rem; font-weight: 800;
+    width: 72px; height: 72px; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--green-dark);
   }
+  .sp-score.sc-birdie { border: 3px solid var(--green-dark); border-radius: 50%; }
+  .sp-score.sc-eagle  { border: 3px solid var(--green-dark); border-radius: 50%; box-shadow: 0 0 0 5px var(--green-dark); }
+  .sp-score.sc-bogey  { border: 3px solid var(--green-dark); border-radius: 3px; }
+  .sp-score.sc-double { border: 3px solid var(--green-dark); border-radius: 3px; box-shadow: 0 0 0 5px var(--green-dark); }
+  .sp-score.sc-triple { border: 3px solid var(--green-dark); border-radius: 3px; box-shadow: 0 0 0 5px var(--green-dark), 0 0 0 9px var(--green-dark); }
   .sp-rel {
     font-size: 0.85rem; font-weight: 700;
     margin-top: 4px;
@@ -1113,7 +1129,7 @@ history.replaceState({ mfStep: 1 }, '');
           const cur = p.scores[h];
           const display = cur != null ? cur : parVal;
           const rel = cur != null ? cur - parVal : null;
-          const cc = cur == null ? 'sc-unset' : rel <= -2 ? 'sc-eagle' : rel === -1 ? 'sc-birdie' : rel === 0 ? 'sc-par' : rel === 1 ? 'sc-bogey' : 'sc-double';
+          const cc = cur == null ? 'sc-unset' : scoreColorClass(display, parVal);
           html += `<td class="${cls}" onclick="openScorePopup(${idx},${h},${parVal})" style="cursor:pointer;"><span class="step-val ${cc}" id="sv-${idx}-${h}">${display}</span></td>`;
         }
         const gross = p.scores.reduce((s,v) => s + (v || 0), 0);
@@ -1318,7 +1334,7 @@ history.replaceState({ mfStep: 1 }, '');
 
   function scoreColorClass(score, par) {
     const r = score - par;
-    return r <= -2 ? 'sc-eagle' : r === -1 ? 'sc-birdie' : r === 0 ? 'sc-par' : r === 1 ? 'sc-bogey' : 'sc-double';
+    return r <= -2 ? 'sc-eagle' : r === -1 ? 'sc-birdie' : r === 0 ? 'sc-par' : r === 1 ? 'sc-bogey' : r === 2 ? 'sc-double' : 'sc-triple';
   }
 
   function relLabel(score, par) {
@@ -1350,7 +1366,7 @@ history.replaceState({ mfStep: 1 }, '');
     document.getElementById('sp-score').textContent = score;
     document.getElementById('sp-score').className = 'sp-score ' + cc;
     document.getElementById('sp-rel').textContent = relLabel(score, par);
-    document.getElementById('sp-rel').style.color = score < par ? '#2d8a4f' : score > par ? '#c0392b' : '#888';
+    document.getElementById('sp-rel').style.color = '#888';
   }
 
   function adjustPopup(dir) {
