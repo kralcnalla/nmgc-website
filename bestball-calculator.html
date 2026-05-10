@@ -1389,6 +1389,7 @@ history.replaceState({ mfStep: 1 }, '');
     document.getElementById('sum-medal-2').textContent = t2Medal !== null ? t2MedalPts : '—';
     document.getElementById('sum-total-1').textContent = team1HolePts + t1MedalPts;
     document.getElementById('sum-total-2').textContent = team2HolePts + t2MedalPts;
+    updateCompleteRoundButton();
   }
 
   function renderSummaryNames() {
@@ -1659,24 +1660,30 @@ history.replaceState({ mfStep: 1 }, '');
   }
 
   document.getElementById('completeRoundBtn').addEventListener('click', () => {
-    // Read computed totals directly from the Match Result summary DOM
-    const t1Pts  = parseFloat(document.getElementById('sum-total-1').textContent) || 0;
-    const t2Pts  = parseFloat(document.getElementById('sum-total-2').textContent) || 0;
-    const t1Name = document.getElementById('sum-name-1').textContent || 'Team 1';
-    const t2Name = document.getElementById('sum-name-2').textContent || 'Team 2';
+    const t1Name   = document.getElementById('sum-name-1').textContent || 'Team 1';
+    const t2Name   = document.getElementById('sum-name-2').textContent || 'Team 2';
+    const t1Holes  = parseFloat(document.getElementById('sum-holes-1').textContent) || 0;
+    const t2Holes  = parseFloat(document.getElementById('sum-holes-2').textContent) || 0;
+    const t1Medal  = parseFloat(document.getElementById('sum-medal-1').textContent) || 0;
+    const t2Medal  = parseFloat(document.getElementById('sum-medal-2').textContent) || 0;
+    const t1Total  = t1Holes + t1Medal;
+    const t2Total  = t2Holes + t2Medal;
+
     let headline, detail;
-    if (t1Pts === t2Pts) {
+    if (t1Total === t2Total) {
       headline = 'All Square';
-      detail   = `Tied — ${t1Pts} points each.`;
+      detail   = `${t1Name} ${t1Total} – ${t2Total} ${t2Name}\n\nHole play: ${t1Holes} – ${t2Holes}  ·  Medal play: ${t1Medal} – ${t2Medal}`;
     } else {
-      const winner = t1Pts > t2Pts ? t1Name : t2Name;
-      const loser  = t1Pts > t2Pts ? t2Name : t1Name;
-      const wPts   = Math.max(t1Pts, t2Pts);
-      const lPts   = Math.min(t1Pts, t2Pts);
+      const winner     = t1Total > t2Total ? t1Name : t2Name;
+      const wHoles     = t1Total > t2Total ? t1Holes : t2Holes;
+      const lHoles     = t1Total > t2Total ? t2Holes : t1Holes;
+      const wMedal     = t1Total > t2Total ? t1Medal : t2Medal;
+      const lMedal     = t1Total > t2Total ? t2Medal : t1Medal;
       headline = `${winner} wins!`;
-      detail   = `Final: ${t1Name} ${t1Pts} – ${t2Pts} ${t2Name}`;
+      detail   = `${t1Name} ${t1Total} – ${t2Total} ${t2Name}\n\nHole play: ${t1Holes} – ${t2Holes}  ·  Medal play: ${t1Medal} – ${t2Medal}`;
     }
     document.getElementById('resultsHeadline').textContent = headline;
+    document.getElementById('resultsDetail').style.whiteSpace = 'pre-line';
     document.getElementById('resultsDetail').textContent   = detail;
     document.getElementById('resultsModal').style.display  = 'flex';
   });
