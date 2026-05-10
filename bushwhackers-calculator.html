@@ -317,17 +317,26 @@
 
   .player-row td.score-cell { padding: 0; position: relative; }
 
-  .player-row td.score-cell input {
-    width: 100%;
-    height: 100%;
-    min-height: 46px;
-    border: none;
-    text-align: center;
-    font-family: inherit;
-    font-size: 1.05rem;
-    background: transparent;
-    font-weight: 500;
-  }
+  .score-cell { cursor: pointer; }
+  .score-cell:active { opacity: 0.7; }
+  .step-val { font-size:0.95rem; font-weight:600; min-width:20px; text-align:center; line-height:46px; display:block; }
+  .sc-unset  { color:#ccc; font-weight:400; }
+  .sc-eagle  { color:#1a6b3c; font-weight:800; }
+  .sc-birdie { color:#2d8a4f; font-weight:700; }
+  .sc-par    { color:#555; font-weight:500; }
+  .sc-bogey  { color:#c0392b; font-weight:600; }
+  .sc-double { color:#8b0000; font-weight:800; }
+  .score-popup-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:500; align-items:center; justify-content:center; }
+  .score-popup-overlay.open { display:flex; }
+  .score-popup { background:white; border-radius:16px; padding:24px 20px 20px; width:min(320px,90vw); box-shadow:0 8px 32px rgba(0,0,0,0.25); text-align:center; }
+  .sp-label { font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#888; margin-bottom:6px; }
+  .sp-player { font-size:0.95rem; font-weight:700; color:var(--green-dark); margin-bottom:20px; }
+  .sp-controls { display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:20px; }
+  .sp-adj { width:64px; height:64px; border-radius:50%; border:none; font-size:2rem; font-weight:700; line-height:1; background:var(--green-light); color:var(--green-dark); cursor:pointer; touch-action:manipulation; display:flex; align-items:center; justify-content:center; }
+  .sp-adj:active { background:#b8cf6e; }
+  .sp-score { font-size:3rem; font-weight:800; min-width:70px; line-height:1; }
+  .sp-rel { font-size:0.85rem; font-weight:700; margin-top:4px; }
+  .sp-done { width:100%; padding:14px; background:var(--green-dark); color:white; border:none; border-radius:10px; font-family:inherit; font-size:1rem; font-weight:700; cursor:pointer; touch-action:manipulation; }
 
   .player-row td.score-cell.stroke {
     background: var(--stroke-mark);
@@ -550,6 +559,22 @@
   <a href="/leagues/bushwhackers.html" style="color:white;font-size:14px;font-weight:600;text-decoration:none;">← Back to Bushwhackers</a>
 </div>
 
+<div class="score-popup-overlay" id="score-popup-overlay" onclick="if(event.target===this)closeScorePopup()">
+  <div class="score-popup">
+    <div class="sp-label" id="sp-hole-label">Hole 1 · Par 4</div>
+    <div class="sp-player" id="sp-player-label">Player</div>
+    <div class="sp-controls">
+      <button class="sp-adj" onclick="adjustPopup(-1)">−</button>
+      <div>
+        <div class="sp-score" id="sp-score">4</div>
+        <div class="sp-rel" id="sp-rel"></div>
+      </div>
+      <button class="sp-adj" onclick="adjustPopup(1)">+</button>
+    </div>
+    <button class="sp-done" onclick="closeScorePopup()">Done</button>
+  </div>
+</div>
+
 <div class="container">
 
   <div class="controls">
@@ -628,6 +653,49 @@
   ];
 
   let currentNine = 'east';
+
+  // ── Score popup ─────────────────────────────────────────────────────────
+  var _popup = { idx: 0, hole: 0, par: 4 };
+
+  function scoreColorClass(score, par) {
+    const r = score - par;
+    return r <= -2 ? 'sc-eagle' : r === -1 ? 'sc-birdie' : r === 0 ? 'sc-par' : r === 1 ? 'sc-bogey' : 'sc-double';
+  }
+
+  function openScorePopup(idx, hole, par) {
+    _popup = { idx, hole, par };
+    const p = players[idx];
+    const cur = p.scores[hole] != null ? p.scores[hole] : par;
+    document.getElementById('sp-hole-label').textContent = 'Hole ' + (hole + 1) + ' · Par ' + par;
+    document.getElementById('sp-player-label').textContent = p.name;
+    updatePopupDisplay(cur, par);
+    document.getElementById('score-popup-overlay').classList.add('open');
+  }
+
+  function updatePopupDisplay(score, par) {
+    const cc = scoreColorClass(score, par);
+    const r = score - par;
+    document.getElementById('sp-score').textContent = score;
+    document.getElementById('sp-score').className = 'sp-score ' + cc;
+    document.getElementById('sp-rel').textContent = r === 0 ? 'Even' : (r > 0 ? '+' : '') + r;
+    document.getElementById('sp-rel').style.color = score < par ? '#2d8a4f' : score > par ? '#c0392b' : '#888';
+  }
+
+  function adjustPopup(dir) {
+    const { idx, hole, par } = _popup;
+    const cur = players[idx].scores[hole] != null ? players[idx].scores[hole] : par;
+    const nv = Math.min(Math.max(cur + dir, 1), 20);
+    players[idx].scores[hole] = nv;
+    updatePopupDisplay(nv, par);
+    const cell = document.getElementById('sv-' + idx + '-' + hole);
+    if (cell) { cell.textContent = nv; cell.className = 'step-val ' + scoreColorClass(nv, par); }
+    renderScores();
+  }
+
+  function closeScorePopup() {
+    document.getElementById('score-popup-overlay').classList.remove('open');
+  }
+  // ────────────────────────────────────────────────────────────────────────
 
   function strokesPerHoleForPlayer(strokesReceived, nine) {
     const cap = Math.min(strokesReceived, 18);
@@ -720,8 +788,12 @@
         for (let h = 0; h < 9; h++) {
           const s = p.holeStrokes[h];
           const cls = s === 1 ? 'score-cell stroke' : s >= 2 ? 'score-cell stroke-2' : 'score-cell';
-          const val = p.scores[h] != null ? p.scores[h] : '';
-          html += `<td class="${cls}"><input type="number" min="1" max="20" inputmode="numeric" data-idx="${idx}" data-hole="${h}" value="${val}"></td>`;
+          const parVal = nine.par[h];
+          const cur = p.scores[h];
+          const display = cur != null ? cur : parVal;
+          const rel = cur != null ? cur - parVal : null;
+          const cc = cur == null ? 'sc-unset' : rel <= -2 ? 'sc-eagle' : rel === -1 ? 'sc-birdie' : rel === 0 ? 'sc-par' : rel === 1 ? 'sc-bogey' : 'sc-double';
+          html += `<td class="${cls}" onclick="openScorePopup(${idx},${h},${parVal})" style="cursor:pointer;"><span class="step-val ${cc}" id="sv-${idx}-${h}">${display}</span></td>`;
         }
         const gross = p.scores.reduce((s,v) => s + (v || 0), 0);
         const grossDisplay = p.scores.some(v => v != null) ? gross : '—';
@@ -763,15 +835,7 @@
         build();
       });
     });
-    t.querySelectorAll('input[data-hole]').forEach(inp => {
-      inp.addEventListener('input', e => {
-        const idx = +e.target.dataset.idx;
-        const hole = +e.target.dataset.hole;
-        const v = e.target.value;
-        players[idx].scores[hole] = v === '' ? null : parseInt(v);
-        renderScores();
-      });
-    });
+    // Score cells wired via onclick="openScorePopup(...)" in HTML
 
     renderScores();
     renderMatchStatus();
