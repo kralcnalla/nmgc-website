@@ -559,6 +559,22 @@
   <a href="/leagues/bushwhackers.html" style="color:white;font-size:14px;font-weight:600;text-decoration:none;">← Back to Bushwhackers</a>
 </div>
 
+<!-- HCP stepper popup -->
+<div class="score-popup-overlay" id="hcp-popup-overlay" onclick="if(event.target===this)closeHcpPopup()">
+  <div class="score-popup">
+    <div class="sp-label">Course Handicap</div>
+    <div class="sp-player" id="hp-player-name">Player</div>
+    <div id="hp-last-used" style="font-size:0.75rem;color:#888;margin-bottom:14px;min-height:1em;"></div>
+    <div class="sp-controls">
+      <button class="sp-adj" onclick="adjustHcp(-0.1)">−</button>
+      <div class="sp-score" id="hp-val" style="color:var(--green-dark);">0.0</div>
+      <button class="sp-adj" onclick="adjustHcp(0.1)">+</button>
+    </div>
+    <button class="sp-done" onclick="confirmHcp()">Confirm &amp; Save</button>
+    <button onclick="closeHcpPopup()" style="width:100%;padding:10px;background:none;border:none;font-family:inherit;font-size:0.88rem;color:#aaa;cursor:pointer;margin-top:6px;touch-action:manipulation;">Skip</button>
+  </div>
+</div>
+
 <div class="score-popup-overlay" id="score-popup-overlay" onclick="if(event.target===this)closeScorePopup()">
   <div class="score-popup">
     <div class="sp-label" id="sp-hole-label">Hole 1 · Par 4</div>
@@ -653,6 +669,49 @@
   ];
 
   let currentNine = 'east';
+
+  // ── Handicap persistence ─────────────────────────────────────────────────
+  var _hcpIdx = null, _hcpVal = 0;
+  const HCP_KEY = 'nmgc:hcp:';
+
+  function storedHcp(name) {
+    const v = localStorage.getItem(HCP_KEY + name.trim().toLowerCase());
+    return v !== null ? parseFloat(v) : null;
+  }
+
+  function openHcpPopup(idx) {
+    _hcpIdx = idx;
+    const p = players[idx];
+    const saved = storedHcp(p.name);
+    _hcpVal = p.hcp || saved || 0;
+    document.getElementById('hp-player-name').textContent = p.name;
+    document.getElementById('hp-last-used').textContent = saved !== null ? 'Last saved: ' + saved.toFixed(1) : '';
+    document.getElementById('hp-val').textContent = _hcpVal.toFixed(1);
+    document.getElementById('hcp-popup-overlay').classList.add('open');
+  }
+
+  function adjustHcp(delta) {
+    _hcpVal = Math.max(0, Math.round((_hcpVal + delta) * 10) / 10);
+    document.getElementById('hp-val').textContent = _hcpVal.toFixed(1);
+  }
+
+  function confirmHcp() {
+    if (_hcpIdx !== null) {
+      const p = players[_hcpIdx];
+      p.hcp = _hcpVal;
+      localStorage.setItem(HCP_KEY + p.name.trim().toLowerCase(), _hcpVal.toFixed(1));
+      const cell = document.getElementById('hcp-val-' + _hcpIdx);
+      if (cell) cell.textContent = _hcpVal.toFixed(1);
+      build();
+    }
+    closeHcpPopup();
+  }
+
+  function closeHcpPopup() {
+    document.getElementById('hcp-popup-overlay').classList.remove('open');
+    _hcpIdx = null;
+  }
+  // ────────────────────────────────────────────────────────────────────────
 
   // ── Score popup ─────────────────────────────────────────────────────────
   var _popup = { idx: 0, hole: 0, par: 4 };
@@ -791,7 +850,7 @@
         html += `<tr class="player-row" data-idx="${idx}">
           <td class="team-cell" id="team-cell-${idx}">${teamLabel}</td>
           <td class="name-cell"><input type="text" placeholder="Player name" data-idx="${idx}" data-field="name" value="${p.name}"></td>
-          <td class="hcp-cell"><input type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" data-idx="${idx}" data-field="hcp" value="${p.hcp || ''}" placeholder="0.0"></td>`;
+          <td class="hcp-cell" onclick="openHcpPopup(${idx})" style="cursor:pointer;"><span id="hcp-val-${idx}" style="display:block;text-align:center;line-height:46px;font-weight:600;color:var(--green-dark);">${p.hcp ? p.hcp.toFixed(1) : '—'}</span></td>`;
         for (let h = 0; h < 9; h++) {
           const s = p.holeStrokes[h];
           const cls = s === 1 ? 'score-cell stroke' : s >= 2 ? 'score-cell stroke-2' : 'score-cell';
@@ -836,13 +895,7 @@
         renderMatchStatus();
       });
     });
-    t.querySelectorAll('input[data-field="hcp"]').forEach(inp => {
-      inp.addEventListener('change', e => {
-        players[+e.target.dataset.idx].hcp = parseFloat(e.target.value) || 0;
-        build();
-      });
-    });
-    // Score cells wired via onclick="openScorePopup(...)" in HTML
+    // HCP and score cells wired via onclick attributes in HTML
 
     renderScores();
     renderMatchStatus();

@@ -638,6 +638,22 @@
   </div>
 </div>
 
+<!-- HCP stepper popup -->
+<div class="score-popup-overlay" id="hcp-popup-overlay" onclick="if(event.target===this)closeHcpPopup()">
+  <div class="score-popup">
+    <div class="sp-label">Course Handicap</div>
+    <div class="sp-player" id="hp-player-name">Player</div>
+    <div id="hp-last-used" style="font-size:0.75rem;color:#888;margin-bottom:14px;min-height:1em;"></div>
+    <div class="sp-controls">
+      <button class="sp-adj" onclick="adjustHcp(-0.1)">−</button>
+      <div class="sp-score" id="hp-val" style="color:var(--green-dark);">0.0</div>
+      <button class="sp-adj" onclick="adjustHcp(0.1)">+</button>
+    </div>
+    <button class="sp-done" onclick="confirmHcp()">Confirm &amp; Save</button>
+    <button onclick="closeHcpPopup()" style="width:100%;padding:10px;background:none;border:none;font-family:inherit;font-size:0.88rem;color:#aaa;cursor:pointer;margin-top:6px;touch-action:manipulation;">Skip</button>
+  </div>
+</div>
+
 <div class="score-popup-overlay" id="score-popup-overlay" onclick="if(event.target===this)closeScorePopup()">
   <div class="score-popup">
     <div class="sp-label" id="sp-hole-label">Hole 1 · Par 4</div>
@@ -894,11 +910,32 @@ function mfToggle(btn, slot, name) {
 function mfAddSub(btn, slot) {
   const row = btn.parentElement;
   row.innerHTML =
-    '<div style="display:flex;gap:6px;padding:4px 0;">' +
-      '<input class="mf-sub-input" id="mf-sub-inp-' + slot + '" placeholder="Sub name" style="flex:1;" onkeydown="if(event.key===\'Enter\')mfConfirmSub(' + slot + ')">' +
-      '<button onclick="mfConfirmSub(' + slot + ')" style="background:var(--green-dark);color:white;border:none;border-radius:6px;padding:8px 12px;font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer;touch-action:manipulation;">Add</button>' +
-    '</div>';
+    '<div style="position:relative;padding:4px 0;">' +
+      '<input class="mf-sub-input" id="mf-sub-inp-' + slot + '" placeholder="Type any name or search roster…" autocomplete="off" style="width:100%;" oninput="mfSubFilter(' + slot + ')" onkeydown="if(event.key===\'Enter\')mfConfirmSub(' + slot + ')">' +
+      '<div id="mf-sub-sug-' + slot + '" style="display:none;position:absolute;left:0;right:0;top:100%;background:white;border:1.5px solid var(--border);border-top:none;border-radius:0 0 8px 8px;max-height:180px;overflow-y:auto;z-index:200;-webkit-overflow-scrolling:touch;box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>' +
+    '</div>' +
+    '<button onclick="mfConfirmSub(' + slot + ')" style="width:100%;margin-top:6px;background:var(--green-dark);color:white;border:none;border-radius:6px;padding:10px;font-family:inherit;font-size:0.88rem;font-weight:600;cursor:pointer;touch-action:manipulation;">Add</button>';
   document.getElementById('mf-sub-inp-' + slot).focus();
+}
+
+function mfSubFilter(slot) {
+  const inp = document.getElementById('mf-sub-inp-' + slot);
+  const sug = document.getElementById('mf-sub-sug-' + slot);
+  const q = inp.value.trim().toLowerCase();
+  if (!q) { sug.style.display = 'none'; return; }
+  const matches = SUB_POOL.filter(n => n.toLowerCase().includes(q)).slice(0, 8);
+  if (!matches.length) { sug.style.display = 'none'; return; }
+  sug.innerHTML = matches.map(n =>
+    '<div style="padding:10px 12px;cursor:pointer;font-size:0.88rem;border-bottom:1px solid #f5f5f5;touch-action:manipulation;" onclick="mfSubSelect(\'' + n.replace(/'/g, "\\'") + '\',' + slot + ')">' + n + '</div>'
+  ).join('');
+  sug.style.display = 'block';
+}
+
+function mfSubSelect(name, slot) {
+  const inp = document.getElementById('mf-sub-inp-' + slot);
+  if (inp) inp.value = name;
+  const sug = document.getElementById('mf-sub-sug-' + slot);
+  if (sug) sug.style.display = 'none';
 }
 
 function mfConfirmSub(slot) {
@@ -953,6 +990,7 @@ function mfStart() {
   history.replaceState(null, '');
   build();
   saveState(true);
+  queueSavedHcps();
 }
 
 function mfSkip() {
@@ -1062,7 +1100,7 @@ history.replaceState({ mfStep: 1 }, '');
         if (p.team !== teamNum) return;
         html += `<tr class="player-row" data-idx="${idx}">
           <td class="name-cell"><input type="text" placeholder="Player name" data-idx="${idx}" data-field="name" value="${p.name}"></td>
-          <td class="hcp-cell"><input type="text" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" data-idx="${idx}" data-field="hcp" value="${p.hcp || ''}" placeholder="0.0"></td>`;
+          <td class="hcp-cell" onclick="openHcpPopup(${idx})" style="cursor:pointer;"><span id="hcp-val-${idx}" style="display:block;text-align:center;line-height:46px;font-weight:600;color:var(--green-dark);">${p.hcp ? p.hcp.toFixed(1) : '—'}</span></td>`;
         for (let h = 0; h < 9; h++) {
           const s = p.holeStrokes[h];
           const cls = s === 1 ? 'score-cell stroke' : s >= 2 ? 'score-cell stroke-2' : 'score-cell';
@@ -1109,15 +1147,7 @@ history.replaceState({ mfStep: 1 }, '');
         saveState(true);
       });
     });
-    t.querySelectorAll('input[data-field="hcp"]').forEach(inp => {
-      inp.addEventListener('change', e => {
-        players[+e.target.dataset.idx].hcp = parseFloat(e.target.value) || 0;
-        document.getElementById('hcp-reminder').style.display = 'none';
-        build();
-        saveState(true);
-      });
-    });
-    // Score cells wired via onclick="openScorePopup(...)" in HTML
+    // HCP and score cells wired via onclick attributes in HTML
 
     renderScores();
     renderSummaryNames();
@@ -1211,6 +1241,72 @@ history.replaceState({ mfStep: 1 }, '');
     document.getElementById('sum-players-1').textContent = t1Players;
     document.getElementById('sum-players-2').textContent = t2Players;
   }
+
+  // ── Handicap persistence ────────────────────────────────────────────────
+  var _hcpIdx = null, _hcpVal = 0, _hcpQueue = [];
+  const HCP_KEY = 'nmgc:hcp:';
+
+  function storedHcp(name) {
+    const v = localStorage.getItem(HCP_KEY + name.trim().toLowerCase());
+    return v !== null ? parseFloat(v) : null;
+  }
+
+  function openHcpPopup(idx) {
+    _hcpIdx = idx;
+    const p = players[idx];
+    const saved = storedHcp(p.name);
+    _hcpVal = p.hcp || saved || 0;
+    document.getElementById('hp-player-name').textContent = p.name;
+    document.getElementById('hp-last-used').textContent = saved !== null ? 'Last saved: ' + saved.toFixed(1) : '';
+    document.getElementById('hp-val').textContent = _hcpVal.toFixed(1);
+    document.getElementById('hcp-popup-overlay').classList.add('open');
+  }
+
+  function adjustHcp(delta) {
+    _hcpVal = Math.max(0, Math.round((_hcpVal + delta) * 10) / 10);
+    document.getElementById('hp-val').textContent = _hcpVal.toFixed(1);
+  }
+
+  function confirmHcp() {
+    if (_hcpIdx !== null) {
+      const p = players[_hcpIdx];
+      p.hcp = _hcpVal;
+      localStorage.setItem(HCP_KEY + p.name.trim().toLowerCase(), _hcpVal.toFixed(1));
+      const cell = document.getElementById('hcp-val-' + _hcpIdx);
+      if (cell) cell.textContent = _hcpVal.toFixed(1);
+      document.getElementById('hcp-reminder').style.display = 'none';
+      build();
+      saveState(true);
+    }
+    closeHcpPopup();
+    setTimeout(nextHcpInQueue, 150);
+  }
+
+  function closeHcpPopup() {
+    document.getElementById('hcp-popup-overlay').classList.remove('open');
+    _hcpIdx = null;
+  }
+
+  function nextHcpInQueue() {
+    if (_hcpQueue.length) openHcpPopup(_hcpQueue.shift());
+  }
+
+  function queueSavedHcps() {
+    _hcpQueue = [];
+    players.forEach((p, idx) => {
+      if (storedHcp(p.name) !== null) _hcpQueue.push(idx);
+    });
+    setTimeout(nextHcpInQueue, 400);
+  }
+  // ────────────────────────────────────────────────────────────────────────
+
+  // ── Sub typeahead ────────────────────────────────────────────────────────
+  var SUB_POOL = (function() {
+    const s = new Set();
+    [1, 2].forEach(div => Object.values(MF_TEAMS[div]).forEach(t => t.roster.forEach(n => s.add(n))));
+    return Array.from(s).sort();
+  })();
+  // ────────────────────────────────────────────────────────────────────────
 
   // ── Score popup ────────────────────────────────────────────────────────
   var _popup = { idx: 0, hole: 0, par: 4 };
