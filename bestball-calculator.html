@@ -773,7 +773,8 @@
     <div id="hp-last-used" style="font-size:0.75rem;color:#888;margin-bottom:14px;min-height:1em;"></div>
     <div class="sp-controls">
       <button class="sp-adj" onclick="adjustHcp(-0.1)">−</button>
-      <div class="sp-score" id="hp-val" style="color:var(--green-dark);">0.0</div>
+      <input type="text" inputmode="decimal" id="hp-val"
+        style="font-size:2.4rem;font-weight:800;width:80px;text-align:center;border:none;border-bottom:2px solid var(--green-dark);color:var(--green-dark);background:transparent;font-family:inherit;padding:4px 0;" value="0.0">
       <button class="sp-adj" onclick="adjustHcp(0.1)">+</button>
     </div>
     <button class="sp-done" onclick="confirmHcp()">Confirm &amp; Save</button>
@@ -1408,19 +1409,24 @@ history.replaceState({ mfStep: 1 }, '');
     const saved = storedHcp(p.name);
     _hcpVal = p.hcp || saved || 0;
     document.getElementById('hp-player-name').textContent = p.name;
-    document.getElementById('hp-last-used').textContent = saved !== null ? 'Last saved: ' + saved.toFixed(1) : '';
-    document.getElementById('hp-val').textContent = _hcpVal.toFixed(1);
+    document.getElementById('hp-last-used').textContent = saved !== null ? 'Last saved: ' + saved.toFixed(1) : 'Type your handicap below';
+    const hpInp = document.getElementById('hp-val');
+    hpInp.value = _hcpVal > 0 ? _hcpVal.toFixed(1) : '';
+    hpInp.placeholder = '0.0';
     document.getElementById('hcp-popup-overlay').classList.add('open');
+    if (!saved) setTimeout(() => hpInp.focus(), 100);
   }
 
   function adjustHcp(delta) {
-    _hcpVal = Math.max(0, Math.round((_hcpVal + delta) * 10) / 10);
-    document.getElementById('hp-val').textContent = _hcpVal.toFixed(1);
+    const inp = document.getElementById('hp-val');
+    _hcpVal = Math.max(0, Math.round(((parseFloat(inp.value) || _hcpVal) + delta) * 10) / 10);
+    inp.value = _hcpVal.toFixed(1);
   }
 
   function confirmHcp() {
     if (_hcpIdx !== null) {
       const p = players[_hcpIdx];
+      _hcpVal = Math.max(0, parseFloat(document.getElementById('hp-val').value) || 0);
       p.hcp = _hcpVal;
       localStorage.setItem(HCP_KEY + p.name.trim().toLowerCase(), _hcpVal.toFixed(1));
       const cell = document.getElementById('hcp-val-' + _hcpIdx);
