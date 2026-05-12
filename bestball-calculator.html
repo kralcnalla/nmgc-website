@@ -1699,7 +1699,7 @@ history.replaceState({ mfStep: 1 }, '');
       `Hole play: ${t1Name} ${t1Holes} – ${t2Holes} ${t2Name}${holeWinner ? ' (' + holeWinner + ')' : ' (tied)'}`,
       `Medal play: ${t1Name} ${t1Medal} – ${t2Medal} ${t2Name}${medalWinner ? ' (' + medalWinner + ' wins)' : ' (tied)'}`,
       `Gross strokes: ${t1Name} ${t1Gross} · ${t2Name} ${t2Gross}`,
-      `Net strokes:   ${t1Name} ${t1Net} · ${t2Name} ${t2Net}`
+      `Net strokes:   ${t1Name} ${t1Net.toFixed(1)} · ${t2Name} ${t2Net.toFixed(1)}`
     ].join('\n');
     document.getElementById('resultsHeadline').textContent = headline;
     document.getElementById('resultsDetail').style.whiteSpace = 'pre-line';
@@ -1707,23 +1707,19 @@ history.replaceState({ mfStep: 1 }, '');
     document.getElementById('resultsModal').style.display  = 'flex';
   });
 
-  document.getElementById('resultsClose').addEventListener('click', () => {
-    document.getElementById('resultsModal').style.display = 'none';
-  });
-
-  document.getElementById('resultsNewMatch').addEventListener('click', () => {
-    document.getElementById('resultsModal').style.display = 'none';
-    document.getElementById('new-match').click();
-  });
+  // resultsClose and resultsNewMatch use inline onclick (defined in HTML after script)
   // ────────────────────────────────────────────────────────────────────────
 </script>
 <div id="resultsModal" class="results-modal" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
-  <div class="results-modal-content">
+  <div class="results-modal-content" style="overflow-y:auto;max-height:90vh;">
     <div class="results-headline" id="resultsHeadline">—</div>
-    <div class="results-detail" id="resultsDetail"></div>
+    <div class="results-detail" id="resultsDetail" style="white-space:pre-line;text-align:left;font-size:0.9rem;"></div>
+    <div style="font-size:0.78rem;color:#888;text-align:center;margin:14px 0 6px;">📸 Screenshot this to save your results</div>
     <div class="results-modal-actions">
-      <button type="button" id="resultsClose" class="btn btn-secondary">Close</button>
-      <button type="button" id="resultsNewMatch" class="btn btn-primary">New Match</button>
+      <button type="button" class="btn btn-secondary"
+        onclick="document.getElementById('resultsModal').style.display='none'">Close</button>
+      <button type="button" class="btn btn-primary"
+        onclick="document.getElementById('resultsModal').style.display='none';document.getElementById('new-match').click()">New Match</button>
     </div>
   </div>
 </div>
