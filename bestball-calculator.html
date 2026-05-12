@@ -1680,15 +1680,27 @@ history.replaceState({ mfStep: 1 }, '');
     const medalWinner = t1Medal > t2Medal ? t1Name : t2Medal > t1Medal ? t2Name : null;
     const holeWinner  = t1Holes > t2Holes ? t1Name : t2Holes > t1Holes ? t2Name : null;
 
-    let headline, detail;
+    const t1P = players.filter(p => p.team === 1);
+    const t2P = players.filter(p => p.team === 2);
+    const gross = p => p.scores.reduce((a,b) => a + (b||0), 0);
+    const t1Gross = t1P.reduce((s,p) => s + gross(p), 0);
+    const t2Gross = t2P.reduce((s,p) => s + gross(p), 0);
+    const t1Net   = t1P.reduce((s,p) => s + gross(p) - Math.min(p.hcp||0, 18), 0);
+    const t2Net   = t2P.reduce((s,p) => s + gross(p) - Math.min(p.hcp||0, 18), 0);
+
+    let headline;
     if (t1Total === t2Total) {
       headline = 'All Square';
     } else {
       headline = (t1Total > t2Total ? t1Name : t2Name) + ' wins!';
     }
-    detail = `Final: ${t1Name} ${t1Total} – ${t2Total} ${t2Name}\n` +
-      `Hole play: ${t1Name} ${t1Holes} – ${t2Holes} ${t2Name}${holeWinner ? ' (' + holeWinner + ')' : ' (tied)'}\n` +
-      `Medal play: ${t1Name} ${t1Medal} – ${t2Medal} ${t2Name}${medalWinner ? ' (' + medalWinner + ' wins medal)' : ' (tied)'}`;
+    const detail = [
+      `Final: ${t1Name} ${t1Total} – ${t2Total} ${t2Name}`,
+      `Hole play: ${t1Name} ${t1Holes} – ${t2Holes} ${t2Name}${holeWinner ? ' (' + holeWinner + ')' : ' (tied)'}`,
+      `Medal play: ${t1Name} ${t1Medal} – ${t2Medal} ${t2Name}${medalWinner ? ' (' + medalWinner + ' wins)' : ' (tied)'}`,
+      `Gross strokes: ${t1Name} ${t1Gross} · ${t2Name} ${t2Gross}`,
+      `Net strokes:   ${t1Name} ${t1Net} · ${t2Name} ${t2Net}`
+    ].join('\n');
     document.getElementById('resultsHeadline').textContent = headline;
     document.getElementById('resultsDetail').style.whiteSpace = 'pre-line';
     document.getElementById('resultsDetail').textContent   = detail;
