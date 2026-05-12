@@ -1677,19 +1677,18 @@ history.replaceState({ mfStep: 1 }, '');
     const t1Total  = t1Holes + t1Medal;
     const t2Total  = t2Holes + t2Medal;
 
+    const medalWinner = t1Medal > t2Medal ? t1Name : t2Medal > t1Medal ? t2Name : null;
+    const holeWinner  = t1Holes > t2Holes ? t1Name : t2Holes > t1Holes ? t2Name : null;
+
     let headline, detail;
     if (t1Total === t2Total) {
       headline = 'All Square';
-      detail   = `${t1Name} ${t1Total} – ${t2Total} ${t2Name}\n\nHole play: ${t1Holes} – ${t2Holes}  ·  Medal play: ${t1Medal} – ${t2Medal}`;
     } else {
-      const winner     = t1Total > t2Total ? t1Name : t2Name;
-      const wHoles     = t1Total > t2Total ? t1Holes : t2Holes;
-      const lHoles     = t1Total > t2Total ? t2Holes : t1Holes;
-      const wMedal     = t1Total > t2Total ? t1Medal : t2Medal;
-      const lMedal     = t1Total > t2Total ? t2Medal : t1Medal;
-      headline = `${winner} wins!`;
-      detail   = `${t1Name} ${t1Total} – ${t2Total} ${t2Name}\n\nHole play: ${t1Holes} – ${t2Holes}  ·  Medal play: ${t1Medal} – ${t2Medal}`;
+      headline = (t1Total > t2Total ? t1Name : t2Name) + ' wins!';
     }
+    detail = `Final: ${t1Name} ${t1Total} – ${t2Total} ${t2Name}\n` +
+      `Hole play: ${t1Name} ${t1Holes} – ${t2Holes} ${t2Name}${holeWinner ? ' (' + holeWinner + ')' : ' (tied)'}\n` +
+      `Medal play: ${t1Name} ${t1Medal} – ${t2Medal} ${t2Name}${medalWinner ? ' (' + medalWinner + ' wins medal)' : ' (tied)'}`;
     document.getElementById('resultsHeadline').textContent = headline;
     document.getElementById('resultsDetail').style.whiteSpace = 'pre-line';
     document.getElementById('resultsDetail').textContent   = detail;
