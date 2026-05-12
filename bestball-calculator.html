@@ -1370,7 +1370,7 @@ history.replaceState({ mfStep: 1 }, '');
     function teamMedal(teamPlayers) {
       const allComplete = teamPlayers.every(p => p.scores.every(s => s != null));
       if (!allComplete) return null;
-      return teamPlayers.reduce((sum, p) => sum + (p.scores.reduce((a,b)=>a+b,0) - Math.min(p.hcp, 18)), 0);
+      return teamPlayers.reduce((sum, p) => sum + (p.scores.reduce((a,b)=>a+b,0) - (p.hcp || 0)), 0);
     }
     const t1Medal = teamMedal(team1Players);
     const t2Medal = teamMedal(team2Players);
@@ -1685,8 +1685,8 @@ history.replaceState({ mfStep: 1 }, '');
     const gross = p => p.scores.reduce((a,b) => a + (b||0), 0);
     const t1Gross = t1P.reduce((s,p) => s + gross(p), 0);
     const t2Gross = t2P.reduce((s,p) => s + gross(p), 0);
-    const t1Net   = t1P.reduce((s,p) => s + gross(p) - Math.min(p.hcp||0, 18), 0);
-    const t2Net   = t2P.reduce((s,p) => s + gross(p) - Math.min(p.hcp||0, 18), 0);
+    const t1Net   = t1P.reduce((s,p) => s + gross(p) - (p.hcp||0), 0);
+    const t2Net   = t2P.reduce((s,p) => s + gross(p) - (p.hcp||0), 0);
 
     let headline;
     if (t1Total === t2Total) {
