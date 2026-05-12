@@ -346,6 +346,18 @@
   .sp-score { font-size:3rem; font-weight:800; min-width:70px; line-height:1; }
   .sp-rel { font-size:0.85rem; font-weight:700; margin-top:4px; }
   .sp-done { width:100%; padding:14px; background:var(--green-dark); color:white; border:none; border-radius:10px; font-family:inherit; font-size:1rem; font-weight:700; cursor:pointer; touch-action:manipulation; }
+  .complete-round-row { display:flex; justify-content:center; padding:20px 12px 32px; }
+  .btn-complete { padding:14px 32px; font-size:1.05rem; font-weight:700; min-height:52px; min-width:220px; border-radius:8px; border:none; font-family:inherit; cursor:pointer; transition:background 0.2s, opacity 0.2s, box-shadow 0.2s; touch-action:manipulation; }
+  .btn-complete:disabled { background:#d4d4d4; color:#888; cursor:not-allowed; opacity:0.7; box-shadow:none; }
+  .btn-complete:not(:disabled) { background:var(--green-dark); color:white; box-shadow:0 4px 12px rgba(26,77,46,0.3); }
+  .btn-complete:not(:disabled):active { background:var(--green-mid); }
+  .bw-results-modal { position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:10000; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .bw-results-content { background:white; border-radius:12px; padding:24px 20px; max-width:440px; width:100%; }
+  .bw-results-headline { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:700; color:var(--green-dark); margin-bottom:10px; text-align:center; }
+  .bw-results-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f0f0f0; font-size:0.9rem; }
+  .bw-results-row:last-child { border-bottom:none; }
+  .bw-results-winner { font-weight:700; color:var(--green-dark); }
+  .bw-results-actions { display:flex; gap:10px; justify-content:center; margin-top:16px; }
 
   .player-row td.score-cell.stroke {
     background: var(--stroke-mark);
@@ -574,17 +586,23 @@
     <div class="sp-label">Course Handicap</div>
     <div class="sp-player" id="hp-player-name">Player</div>
     <div id="hp-last-used" style="font-size:0.75rem;color:#888;margin-bottom:14px;min-height:1em;"></div>
-    <div class="sp-controls">
+    <!-- Stepper mode: remembered value -->
+    <div class="sp-controls" id="hp-stepper">
       <button class="sp-adj" onclick="adjustHcp(-0.1)">−</button>
       <div class="sp-score" id="hp-val" style="color:var(--green-dark);">0.0</div>
       <button class="sp-adj" onclick="adjustHcp(0.1)">+</button>
+    </div>
+    <!-- Type mode: no remembered value -->
+    <div id="hp-type" style="display:none;margin-bottom:8px;">
+      <input type="text" inputmode="decimal" id="hp-type-input" placeholder="e.g. 8.4"
+        style="font-size:2rem;font-weight:700;width:100%;text-align:center;border:none;border-bottom:2.5px solid var(--green-dark);color:var(--green-dark);background:transparent;font-family:inherit;padding:8px 0;outline:none;">
     </div>
     <button class="sp-done" onclick="confirmHcp()">Confirm &amp; Save</button>
     <button onclick="closeHcpPopup()" style="width:100%;padding:10px;background:none;border:none;font-family:inherit;font-size:0.88rem;color:#aaa;cursor:pointer;margin-top:6px;touch-action:manipulation;">Skip</button>
   </div>
 </div>
 
-<div class="score-popup-overlay" id="score-popup-overlay" onclick="if(event.target===this)closeScorePopup()">
+<div class="score-popup-overlay" id="score-popup-overlay" onclick="if(event.target===this)dismissScorePopup()">
   <div class="score-popup">
     <div class="sp-label" id="sp-hole-label">Hole 1 · Par 4</div>
     <div class="sp-player" id="sp-player-label">Player</div>
@@ -611,7 +629,8 @@
         <option value="east" selected>East Nine</option>
         <option value="west">West Nine</option>
       </select>
-      <button class="reset-btn" id="reset">Reset</button>
+      <button class="reset-btn" id="clear-scores-bw">Clear Scores</button>
+      <button class="reset-btn" id="reset">Full Reset</button>
     </div>
   </div>
 
@@ -639,6 +658,11 @@
     <span class="legend-item"><span class="legend-swatch"></span> Player receives 1 stroke on this hole</span>
     <span class="legend-item"><span class="legend-swatch legend-swatch-2"></span> Player receives 2 strokes on this hole</span>
   </div>
+
+  <div class="complete-round-row">
+    <button type="button" id="bwCompleteRoundBtn" class="btn-complete" disabled>Complete Round</button>
+  </div>
+
 </div>
 
 <div class="info-modal-overlay" id="hcp-modal" onclick="if(event.target===this)closeHcpInfo()">
@@ -694,8 +718,18 @@
     const saved = storedHcp(p.name);
     _hcpVal = p.hcp || saved || 0;
     document.getElementById('hp-player-name').textContent = p.name;
-    document.getElementById('hp-last-used').textContent = saved !== null ? 'Last saved: ' + saved.toFixed(1) : '';
-    document.getElementById('hp-val').textContent = _hcpVal.toFixed(1);
+    if (saved !== null) {
+      document.getElementById('hp-last-used').textContent = 'Last saved: ' + saved.toFixed(1);
+      document.getElementById('hp-stepper').style.display = 'flex';
+      document.getElementById('hp-type').style.display = 'none';
+      document.getElementById('hp-val').textContent = _hcpVal.toFixed(1);
+    } else {
+      document.getElementById('hp-last-used').textContent = 'Enter this player\'s course handicap';
+      document.getElementById('hp-stepper').style.display = 'none';
+      document.getElementById('hp-type').style.display = 'block';
+      document.getElementById('hp-type-input').value = '';
+      setTimeout(() => document.getElementById('hp-type-input').focus(), 100);
+    }
     document.getElementById('hcp-popup-overlay').classList.add('open');
   }
 
@@ -704,9 +738,16 @@
     document.getElementById('hp-val').textContent = _hcpVal.toFixed(1);
   }
 
+  function confirmHcpTyped() {
+    _hcpVal = Math.min(54, Math.max(0, parseFloat(document.getElementById('hp-type-input').value) || 0));
+  }
+
   function confirmHcp() {
     if (_hcpIdx !== null) {
       const p = players[_hcpIdx];
+      if (document.getElementById('hp-type').style.display !== 'none') {
+        _hcpVal = Math.min(54, Math.max(0, parseFloat(document.getElementById('hp-type-input').value) || 0));
+      }
       p.hcp = _hcpVal;
       localStorage.setItem(HCP_KEY + p.name.trim().toLowerCase(), _hcpVal.toFixed(1));
       const cell = document.getElementById('hcp-val-' + _hcpIdx);
@@ -733,14 +774,7 @@
   function openScorePopup(idx, hole, par) {
     _popup = { idx, hole, par };
     const p = players[idx];
-    // Commit par immediately so Done always saves a score
-    if (p.scores[hole] == null) {
-      p.scores[hole] = par;
-      const cell = document.getElementById('sv-' + idx + '-' + hole);
-      if (cell) { cell.textContent = par; cell.className = 'step-val sc-par'; }
-      renderScores();
-    }
-    const cur = p.scores[hole];
+    const cur = p.scores[hole] != null ? p.scores[hole] : par;
     document.getElementById('sp-hole-label').textContent = 'Hole ' + (hole + 1) + ' · Par ' + par;
     document.getElementById('sp-player-label').textContent = p.name;
     updatePopupDisplay(cur, par);
@@ -768,6 +802,18 @@
   }
 
   function closeScorePopup() {
+    const { idx, hole, par } = _popup;
+    if (players[idx].scores[hole] == null) {
+      const shown = parseInt(document.getElementById('sp-score').textContent) || par;
+      players[idx].scores[hole] = shown;
+      const cell = document.getElementById('sv-' + idx + '-' + hole);
+      if (cell) { cell.textContent = shown; cell.className = 'step-val ' + scoreColorClass(shown, par); }
+      renderScores();
+    }
+    document.getElementById('score-popup-overlay').classList.remove('open');
+  }
+
+  function dismissScorePopup() {
     document.getElementById('score-popup-overlay').classList.remove('open');
   }
   // ────────────────────────────────────────────────────────────────────────
@@ -1029,6 +1075,7 @@
     document.getElementById('sum-total-1').textContent = team1Total;
     document.getElementById('sum-total-2').textContent = team2Total;
     renderSummaryHeaders();
+    updateCompleteRoundButton();
   }
 
   ['team-name-1', 'team-name-2'].forEach((id, i) => {
@@ -1070,7 +1117,68 @@
 
   function showHcpInfo() { document.getElementById('hcp-modal').classList.add('open'); }
   function closeHcpInfo() { document.getElementById('hcp-modal').classList.remove('open'); }
+
+  // ── Clear Scores (scores only) ─────────────────────────────────────────
+  document.getElementById('clear-scores-bw').addEventListener('click', () => {
+    if (!confirm('Clear all scores?')) return;
+    players.forEach((p, idx) => {
+      p.scores = Array(9).fill(null);
+      for (let h = 0; h < 9; h++) {
+        const nine = NINES[currentNine];
+        const cell = document.getElementById('sv-' + idx + '-' + h);
+        if (cell) { cell.textContent = nine.par[h]; cell.className = 'step-val sc-unset'; }
+      }
+    });
+    renderScores();
+  });
+
+  // ── Complete Round ─────────────────────────────────────────────────────
+  function updateCompleteRoundButton() {
+    const btn = document.getElementById('bwCompleteRoundBtn');
+    if (!btn) return;
+    const allDone = players.every(p => p.scores.every(s => s != null && s > 0));
+    btn.disabled = !allDone;
+    btn.textContent = allDone ? 'Complete Round →' : 'Complete Round';
+  }
+
+  document.getElementById('bwCompleteRoundBtn').addEventListener('click', () => {
+    const t1Total = parseFloat(document.getElementById('sum-total-1').textContent) || 0;
+    const t2Total = parseFloat(document.getElementById('sum-total-2').textContent) || 0;
+    const t1Name  = teams[1].name || 'Team 1';
+    const t2Name  = teams[2].name || 'Team 2';
+
+    let headlineText = t1Total === t2Total ? 'All Square' :
+      (t1Total > t2Total ? t1Name : t2Name) + ' wins!';
+
+    let rows = '<div class="bw-results-row"><span>Overall</span><span class="bw-results-winner">' +
+      t1Name + ' ' + t1Total + ' – ' + t2Total + ' ' + t2Name + '</span></div>';
+
+    for (let m = 0; m < 4; m++) {
+      const mt1 = parseFloat(document.getElementById('sum-m' + m + '-t1')?.textContent) || 0;
+      const mt2 = parseFloat(document.getElementById('sum-m' + m + '-t2')?.textContent) || 0;
+      const p1 = players[m * 2].name;
+      const p2 = players[m * 2 + 1].name;
+      const winner = mt1 > mt2 ? p1 : mt2 > mt1 ? p2 : 'Tie';
+      rows += '<div class="bw-results-row"><span>Match ' + (m+1) + ': ' + p1 + ' vs ' + p2 + '</span>' +
+        '<span class="' + (mt1 !== mt2 ? 'bw-results-winner' : '') + '">' + (mt1 === mt2 ? 'Tied' : winner + ' ' + Math.max(mt1,mt2) + '–' + Math.min(mt1,mt2)) + '</span></div>';
+    }
+
+    document.getElementById('bwResultsModal').innerHTML =
+      '<div class="bw-results-content">' +
+        '<div class="bw-results-headline">' + headlineText + '</div>' +
+        rows +
+        '<div class="bw-results-actions">' +
+          '<button class="btn btn-secondary" onclick="document.getElementById(\'bwResultsModal\').style.display=\'none\'">Close</button>' +
+          '<button class="btn btn-primary" onclick="document.getElementById(\'bwResultsModal\').style.display=\'none\';document.getElementById(\'reset\').click()">New Round</button>' +
+        '</div>' +
+      '</div>';
+    document.getElementById('bwResultsModal').style.display = 'flex';
+  });
+  // ────────────────────────────────────────────────────────────────────────
 </script>
+
+<div id="bwResultsModal" class="bw-results-modal" style="display:none;" onclick="if(event.target===this)this.style.display='none'"></div>
+
 <div style="text-align:center;padding:1rem;font-size:12px;color:#999;">nemadjimensclub.com</div>
 </body>
 </html>
