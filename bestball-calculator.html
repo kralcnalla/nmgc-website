@@ -1369,7 +1369,7 @@ history.replaceState({ mfStep: 1 }, '');
     function teamMedal(teamPlayers) {
       const allComplete = teamPlayers.every(p => p.scores.every(s => s != null));
       if (!allComplete) return null;
-      return teamPlayers.reduce((sum, p) => sum + (p.scores.reduce((a,b)=>a+b,0) - (p.hcp || 0)), 0);
+      return teamPlayers.reduce((sum, p) => sum + (p.scores.reduce((a,b)=>a+b,0) - Math.round(p.hcp || 0)), 0);
     }
     const t1Medal = teamMedal(team1Players);
     const t2Medal = teamMedal(team2Players);
