@@ -689,7 +689,7 @@
 
   /* ── Match Finder ── */
   .mf-overlay { position:fixed; inset:0; background:var(--cream); z-index:1000; overflow-y:auto; -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; }
-  .mf-head { background:var(--green-dark); color:white; padding:20px; text-align:center; }
+  .mf-head { background:var(--green-dark); color:white; padding:20px; padding-top:calc(20px + env(safe-area-inset-top)); text-align:center; }
   .mf-head h2 { font-family:'Playfair Display',serif; font-size:1.4rem; margin-bottom:4px; }
   .mf-head p { font-size:0.85rem; opacity:0.85; }
   .mf-body { padding:16px 20px; max-width:480px; margin:0 auto; width:100%; }
