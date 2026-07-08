@@ -905,7 +905,8 @@
         Body:               file,
         ContentType:        'application/pdf',
         ContentDisposition: 'inline',
-        ACL:                'public-read'
+        ACL:                'public-read',
+        CacheControl:       'no-cache, no-store, must-revalidate'
       }, function(err) {
         if (err) { reject(err); return; }
         resolve({ url: S3_BASE_URL + filename });
