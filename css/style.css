@@ -193,13 +193,13 @@ img { max-width: 100%; display: block; }
   position: fixed;
   left: 0;
   right: 0;
+  bottom: 0;
   z-index: 999;
   background: var(--darker);
   border-top: 1px solid #333;
   padding: 1rem 1.5rem;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  max-height: 80vh;
 }
 
 .mobile-nav.open { display: block; }
