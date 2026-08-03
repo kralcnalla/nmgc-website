@@ -6,10 +6,11 @@
 
     row.addEventListener('click', function(e) {
       e.preventDefault();
-      fetch(href)
+      var url = href + (href.includes('?') ? '&' : '?') + 't=' + Date.now();
+      fetch(url)
         .then(function(res) {
           if (res.ok) {
-            window.location.href = href;
+            window.location.href = url;
           } else {
             showMsg(row);
           }
