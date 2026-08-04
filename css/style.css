@@ -1085,11 +1085,10 @@ img { max-width: 100%; display: block; }
 }
 
 .event-name a {
-  color: inherit;
-  text-decoration: none;
+  color: #3a5fc8;
+  text-decoration: underline;
 }
 .event-name a:hover {
-  text-decoration: underline;
   color: #1a4d2e;
 }
 
